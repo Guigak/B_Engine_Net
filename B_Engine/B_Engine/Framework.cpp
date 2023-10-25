@@ -347,8 +347,8 @@ void CFramework::Build_Objects() {
 	m_pScene = new CScene();
 	m_pScene->Build_Objects(m_pd3d_Device, m_pd3d_Command_List);
 
-	CAirplane_Player* pAirplane_Player = new CAirplane_Player(m_pd3d_Device, m_pd3d_Command_List, m_pScene->Get_Graphics_RootSignature());
-	m_pPlayer = pAirplane_Player;
+	CCube_Player* pCube_Player = new CCube_Player(m_pd3d_Device, m_pd3d_Command_List, m_pScene->Get_Graphics_RootSignature());
+	m_pPlayer = pCube_Player;
 	m_pCamera = m_pPlayer->Get_Camera();
 
 	m_pd3d_Command_List->Close();
@@ -380,22 +380,22 @@ void CFramework::Prcs_Input() {
 	DWORD dwDirection = 0;
 
 	if (GetKeyboardState(pKey_Buffer)) {
-		if (pKey_Buffer[VK_UP] & 0xF0) {
+		if (pKey_Buffer[VK_W] & 0xF0) {
 			dwDirection |= DIRECT_FORWARD;
 		}
-		if (pKey_Buffer[VK_DOWN] & 0xF0) {
+		if (pKey_Buffer[VK_S] & 0xF0) {
 			dwDirection |= DIRECT_BACKWARD;
 		}
-		if (pKey_Buffer[VK_LEFT] & 0xF0) {
+		if (pKey_Buffer[VK_A] & 0xF0) {
 			dwDirection |= DIRECT_LEFT;
 		}
-		if (pKey_Buffer[VK_RIGHT] & 0xF0) {
+		if (pKey_Buffer[VK_D] & 0xF0) {
 			dwDirection |= DIRECT_RIGHT;
 		}
-		if (pKey_Buffer[VK_PRIOR] & 0xF0) {
+		if (pKey_Buffer[VK_SPACE] & 0xF0) {
 			dwDirection |= DIRECT_UP;
 		}
-		if (pKey_Buffer[VK_NEXT] & 0xF0) {
+		if (pKey_Buffer[VK_LSHIFT] & 0xF0) {
 			dwDirection |= DIRECT_DOWN;
 		}
 	}
@@ -415,21 +415,16 @@ void CFramework::Prcs_Input() {
 	}
 
 	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f)) {
-		if (m_pSelected_Object) {
-			Prcs_Selected_Object(dwDirection, cxDelta, cyDelta);
+		if (cxDelta || cyDelta) {
+			if (pKey_Buffer[VK_RBUTTON] & 0xF0) {
+				m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
+			}
+			else {
+				m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
+			}
 		}
-		else {
-			if (cxDelta || cyDelta) {
-				if (pKey_Buffer[VK_RBUTTON] & 0xF0) {
-					m_pPlayer->Rotate(cyDelta, 0.0f, -cxDelta);
-				}
-				else {
-					m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
-				}
-			}
-			if (dwDirection) {
-				m_pPlayer->Move(dwDirection, 5000.0f * m_Timer.Get_Elapsed_Time(), true);
-			}
+		if (dwDirection) {
+			m_pPlayer->Move(dwDirection, PLAYER_MOVE_DISTANCE * m_Timer.Get_Elapsed_Time(), false);
 		}
 	}
 
@@ -532,17 +527,26 @@ void CFramework::Wait_4_GPU_Complete() {
 void CFramework::Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam) {
 	switch (nMsg_ID) {
 	case WM_LBUTTONDOWN :
-	case WM_RBUTTONDOWN :
-		m_pSelected_Object = m_pScene->Pick_Object_Pointed_By_Cursor(LOWORD(lParam), HIWORD(lParam), m_pCamera);
+		if (m_bCaptured) {
+			m_pScene->Delete_Cube_Object(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera);
+		}
+		else {
+			SetCapture(hWnd);
+			GetCursorPos(&m_ptOld_Cursor_Pos);
 
-		SetCapture(hWnd);
-		GetCursorPos(&m_ptOld_Cursor_Pos);
+			m_bCaptured = true;
+		}
+		break;
+	case WM_RBUTTONDOWN :
+		if (m_bCaptured) {
+			m_pScene->Add_Cube_Object(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera);
+		}
 		break;
 	case WM_LBUTTONUP :
 	case WM_RBUTTONUP :
-		ReleaseCapture();
 		break;
 	case WM_MOUSEMOVE :
+		m_pSelected_Object = m_pScene->Pick_Object_Pointed_By_Cursor(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera);
 		break;
 	default :
 		break;
@@ -559,8 +563,8 @@ void CFramework::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARA
 		case VK_RETURN:
 			break;
 		case VK_F1:
-		case VK_F2:
-		case VK_F3:
+		//case VK_F2:
+		//case VK_F3:
 			if (m_pPlayer) {
 				m_pCamera = m_pPlayer->Chg_Camera(((DWORD)wParam - VK_F1 + 1), m_Timer.Get_Elapsed_Time());
 			}
@@ -570,6 +574,14 @@ void CFramework::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARA
 			break;
 		case VK_F9:
 			Chg_SwapChain_State();
+			m_bCaptured = false;
+			break;
+		case VK_TAB:
+			if (m_bCaptured) {
+				ReleaseCapture();
+
+				m_bCaptured = false;
+			}
 			break;
 		default:
 			break;

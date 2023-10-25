@@ -16,6 +16,9 @@ protected :
 
 	CShader* m_pShader = NULL;
 
+	//
+	DirectX::XMFLOAT4 m_xmf4_Color;
+
 public :
 	CObject();
 	virtual ~CObject();
@@ -71,7 +74,13 @@ public :
 
 	//
 	void Generate_Ray_4_Picking(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, DirectX::XMFLOAT3* pxmf3_Pick_Ray_Position, DirectX::XMFLOAT3* pxmf3_Pick_Ray_Direction);
-	int Pick_Object_By_Ray_Intersection(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfHit_Distance, CMesh* pMesh = NULL);
+	int Pick_Object_By_Ray_Intersection(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfHit_Distance, CMesh* pMesh = NULL, int* nPrimive_Number = NULL);
+
+	//
+	void Set_Color(float fColor_r, float fColor_g, float fColor_b, float fColor_a);
+	void Set_Color(DirectX::XMFLOAT4 xmf4_Color);
+
+	DirectX::XMFLOAT4 Get_Color() { return m_xmf4_Color; };
 };
 
 class CRotating_Object : public CObject {

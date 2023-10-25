@@ -58,6 +58,25 @@ using Microsoft::WRL::ComPtr;
 // random color
 #define RANDOM_COLOR DirectX::XMFLOAT4(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX))
 
+// Cube data
+#define CUBE_WIDTH 10.0f
+#define CUBE_INIT_RING_NUMBER 1
+#define CUBE_MAX_NUMBER 10000
+#define CUBE_DEFAULT_COLOR 0.2f
+
+// player data
+#define PLAYER_MAX_VELOCITY 50.0f
+#define PLAYER_MAX_GRAVITY 50.0f
+#define PLAYER_GRAVITY 100.0f
+#define PLAYER_FRICTION 50.0f
+#define PLAYER_MOVE_DISTANCE 100.0f
+
+// VK data
+#define VK_W 0x57
+#define VK_A 0x41
+#define VK_S 0x53
+#define VK_D 0x44
+
 // fullscreen default
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 

@@ -43,5 +43,8 @@ public :
 
 	//
 	CObject* Pick_Object_Pointed_By_Cursor(int Client_x, int Client_y, CCamera* pCamera);
+
+	void Delete_Cube_Object(int Client_x, int Client_y, CCamera* pCamera);
+	void Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera);
 };
 

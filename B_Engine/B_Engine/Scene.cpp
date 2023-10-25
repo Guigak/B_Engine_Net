@@ -107,6 +107,52 @@ CObject* CScene::Pick_Object_Pointed_By_Cursor(int Client_x, int Client_y, CCame
 	return pNearest_Object;
 }
 
+void CScene::Delete_Cube_Object(int Client_x, int Client_y, CCamera* pCamera) {	// have to fix later
+	if (!pCamera) {
+		return;
+	}
+
+	DirectX::XMFLOAT4X4 xmf4x4_View = pCamera->Get_View_Matrix();
+	DirectX::XMFLOAT4X4 xmf4x4_Projection = pCamera->Get_Projection_Matrix();
+	D3D12_VIEWPORT d3d_Viewport = pCamera->Get_ViewPort();
+
+	DirectX::XMFLOAT3 xmf3_Pick_Position;
+	xmf3_Pick_Position.x = (((2.0f * Client_x) / d3d_Viewport.Width) - 1) / xmf4x4_Projection._11;
+	xmf3_Pick_Position.y = -(((2.0f * Client_y) / d3d_Viewport.Height) - 1) / xmf4x4_Projection._22;
+	xmf3_Pick_Position.z = 1.0f;
+
+	int nIntersected = 0;
+	float fHit_Distance = FLT_MAX;
+	float fNearest_Hit_Distance = FLT_MAX;
+
+	for (int i = 0; i < m_nShaders; ++i) {
+		m_pShaders[i].Delete_Cube_Object(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
+	}
+}
+
+void CScene::Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera) {
+	if (!pCamera) {
+		return;
+	}
+
+	DirectX::XMFLOAT4X4 xmf4x4_View = pCamera->Get_View_Matrix();
+	DirectX::XMFLOAT4X4 xmf4x4_Projection = pCamera->Get_Projection_Matrix();
+	D3D12_VIEWPORT d3d_Viewport = pCamera->Get_ViewPort();
+
+	DirectX::XMFLOAT3 xmf3_Pick_Position;
+	xmf3_Pick_Position.x = (((2.0f * Client_x) / d3d_Viewport.Width) - 1) / xmf4x4_Projection._11;
+	xmf3_Pick_Position.y = -(((2.0f * Client_y) / d3d_Viewport.Height) - 1) / xmf4x4_Projection._22;
+	xmf3_Pick_Position.z = 1.0f;
+
+	int nIntersected = 0;
+	float fHit_Distance = FLT_MAX;
+	float fNearest_Hit_Distance = FLT_MAX;
+
+	for (int i = 0; i < m_nShaders; ++i) {
+		m_pShaders[i].Add_Cube_Object(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
+	}
+}
+
 void CScene::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
 	m_pd3d_Graphics_RootSignature = Crt_Graphics_RootSignature(pd3d_Device);
 

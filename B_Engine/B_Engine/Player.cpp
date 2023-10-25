@@ -166,15 +166,15 @@ void CPlayer::Update(float fElapsed_Time) {
 	float fMax_Velocity = m_fMax_Velocity * fElapsed_Time;
 
 	if (fLength > m_fMax_Velocity) {
-		m_xmf3_Velocity.x *= (fMax_Velocity / fLength);
-		m_xmf3_Velocity.z *= (fMax_Velocity / fLength);
+		m_xmf3_Velocity.x *= (m_fMax_Velocity / fLength);
+		m_xmf3_Velocity.z *= (m_fMax_Velocity / fLength);
 	}
 
 	float fMax_Gravity = m_fMax_Gravity * fElapsed_Time;
 	fLength = sqrtf(m_xmf3_Velocity.y * m_xmf3_Velocity.y);
 
 	if (fLength > m_fMax_Gravity) {
-		m_xmf3_Velocity.y *= (fMax_Gravity / fLength);
+		m_xmf3_Velocity.y *= (m_fMax_Gravity / fLength);
 	}
 
 	DirectX::XMFLOAT3 xmf3_Velocity = Vector3::Multiply(m_xmf3_Velocity, fElapsed_Time, false);
@@ -384,4 +384,68 @@ void CAirplane_Player::Prepare_Render() {
 
 	DirectX::XMMATRIX xmmtx_Rotate = DirectX::XMMatrixRotationRollPitchYaw(DirectX::XMConvertToRadians(90.0f), 0.0f, 0.0f);
 	m_xmf4x4_World = Matrix4x4::Multiply(xmmtx_Rotate, m_xmf4x4_World);
+}
+
+CCube_Player::CCube_Player(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, ID3D12RootSignature* pd3d_Graphics_RootSignature) {
+	CMesh* pCube_Mesh = new CCube_Mesh(pd3d_Device, pd3d_Command_List, CUBE_WIDTH * 2 / 3, CUBE_WIDTH * 8 / 5, CUBE_WIDTH * 2 / 3);
+
+	Set_Mesh(pCube_Mesh);
+
+	m_pCamera = Chg_Camera(FIRST_PERSON_CAMERA, 0.0f);
+
+	Crt_Shader_Variables(pd3d_Device, pd3d_Command_List);
+
+	Set_Position(DirectX::XMFLOAT3(0.0f, 50.0f, 0.0f));
+
+	CObjects_Shader* pShader = new CObjects_Shader();
+	pShader->Crt_Shader(pd3d_Device, pd3d_Graphics_RootSignature);
+	Set_Shader(pShader);
+}
+
+CCube_Player::~CCube_Player() {
+}
+
+CCamera* CCube_Player::Chg_Camera(DWORD nNew_Camera_Mode, float fElapsed_Time) {
+	DWORD nCurrent_Camera_Mode = (m_pCamera) ? m_pCamera->Get_Mode() : 0x00;
+
+	if (nCurrent_Camera_Mode == nNew_Camera_Mode) {
+		return m_pCamera;
+	}
+
+	switch (nNew_Camera_Mode) {
+	case FIRST_PERSON_CAMERA:
+		Set_Friction(PLAYER_FRICTION);
+		//Set_Gravity(DirectX::XMFLOAT3(0.0f, -PLAYER_GRAVITY, 0.0f));
+		Set_Max_Velocity(PLAYER_MAX_VELOCITY);
+		Set_Max_Gravity(PLAYER_MAX_GRAVITY);
+		m_pCamera = CPlayer::Chg_Camera(FIRST_PERSON_CAMERA, nCurrent_Camera_Mode);
+		m_pCamera->Set_Lag_Time(0.0f);
+		m_pCamera->Set_Offset(DirectX::XMFLOAT3(0.0f, CUBE_WIDTH * 8 / 5, 0.0f));
+		m_pCamera->Gernerate_Projection_Matrix(60.0f, ASPECT_RATIO, 1.01f, 5000.0f);
+		m_pCamera->Set_Viewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
+		m_pCamera->Set_ScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+		break;
+	case SPACESHIP_CAMERA:
+		break;
+	case THIRD_PERSON_CAMERA:
+		Set_Friction(PLAYER_FRICTION);
+		//Set_Gravity(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
+		Set_Max_Velocity(PLAYER_MAX_VELOCITY);
+		Set_Max_Gravity(PLAYER_MAX_GRAVITY);
+		m_pCamera = CPlayer::Chg_Camera(THIRD_PERSON_CAMERA, nCurrent_Camera_Mode);
+		m_pCamera->Set_Lag_Time(0.0f);
+		m_pCamera->Set_Offset(DirectX::XMFLOAT3(0.0f, 40.0f, -50.0f));
+		m_pCamera->Gernerate_Projection_Matrix(60.0f, ASPECT_RATIO, 1.01f, 5000.0f);
+		m_pCamera->Set_Viewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
+		m_pCamera->Set_ScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+		break;
+	default:
+		break;
+	}
+
+	m_pCamera->Set_Position(Vector3::Add(m_xmf3_Position, m_pCamera->Get_Offset()));
+
+	Update(fElapsed_Time);
+
+	return m_pCamera;
 }

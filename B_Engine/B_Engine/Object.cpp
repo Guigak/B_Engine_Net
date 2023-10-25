@@ -157,23 +157,31 @@ void CObject::Generate_Ray_4_Picking(DirectX::XMFLOAT3& xmf3_Pick_Position, Dire
 	*pxmf3_Pick_Ray_Direction = Vector3::Normalize(Vector3::Subtract(*pxmf3_Pick_Ray_Direction, *pxmf3_Pick_Ray_Position));
 }
 
-int CObject::Pick_Object_By_Ray_Intersection(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfHit_Distance, CMesh* pMesh) {
+int CObject::Pick_Object_By_Ray_Intersection(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfHit_Distance, CMesh* pMesh, int* nPrimive_Number) {
 	int nIntersected = 0;
 
 	if (m_pMesh){
 		DirectX::XMFLOAT3 xmf3_Pick_Ray_Position, xmf3_Pick_Ray_Direction;
 		Generate_Ray_4_Picking(xmf3_Pick_Position, xmf4x4_View, &xmf3_Pick_Ray_Position, &xmf3_Pick_Ray_Direction);
 
-		nIntersected = m_pMesh->Chk_Ray_Intersection(xmf3_Pick_Ray_Position, xmf3_Pick_Ray_Direction, pfHit_Distance);
+		nIntersected = m_pMesh->Chk_Ray_Intersection(xmf3_Pick_Ray_Position, xmf3_Pick_Ray_Direction, pfHit_Distance, nPrimive_Number);
 	}
 	else {
 		DirectX::XMFLOAT3 xmf3_Pick_Ray_Position, xmf3_Pick_Ray_Direction;
 		Generate_Ray_4_Picking(xmf3_Pick_Position, xmf4x4_View, &xmf3_Pick_Ray_Position, &xmf3_Pick_Ray_Direction);
 
-		nIntersected = pMesh->Chk_Ray_Intersection(xmf3_Pick_Ray_Position, xmf3_Pick_Ray_Direction, pfHit_Distance);
+		nIntersected = pMesh->Chk_Ray_Intersection(xmf3_Pick_Ray_Position, xmf3_Pick_Ray_Direction, pfHit_Distance, nPrimive_Number);
 	}
 
 	return nIntersected;
+}
+
+void CObject::Set_Color(float fColor_r, float fColor_g, float fColor_b, float fColor_a) {
+	m_xmf4_Color = DirectX::XMFLOAT4(fColor_r, fColor_g, fColor_b, fColor_a);
+}
+
+void CObject::Set_Color(DirectX::XMFLOAT4 xmf4_Color) {
+	Set_Color(xmf4_Color.x, xmf4_Color.y, xmf4_Color.z, xmf4_Color.w);
 }
 
 //

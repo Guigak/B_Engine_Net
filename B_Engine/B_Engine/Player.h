@@ -85,6 +85,7 @@ public :
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera = NULL);
 };
 
+//
 class CAirplane_Player : public CPlayer {
 public :
 	CAirplane_Player(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, ID3D12RootSignature* pd3d_Graphics_RootSignature);
@@ -93,4 +94,13 @@ public :
 	virtual CCamera* Chg_Camera(DWORD nNew_Camera_Mode, float fElapsed_Time);
 
 	virtual void Prepare_Render();
+};
+
+//
+class CCube_Player : public CPlayer {
+public :
+	CCube_Player(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, ID3D12RootSignature* pd3d_Graphics_RootSignature);
+	virtual ~CCube_Player();
+
+	virtual CCamera* Chg_Camera(DWORD nNew_Camera_Mode, float fElapsed_Time);
 };

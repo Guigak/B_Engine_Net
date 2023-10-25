@@ -44,7 +44,7 @@ public:
 
 	//
 	virtual D3D12_INPUT_LAYOUT_DESC Crt_Input_Layout();
-	virtual D3D12_RASTERIZER_DESC Crt_Rasterizer_State();
+	virtual D3D12_RASTERIZER_DESC Crt_Rasterizer_State(bool bSolid = true);
 	virtual D3D12_BLEND_DESC Crt_Blend_State();
 	virtual D3D12_DEPTH_STENCIL_DESC Crt_Depth_Stencil_State();
 
@@ -110,6 +110,10 @@ public :
 
 	//
 	virtual CObject* Pick_Object_By_Ray_Intersection(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
+
+	//
+	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {};
+	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {};
 };
 
 //
@@ -134,4 +138,7 @@ public :
 	virtual void Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List);
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
+
+	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
+	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
 };

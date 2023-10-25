@@ -33,10 +33,15 @@ D3D12_INPUT_LAYOUT_DESC CShader::Crt_Input_Layout() {
 	return d3d_Input_Layout_Desc;
 }
 
-D3D12_RASTERIZER_DESC CShader::Crt_Rasterizer_State() {
+D3D12_RASTERIZER_DESC CShader::Crt_Rasterizer_State(bool bSolid) {
 	D3D12_RASTERIZER_DESC d3d_Rasterizer_Desc;
 	ZeroMemory(&d3d_Rasterizer_Desc, sizeof(D3D12_RASTERIZER_DESC));
-	d3d_Rasterizer_Desc.FillMode = D3D12_FILL_MODE_SOLID;
+	if (bSolid) {
+		d3d_Rasterizer_Desc.FillMode = D3D12_FILL_MODE_SOLID;
+	}
+	else {
+		d3d_Rasterizer_Desc.FillMode = D3D12_FILL_MODE_WIREFRAME;
+	}
 	d3d_Rasterizer_Desc.CullMode = D3D12_CULL_MODE_BACK;
 	d3d_Rasterizer_Desc.FrontCounterClockwise = FALSE;
 	d3d_Rasterizer_Desc.DepthBias = 0;
@@ -288,38 +293,6 @@ CObjects_Shader::~CObjects_Shader() {
 }
 
 void CObjects_Shader::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
-	/*CCube_Mesh* pCube_Mesh = new CCube_Mesh(pd3d_Device, pd3d_Command_List, 12.0f, 12.0f, 12.0f);
-
-	int x_objs = 10;
-	int y_objs = 10;
-	int z_Objs = 10;
-
-	m_nObjects = (x_objs * 2 + 1) * (y_objs * 2 + 1) * (z_Objs * 2 + 1);
-
-	m_ppObjects = new CObject * [m_nObjects];
-
-	float fx_Pitch = 12.0f * 2.5f;
-	float fy_Pitch = 12.0f * 2.5f;
-	float fz_Pitch = 12.0f * 2.5f;
-
-	CRotating_Object* pRotating_Object = NULL;
-	int i = 0;
-
-	for (int x = -x_objs; x <= x_objs; ++x) {
-		for (int y = -y_objs; y <= y_objs; ++y) {
-			for (int z = -z_Objs; z <= z_Objs; ++z) {
-				pRotating_Object = new CRotating_Object();
-				pRotating_Object->Set_Mesh(pCube_Mesh);
-				pRotating_Object->Set_Position(fx_Pitch * x, fy_Pitch * y, fz_Pitch * z);
-				pRotating_Object->Set_Rotation_Axis(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-				pRotating_Object->Set_Rotation_Speed((10.0f * (i % 10) + 3.0f) * 1.0f);
-
-				m_ppObjects[i++] = pRotating_Object;
-			}
-		}
-	}
-
-	Crt_Shader_Variables(pd3d_Device, pd3d_Command_List);*/
 }
 
 void CObjects_Shader::Release_Objects() {
@@ -442,7 +415,7 @@ void CInstancing_Shader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignatu
 }
 
 void CInstancing_Shader::Crt_Shader_Variables(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
-	m_pd3d_CB_Objects = Crt_Buffer_Resource(pd3d_Device, pd3d_Command_List, NULL, sizeof(VS_VB_INSTANCE) * m_nObjects, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ, NULL);
+	m_pd3d_CB_Objects = Crt_Buffer_Resource(pd3d_Device, pd3d_Command_List, NULL, sizeof(VS_VB_INSTANCE) * CUBE_MAX_NUMBER, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ, NULL);
 
 	m_pd3d_CB_Objects->Map(0, NULL, (void**)&m_pCB_Mapped_Objects);
 }
@@ -451,7 +424,7 @@ void CInstancing_Shader::Udt_Shader_Variables(ID3D12GraphicsCommandList* pd3d_Co
 	pd3d_Command_List->SetGraphicsRootShaderResourceView(2, m_pd3d_CB_Objects->GetGPUVirtualAddress());
 
 	for (int i = 0; i < m_nObjects; ++i) {
-		m_pCB_Mapped_Objects[i].m_xmf4_Color = (i % 2) ? DirectX::XMFLOAT4(0.5f, 0.0f, 0.0f, 0.0f) : DirectX::XMFLOAT4(0.0f, 0.0f, 0.5f, 0.0f);
+		m_pCB_Mapped_Objects[i].m_xmf4_Color = m_ppObjects[i]->Get_Color();
 
 		DirectX::XMStoreFloat4x4(&m_pCB_Mapped_Objects[i].m_xmf4x4_Transform, DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&m_ppObjects[i]->Get_World_Matrix())));
 	}
@@ -468,34 +441,24 @@ void CInstancing_Shader::Release_Shader_Variables() {
 }
 
 void CInstancing_Shader::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
-	int Objects_x = 10;
-	int Objects_y = 10;
-	int Objects_z = 10;
 	int i = 0;
 
-	m_nObjects = (Objects_x * 2 + 1) * (Objects_y * 2 + 1) * (Objects_z * 2 + 1);
+	m_nObjects = (CUBE_INIT_RING_NUMBER * 2 + 1) * (CUBE_INIT_RING_NUMBER * 2 + 1);
 
-	m_ppObjects = new CObject * [m_nObjects];
+	m_ppObjects = new CObject * [CUBE_MAX_NUMBER] { NULL };
 
-	float fPitch_x = 12.0f * 2.5f;
-	float fPitch_y = 12.0f * 2.5f;
-	float fPitch_z = 12.0f * 2.5f;
+	CObject* pObject = NULL;
 
-	CRotating_Object* pRotating_Object = NULL;
-
-	for (int x = -Objects_x; x <= Objects_x; ++x) {
-		for (int y = -Objects_y; y <= Objects_y; ++y) {
-			for (int z = -Objects_z; z <= Objects_z; ++z) {
-				pRotating_Object = new CRotating_Object();
-				pRotating_Object->Set_Position(fPitch_x * x, fPitch_y * y, fPitch_z * z);
-				pRotating_Object->Set_Rotation_Axis(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
-				pRotating_Object->Set_Rotation_Speed(10.0f * (i % 10));
-				m_ppObjects[i++] = pRotating_Object;
-			}
+	for (int x = -CUBE_INIT_RING_NUMBER; x <= CUBE_INIT_RING_NUMBER; ++x) {
+		for (int z = -CUBE_INIT_RING_NUMBER; z <= CUBE_INIT_RING_NUMBER; ++z) {
+			pObject = new CObject();
+			pObject->Set_Position(CUBE_WIDTH * x, 0.0f, CUBE_WIDTH * z);
+			pObject->Set_Color(CUBE_DEFAULT_COLOR, CUBE_DEFAULT_COLOR, CUBE_DEFAULT_COLOR, 0.0f);
+			m_ppObjects[i++] = pObject;
 		}
 	}
 
-	CCube_Mesh* pCube_Mesh = new CCube_Mesh(pd3d_Device, pd3d_Command_List, 12.0f, 12.0f, 12.0f);
+	CCube_Mesh* pCube_Mesh = new CCube_Mesh(pd3d_Device, pd3d_Command_List, CUBE_WIDTH, CUBE_WIDTH, CUBE_WIDTH);
 
 	m_ppObjects[0]->Set_Mesh(pCube_Mesh);
 
@@ -508,4 +471,89 @@ void CInstancing_Shader::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CC
 	Udt_Shader_Variables(pd3d_Command_List);
 
 	m_ppObjects[0]->Render(pd3d_Command_List, pCamera, m_nObjects);
+}
+
+void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {
+	int nIntersected = 0;
+	*pfNear_Hit_Distance = FLT_MAX;
+	float fHit_Distance = FLT_MAX;
+	CObject* pSelected_Object = NULL;
+	int nSelected_Index = 0;
+	int nPrimitive_Number = 0;
+
+	for (int i = 0; i < m_nObjects; ++i) {
+		nIntersected = m_ppObjects[i]->Pick_Object_By_Ray_Intersection(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance, m_ppObjects[0]->Get_Mesh(), &nPrimitive_Number);
+
+		if ((nIntersected > 0) && (fHit_Distance < *pfNear_Hit_Distance)) {
+			*pfNear_Hit_Distance = fHit_Distance;
+			pSelected_Object = m_ppObjects[i];
+			nSelected_Index = i;
+		}
+	}
+
+	if (pSelected_Object) {
+		DirectX::XMFLOAT3 xmf3_Position = m_ppObjects[nSelected_Index]->Get_Position();
+
+		switch (nPrimitive_Number) {
+		case 0:	// top
+			xmf3_Position = Vector3::Add(xmf3_Position, Vector3::Multiply(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), CUBE_WIDTH, false));
+			break;
+		case 1:	// front
+			xmf3_Position = Vector3::Add(xmf3_Position, Vector3::Multiply(DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f), CUBE_WIDTH, false));
+			break;
+		case 2:	// left
+			xmf3_Position = Vector3::Add(xmf3_Position, Vector3::Multiply(DirectX::XMFLOAT3(-1.0f, 0.0f, 0.0f), CUBE_WIDTH, false));
+			break;
+		case 3:	// right
+			xmf3_Position = Vector3::Add(xmf3_Position, Vector3::Multiply(DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f), CUBE_WIDTH, false));
+			break;
+		case 4:	// back
+			xmf3_Position = Vector3::Add(xmf3_Position, Vector3::Multiply(DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f), CUBE_WIDTH, false));
+			break;
+		case 5:	// bottom
+			xmf3_Position = Vector3::Add(xmf3_Position, Vector3::Multiply(DirectX::XMFLOAT3(0.0f, -1.0f, 0.0f), CUBE_WIDTH, false));
+			break;
+		default:
+			break;
+		}
+
+		CObject* pObject = NULL;
+		pObject = new CObject();
+		pObject->Set_Position(xmf3_Position);
+		pObject->Set_Color(0.5f, 0.0f, 0.0f, 0.0f);
+		m_ppObjects[m_nObjects++] = pObject;
+	}
+}
+
+void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {
+	int nIntersected = 0;
+	*pfNear_Hit_Distance = FLT_MAX;
+	float fHit_Distance = FLT_MAX;
+	CObject* pSelected_Object = NULL;
+	int nSelected_Index = 0;
+
+	for (int i = 0; i < m_nObjects; ++i) {
+		nIntersected = m_ppObjects[i]->Pick_Object_By_Ray_Intersection(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance, m_ppObjects[0]->Get_Mesh());
+
+		if ((nIntersected > 0) && (fHit_Distance < *pfNear_Hit_Distance)) {
+			*pfNear_Hit_Distance = fHit_Distance;
+			pSelected_Object = m_ppObjects[i];
+			nSelected_Index = i;
+		}
+	}
+
+	if (pSelected_Object) {
+		if (nSelected_Index < (CUBE_INIT_RING_NUMBER * 2 + 1) * (CUBE_INIT_RING_NUMBER * 2 + 1)) {
+			return;
+		}
+
+		m_ppObjects[nSelected_Index]->Release();
+		m_ppObjects[nSelected_Index] = NULL;
+
+		if (nSelected_Index != m_nObjects - 1) {
+			m_ppObjects[nSelected_Index] = m_ppObjects[m_nObjects - 1];
+		}
+
+		--m_nObjects;
+	}
 }

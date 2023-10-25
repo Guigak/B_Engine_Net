@@ -93,7 +93,7 @@ public :
 	DirectX::BoundingOrientedBox Get_OOBB() { return m_xmOOBB; }
 
 	//
-	int Chk_Ray_Intersection(DirectX::XMFLOAT3& xmf3_Ray_Position, DirectX::XMFLOAT3& xmf3_Ray_Direction, float* pfNear_Hit_Distance);
+	int Chk_Ray_Intersection(DirectX::XMFLOAT3& xmf3_Ray_Position, DirectX::XMFLOAT3& xmf3_Ray_Direction, float* pfNear_Hit_Distance, int* nPrimitive_Number = NULL);
 };
 
 class CTriangle_Mesh : public CMesh {

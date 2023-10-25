@@ -69,6 +69,15 @@ private :
 	// picking
 	CObject* m_pSelected_Object = NULL;
 
+	// player
+	CPlayer* m_pPlayer = NULL;
+
+	// mouse point
+	POINT m_ptOld_Cursor_Pos;
+
+	// capture
+	bool m_bCaptured = false;
+
 public :
 	CFramework();
 	~CFramework();
@@ -106,14 +115,8 @@ public :
 public :
 	void Move_2_Next_Frame();
 
-	// player
-public :
-	CPlayer* m_pPlayer = NULL;
-
-	// mouse point
-	POINT m_ptOld_Cursor_Pos;
-
 	// picking
+public :
 	void Prcs_Selected_Object(DWORD dwDirection, float fDelta_x, float fDelta_y);
 };
 
