@@ -70,6 +70,7 @@ using Microsoft::WRL::ComPtr;
 #define PLAYER_GRAVITY 100.0f
 #define PLAYER_FRICTION 50.0f
 #define PLAYER_MOVE_DISTANCE 100.0f
+#define PLAYER_PICKING_DISTANCE 20.0f
 
 // VK data
 #define VK_W 0x57

@@ -480,6 +480,7 @@ void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, 
 	CObject* pSelected_Object = NULL;
 	int nSelected_Index = 0;
 	int nPrimitive_Number = 0;
+	int nSelected_Primitive_Number = 0;
 
 	for (int i = 0; i < m_nObjects; ++i) {
 		nIntersected = m_ppObjects[i]->Pick_Object_By_Ray_Intersection(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance, m_ppObjects[0]->Get_Mesh(), &nPrimitive_Number);
@@ -488,13 +489,14 @@ void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, 
 			*pfNear_Hit_Distance = fHit_Distance;
 			pSelected_Object = m_ppObjects[i];
 			nSelected_Index = i;
+			nSelected_Primitive_Number = nPrimitive_Number;
 		}
 	}
 
 	if (pSelected_Object) {
 		DirectX::XMFLOAT3 xmf3_Position = m_ppObjects[nSelected_Index]->Get_Position();
 
-		switch (nPrimitive_Number) {
+		switch (nSelected_Primitive_Number) {
 		case 0:	// top
 			xmf3_Position = Vector3::Add(xmf3_Position, Vector3::Multiply(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), CUBE_WIDTH, false));
 			break;
