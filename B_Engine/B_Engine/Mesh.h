@@ -121,3 +121,10 @@ public :
 	CSphere_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, float fRadius = 2.0f, int nSlices = 20, int nStacks = 20);
 	virtual ~CSphere_Mesh();
 };
+
+//
+class CBounding_Box_Mesh : public CMesh {
+public :
+	CBounding_Box_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, float fWidth, float fHeight, float fDepth);
+	virtual ~CBounding_Box_Mesh();
+};

@@ -69,6 +69,9 @@ public:
 
 	virtual void Prepare_Render(ID3D12GraphicsCommandList* pd3d_Command_List);
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
+
+	//
+	virtual void Udt_Shader_Variables_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List) {};
 };
 
 class CDiffused_Shader : public CShader {
@@ -141,4 +144,7 @@ public :
 
 	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
 	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
+
+	//
+	virtual void Udt_Shader_Variables_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List);
 };

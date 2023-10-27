@@ -8,6 +8,10 @@ CObject::CObject() {
 CObject::~CObject() {
 	if (m_pMesh) {
 		m_pMesh->Release();
+
+		if (m_pBounding_Box_Mesh) {
+			m_pBounding_Box_Mesh->Release();
+		}
 	}
 	if (m_pShader) {
 		m_pShader->Release_Shader_Variables();
@@ -30,6 +34,18 @@ void CObject::Set_Mesh(CMesh* pMesh) {
 
 	if (m_pMesh) {
 		m_pMesh->Add_Ref();
+	}
+}
+
+void CObject::Set_Bounding_Box_Mesh(CBounding_Box_Mesh* pBounding_Box_Mesh) {
+	if (m_pBounding_Box_Mesh) {
+		m_pBounding_Box_Mesh->Release();
+	}
+
+	m_pBounding_Box_Mesh = pBounding_Box_Mesh;
+
+	if (m_pBounding_Box_Mesh) {
+		m_pBounding_Box_Mesh->Add_Ref();
 	}
 }
 
@@ -71,6 +87,14 @@ void CObject::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCam
 
 	if (m_pMesh) {
 		m_pMesh->Render(pd3d_Command_List, nInstances);
+	}
+}
+
+void CObject::Render_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera, UINT nInstances) {
+	Prepare_Render();
+
+	if (m_pBounding_Box_Mesh) {
+		m_pBounding_Box_Mesh->Render(pd3d_Command_List, nInstances);
 	}
 }
 

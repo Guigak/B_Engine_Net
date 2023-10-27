@@ -13,6 +13,7 @@ private :
 protected :
 	DirectX::XMFLOAT4X4 m_xmf4x4_World;
 	CMesh* m_pMesh = NULL;
+	CBounding_Box_Mesh* m_pBounding_Box_Mesh = NULL;
 
 	CShader* m_pShader = NULL;
 
@@ -37,6 +38,7 @@ public :
 	void Release_Upload_Buffers();
 
 	virtual void Set_Mesh(CMesh* pMesh);
+	virtual void Set_Bounding_Box_Mesh(CBounding_Box_Mesh* pBounding_Box_Mesh);
 	virtual void Set_Shader(CShader* pShader);
 
 	//
@@ -47,6 +49,8 @@ public :
 	virtual void Prepare_Render();
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera, UINT nInstances);
+
+	void Render_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera, UINT nInstances);
 
 	void Rotate(DirectX::XMFLOAT3* pxmf3_Axis, float fAngle);
 

@@ -63,7 +63,7 @@ using Microsoft::WRL::ComPtr;
 
 // Cube data
 #define CUBE_WIDTH 10.0f
-#define CUBE_INIT_RING_NUMBER 1
+#define CUBE_INIT_RING_NUMBER 10
 #define CUBE_MAX_NUMBER 10000
 #define CUBE_DEFAULT_COLOR 0.2f
 

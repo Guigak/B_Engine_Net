@@ -459,8 +459,10 @@ void CInstancing_Shader::Build_Objects(ID3D12Device* pd3d_Device, ID3D12Graphics
 	}
 
 	CCube_Mesh* pCube_Mesh = new CCube_Mesh(pd3d_Device, pd3d_Command_List, CUBE_WIDTH, CUBE_WIDTH, CUBE_WIDTH);
-
 	m_ppObjects[0]->Set_Mesh(pCube_Mesh);
+
+	CBounding_Box_Mesh* pBounding_Box_Mesh = new CBounding_Box_Mesh(pd3d_Device, pd3d_Command_List, CUBE_WIDTH, CUBE_WIDTH, CUBE_WIDTH);
+	m_ppObjects[0]->Set_Bounding_Box_Mesh(pBounding_Box_Mesh);
 
 	Crt_Shader_Variables(pd3d_Device, pd3d_Command_List);
 }
@@ -471,6 +473,10 @@ void CInstancing_Shader::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CC
 	Udt_Shader_Variables(pd3d_Command_List);
 
 	m_ppObjects[0]->Render(pd3d_Command_List, pCamera, m_nObjects);
+
+	Udt_Shader_Variables_4_Bounding_Box(pd3d_Command_List);
+
+	m_ppObjects[0]->Render_Bounding_Box(pd3d_Command_List, pCamera, m_nObjects);
 }
 
 void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {
@@ -557,5 +563,13 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 		}
 
 		--m_nObjects;
+	}
+}
+
+void CInstancing_Shader::Udt_Shader_Variables_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List) {
+	pd3d_Command_List->SetGraphicsRootShaderResourceView(2, m_pd3d_CB_Objects->GetGPUVirtualAddress());
+
+	for (int i = 0; i < m_nObjects; ++i) {
+		m_pCB_Mapped_Objects[i].m_xmf4_Color = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 }

@@ -52,7 +52,7 @@ VS_INSTANCING_OUTPUT VSInstancing(VS_INSTANCING_INPUT input, uint nInstanceID : 
 	VS_INSTANCING_OUTPUT output;
 
 	output.position = mul(mul(mul(float4(input.position, 1.0f), gObject_Infos[nInstanceID].m_mtx_Object), gmtx_View), gmtx_Projection);
-	output.color = input.color + gObject_Infos[nInstanceID].m_f4Color;
+	output.color = gObject_Infos[nInstanceID].m_f4Color;
 
 	return output;
 }
