@@ -587,6 +587,15 @@ void CFramework::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARA
 			break;
 		}
 		break;
+	case WM_KEYDOWN:
+		switch (wParam) {
+		case VK_F8:
+			m_bCaptured = false;
+			break;
+		default:
+			break;
+		}
+		break;
 	default :
 		break;
 	}

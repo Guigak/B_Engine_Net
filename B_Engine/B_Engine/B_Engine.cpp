@@ -10,6 +10,8 @@ HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 
+bool g_bConsole = false;
+
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -18,6 +20,39 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 // Framework
 CFramework gFramework;
+
+// console function
+DWORD WINAPI Prcs_Console(LPVOID argument) {
+    AllocConsole();
+    SetConsoleTitle(TEXT("커맨드 창"));
+
+    //
+    _tfreopen(_T("CONOUT$"), _T("w"), stdout);
+    _tfreopen(_T("CONIN$"), _T("r"), stdin);
+    _tfreopen(_T("CONERR$"), _T("w"), stderr);
+    _tsetlocale(LC_ALL, _T(""));
+
+    //
+    int num = 0;
+
+    while (1) {
+        scanf("%d", &num);
+        printf("%d", num);
+
+        if (num == -1) {
+            g_bConsole = false;
+            break;
+        }
+    }
+
+    HWND hWndConsole = GetConsoleWindow();
+    ShowWindow(hWndConsole, SW_HIDE);
+
+    FreeConsole();
+
+    return 0;
+}
+
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -181,6 +216,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE :
     case WM_KEYDOWN :
     case WM_KEYUP :
+        if (wParam == VK_F8 && !g_bConsole) {
+            HANDLE hThread;
+
+            hThread = CreateThread(NULL, 0, Prcs_Console, NULL, 0, NULL);
+
+            if (hThread == NULL) {
+                OutputDebugStringA("Create console fail\n");
+            }
+            else {
+                CloseHandle(hThread);
+            }
+
+            g_bConsole = true;
+        }
+
         gFramework.Prcs_Msg_Wnd(hWnd, message, wParam, lParam);
         break;
     case WM_DESTROY:
