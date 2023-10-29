@@ -111,6 +111,9 @@ void CObject::Udt_Shader_Variables(ID3D12GraphicsCommandList* pd3d_Command_List)
 	DirectX::XMStoreFloat4x4(&xmf4x4_World, DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&m_xmf4x4_World)));
 
 	pd3d_Command_List->SetGraphicsRoot32BitConstants(0, 16, &xmf4x4_World, 0);
+
+	// color
+	pd3d_Command_List->SetGraphicsRoot32BitConstants(3, 1, &m_xmf4_Color, 0);
 }
 
 void CObject::Release_Shader_Variables() {

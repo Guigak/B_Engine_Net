@@ -7,6 +7,10 @@ cbuffer CB_Camera_Info : register(b1) {
 	matrix gmtx_Projection : packoffset(c4);
 }
 
+cbuffer CB_UI_Info : register(b2) {
+	float4 f4Color : packoffset(c0);
+}
+
 struct INSTANCED_OBJECT_INFO {
 	matrix m_mtx_Object;
 	float4 m_f4Color;
@@ -75,7 +79,7 @@ VS_OUTPUT VSUI(VS_INPUT input) {
 	VS_OUTPUT output;
 
 	output.position = float4(input.position, 1.0f);
-	output.color = input.color;
+	output.color = f4Color;
 
 	return output;
 }

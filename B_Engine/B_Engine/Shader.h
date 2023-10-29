@@ -149,7 +149,7 @@ public :
 };
 
 //
-class CUI_Shader : public CObjects_Shader {	// todo
+class CUI_Shader : public CObjects_Shader {
 public :
 	CUI_Shader();
 	virtual ~CUI_Shader();
@@ -158,4 +158,6 @@ public :
 	virtual D3D12_SHADER_BYTECODE Crt_Vertex_Shader(ID3DBlob** ppd3d_Shader_Blob);
 	virtual D3D12_SHADER_BYTECODE Crt_Pixel_Shader(ID3DBlob** ppd3d_Shader_Blob);
 	virtual void Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
+
+	virtual void Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List);
 };

@@ -17,7 +17,7 @@ bool CScene::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lP
 ID3D12RootSignature* CScene::Crt_Graphics_RootSignature(ID3D12Device* pd3d_Device) {
 	ID3D12RootSignature* pd3d_Graphics_RootSignature = NULL;
 
-	D3D12_ROOT_PARAMETER pd3d_RootParameters[3];
+	D3D12_ROOT_PARAMETER pd3d_RootParameters[4];
 	pd3d_RootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 	pd3d_RootParameters[0].Constants.Num32BitValues = 16;
 	pd3d_RootParameters[0].Constants.ShaderRegister = 0;
@@ -32,6 +32,12 @@ ID3D12RootSignature* CScene::Crt_Graphics_RootSignature(ID3D12Device* pd3d_Devic
 	pd3d_RootParameters[2].Descriptor.ShaderRegister = 0;
 	pd3d_RootParameters[2].Descriptor.RegisterSpace = 0;
 	pd3d_RootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	//
+	pd3d_RootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	pd3d_RootParameters[3].Constants.Num32BitValues = 1;
+	pd3d_RootParameters[3].Constants.ShaderRegister = 2;
+	pd3d_RootParameters[3].Constants.RegisterSpace = 0;
+	pd3d_RootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
 	D3D12_ROOT_SIGNATURE_FLAGS d3d_RootSignature_Flags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -96,7 +102,7 @@ CObject* CScene::Pick_Object_Pointed_By_Cursor(int Client_x, int Client_y, CCame
 	CObject* pNearest_Object = NULL;
 
 	for (int i = 0; i < m_nShaders; ++i) {
-		pIntersected_Object = m_pShaders[i].Pick_Object_By_Ray_Intersection(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
+		pIntersected_Object = m_ppShaders[i]->Pick_Object_By_Ray_Intersection(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
 
 		if (pIntersected_Object && (fHit_Distance < fNearest_Hit_Distance)) {
 			fNearest_Hit_Distance = fHit_Distance;
@@ -126,7 +132,7 @@ void CScene::Delete_Cube_Object(int Client_x, int Client_y, CCamera* pCamera) {	
 	float fNearest_Hit_Distance = FLT_MAX;
 
 	for (int i = 0; i < m_nShaders; ++i) {
-		m_pShaders[i].Delete_Cube_Object(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
+		m_ppShaders[i]->Delete_Cube_Object(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
 	}
 }
 
@@ -149,17 +155,25 @@ void CScene::Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera) {
 	float fNearest_Hit_Distance = FLT_MAX;
 
 	for (int i = 0; i < m_nShaders; ++i) {
-		m_pShaders[i].Add_Cube_Object(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
+		m_ppShaders[i]->Add_Cube_Object(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
 	}
 }
 
 void CScene::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
 	m_pd3d_Graphics_RootSignature = Crt_Graphics_RootSignature(pd3d_Device);
 
-	m_nShaders = 1;
-	m_pShaders = new CInstancing_Shader[m_nShaders];
-	m_pShaders[0].Crt_Shader(pd3d_Device, m_pd3d_Graphics_RootSignature);
-	m_pShaders[0].Build_Objects(pd3d_Device, pd3d_Command_List);
+	m_nShaders = 2;
+	m_ppShaders = new CObjects_Shader * [m_nShaders];
+
+	CObjects_Shader* pObject_Shader = new CInstancing_Shader;
+	m_ppShaders[0] = pObject_Shader;
+	m_ppShaders[0]->Crt_Shader(pd3d_Device, m_pd3d_Graphics_RootSignature);
+	m_ppShaders[0]->Build_Objects(pd3d_Device, pd3d_Command_List);
+
+	pObject_Shader = new CUI_Shader;
+	m_ppShaders[1] = pObject_Shader;
+	m_ppShaders[1]->Crt_Shader(pd3d_Device, m_pd3d_Graphics_RootSignature);
+	m_ppShaders[1]->Build_Objects(pd3d_Device, pd3d_Command_List);
 }
 
 void CScene::Release_Objects() {
@@ -168,12 +182,12 @@ void CScene::Release_Objects() {
 	}
 
 	for (int i = 0; i < m_nShaders; ++i) {
-		m_pShaders[i].Release_Shader_Variables();
-		m_pShaders[i].Release_Objects();
+		m_ppShaders[i]->Release_Shader_Variables();
+		m_ppShaders[i]->Release_Objects();
 	}
 
-	if (m_pShaders) {
-		delete[] m_pShaders;
+	if (m_ppShaders) {
+		delete[] m_ppShaders;
 	}
 }
 
@@ -183,7 +197,7 @@ bool CScene::Prcs_Input() {
 
 void CScene::Anim_Objects(float fElapsed_Time) {
 	for (int i = 0; i < m_nShaders; ++i) {
-		m_pShaders[i].Anim_Objects(fElapsed_Time);
+		m_ppShaders[i]->Anim_Objects(fElapsed_Time);
 	}
 }
 
@@ -202,12 +216,12 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCame
 	}
 
 	for (int i = 0; i < m_nShaders; ++i) {
-		m_pShaders[i].Render(pd3d_Command_List, pCamera);
+		m_ppShaders[i]->Render(pd3d_Command_List, pCamera);
 	}
 }
 
 void CScene::Release_Upload_Buffers() {
 	for (int i = 0; i < m_nShaders; ++i) {
-		m_pShaders[i].Release_Upload_Buffers();
+		m_ppShaders[i]->Release_Upload_Buffers();
 	}
 }

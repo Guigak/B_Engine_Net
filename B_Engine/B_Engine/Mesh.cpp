@@ -497,7 +497,8 @@ CUI_Box_Mesh::CUI_Box_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList*
 	float ftop = fPosition_y + fHeight * 0.5f;
 	float fright = fPosition_x + fWidth * 0.5f;
 	float fbottom = fPosition_y - fHeight * 0.5f;
-	float fz = CAMERA_NEAR_DISTANCE;
+	//float fz = CAMERA_NEAR_DISTANCE;
+	float fz = 0.0f;
 
 	m_pVertices = new CDiffused_Vertex[m_nVertices];
 	m_pVertices[0] = CDiffused_Vertex(DirectX::XMFLOAT3(fleft, ftop, fz), xmf4_Color);

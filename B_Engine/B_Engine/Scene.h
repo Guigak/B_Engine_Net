@@ -12,7 +12,7 @@ protected :
 	//CObject** m_ppObjects = NULL;
 	//int m_nObjects = 0;
 
-	CObjects_Shader* m_pShaders = NULL;
+	CObjects_Shader** m_ppShaders = NULL;
 	int m_nShaders = 0;
 
 	ID3D12RootSignature* m_pd3d_Graphics_RootSignature = NULL;
