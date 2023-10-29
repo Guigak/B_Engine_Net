@@ -53,7 +53,7 @@ public:
 
 	D3D12_SHADER_BYTECODE Compile_Shader_From_File(WCHAR* pszFile_Name, LPCSTR pszShader_Name, LPCSTR pszShader_Profile, ID3DBlob** ppd3d_Shader_Blob);
 
-	virtual void Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature);
+	virtual void Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
 
 	virtual void Crt_Shader_Variables(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List);
 	virtual void Udt_Shader_Variables(ID3D12GraphicsCommandList* pd3d_Command_List);
@@ -69,9 +69,6 @@ public:
 
 	virtual void Prepare_Render(ID3D12GraphicsCommandList* pd3d_Command_List);
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
-
-	//
-	virtual void Udt_Shader_Variables_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List) {};
 };
 
 class CDiffused_Shader : public CShader {
@@ -84,7 +81,7 @@ public :
 	virtual D3D12_SHADER_BYTECODE Crt_Vertex_Shader(ID3DBlob** ppd3d_Shader_Blob);
 	virtual D3D12_SHADER_BYTECODE Crt_Pixel_Shader(ID3DBlob** ppd3d_Shader_Blob);
 
-	virtual void Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_Graphics_RootSignature);
+	virtual void Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
 };
 
 //
@@ -104,7 +101,7 @@ public :
 	virtual D3D12_SHADER_BYTECODE Crt_Vertex_Shader(ID3DBlob** ppd3d_Shader_Blob);
 	virtual D3D12_SHADER_BYTECODE Crt_Pixel_Shader(ID3DBlob** ppd3d_Shader_Blob);
 
-	virtual void Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_Graphics_RootSignature);
+	virtual void Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
 
 	virtual void Release_Upload_Buffers();
 
@@ -132,7 +129,7 @@ public :
 	virtual D3D12_INPUT_LAYOUT_DESC Crt_Input_Layout();
 	virtual D3D12_SHADER_BYTECODE Crt_Vertex_Shader(ID3DBlob** ppd3d_Shader_Blob);
 	virtual D3D12_SHADER_BYTECODE Crt_Pixel_Shader(ID3DBlob** ppd3d_Shader_Blob);
-	virtual void Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_Graphics_RootSignature);
+	virtual void Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
 
 	virtual void Crt_Shader_Variables(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List);
 	virtual void Udt_Shader_Variables(ID3D12GraphicsCommandList* pd3d_Command_List);
@@ -145,6 +142,8 @@ public :
 	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
 	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
 
-	//
-	virtual void Udt_Shader_Variables_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List);
+	// for bounding box
+	void Prepare_Render_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List);
+	D3D12_SHADER_BYTECODE Crt_Vertex_Shader_4_Bounding_Box(ID3DBlob** ppd3d_Shader_Blob);
+	void Crt_Shader_4_Bounding_Box(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
 };

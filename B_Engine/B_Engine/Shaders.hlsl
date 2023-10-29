@@ -57,6 +57,15 @@ VS_INSTANCING_OUTPUT VSInstancing(VS_INSTANCING_INPUT input, uint nInstanceID : 
 	return output;
 }
 
+VS_INSTANCING_OUTPUT VSInstancing4BoudingBox(VS_INSTANCING_INPUT input, uint nInstanceID : SV_InstanceID) {
+	VS_INSTANCING_OUTPUT output;
+
+	output.position = mul(mul(mul(float4(input.position, 1.0f), gObject_Infos[nInstanceID].m_mtx_Object), gmtx_View), gmtx_Projection);
+	output.color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	return output;
+}
+
 float4 PSInstancing(VS_INSTANCING_OUTPUT input) : SV_TARGET{
 	return input.color;
 }

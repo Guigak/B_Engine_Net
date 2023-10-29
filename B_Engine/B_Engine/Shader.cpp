@@ -145,7 +145,7 @@ D3D12_SHADER_BYTECODE CShader::Compile_Shader_From_File(WCHAR* pszFile_Name, LPC
 	return d3d_Shader_ByteCode;
 }
 
-void CShader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature) {
+void CShader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type) {
 	//m_nPipeline_States = 1;
 	//m_ppd3d_Pipeline_States = new ID3D12PipelineState * [m_nPipeline_States];
 
@@ -162,7 +162,7 @@ void CShader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_Ro
 	d3d_Pipeline_State_Desc.DepthStencilState = Crt_Depth_Stencil_State();
 	d3d_Pipeline_State_Desc.InputLayout = Crt_Input_Layout();
 	d3d_Pipeline_State_Desc.SampleMask = UINT_MAX;
-	d3d_Pipeline_State_Desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	d3d_Pipeline_State_Desc.PrimitiveTopologyType = d3d_Primitive_Topology_Type;
 	d3d_Pipeline_State_Desc.NumRenderTargets = 1;
 	d3d_Pipeline_State_Desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	d3d_Pipeline_State_Desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -277,11 +277,11 @@ D3D12_SHADER_BYTECODE CDiffused_Shader::Crt_Pixel_Shader(ID3DBlob** ppd3d_Shader
 	return CShader::Compile_Shader_From_File(L"Shaders.hlsl", "PSDiffused", "ps_5_1", ppd3d_Shader_Blob);
 }
 
-void CDiffused_Shader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_Graphics_RootSignature) {
+void CDiffused_Shader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type) {
 	m_nPipeline_States = 1;
 	m_ppd3d_Pipeline_States = new ID3D12PipelineState * [m_nPipeline_States];
 
-	CShader::Crt_Shader(pd3d_Device, pd3d_Graphics_RootSignature);
+	CShader::Crt_Shader(pd3d_Device, pd3d_RootSignature);
 }
 
 
@@ -329,11 +329,11 @@ D3D12_SHADER_BYTECODE CObjects_Shader::Crt_Pixel_Shader(ID3DBlob** ppd3d_Shader_
 	return CShader::Compile_Shader_From_File(L"Shaders.hlsl", "PSDiffused", "ps_5_1", ppd3d_Shader_Blob);
 }
 
-void CObjects_Shader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_Graphics_RootSignature) {
+void CObjects_Shader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type) {
 	m_nPipeline_States = 1;
 	m_ppd3d_Pipeline_States = new ID3D12PipelineState * [m_nPipeline_States];
 
-	CShader::Crt_Shader(pd3d_Device, pd3d_Graphics_RootSignature);
+	CShader::Crt_Shader(pd3d_Device, pd3d_RootSignature);
 }
 
 void CObjects_Shader::Release_Upload_Buffers() {
@@ -407,11 +407,12 @@ D3D12_SHADER_BYTECODE CInstancing_Shader::Crt_Pixel_Shader(ID3DBlob** ppd3d_Shad
 	return (CShader::Compile_Shader_From_File(L"Shaders.hlsl", "PSInstancing", "ps_5_1", ppd3d_Shader_Blob));
 }
 
-void CInstancing_Shader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_Graphics_RootSignature) {
-	m_nPipeline_States = 1;
+void CInstancing_Shader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type) {
+	m_nPipeline_States = 2;
 	m_ppd3d_Pipeline_States = new ID3D12PipelineState * [m_nPipeline_States];
 
-	CShader::Crt_Shader(pd3d_Device, pd3d_Graphics_RootSignature);
+	CShader::Crt_Shader(pd3d_Device, pd3d_RootSignature);
+	Crt_Shader_4_Bounding_Box(pd3d_Device, pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE);
 }
 
 void CInstancing_Shader::Crt_Shader_Variables(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
@@ -474,14 +475,14 @@ void CInstancing_Shader::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CC
 
 	m_ppObjects[0]->Render(pd3d_Command_List, pCamera, m_nObjects);
 
-	Udt_Shader_Variables_4_Bounding_Box(pd3d_Command_List);
+	Prepare_Render_4_Bounding_Box(pd3d_Command_List);
 
 	m_ppObjects[0]->Render_Bounding_Box(pd3d_Command_List, pCamera, m_nObjects);
 }
 
 void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {
 	int nIntersected = 0;
-	*pfNear_Hit_Distance = FLT_MAX;
+	*pfNear_Hit_Distance = PLAYER_PICKING_DISTANCE;
 	float fHit_Distance = FLT_MAX;
 	CObject* pSelected_Object = NULL;
 	int nSelected_Index = 0;
@@ -535,7 +536,7 @@ void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, 
 
 void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {
 	int nIntersected = 0;
-	*pfNear_Hit_Distance = FLT_MAX;
+	*pfNear_Hit_Distance = PLAYER_PICKING_DISTANCE;
 	float fHit_Distance = FLT_MAX;
 	CObject* pSelected_Object = NULL;
 	int nSelected_Index = 0;
@@ -566,10 +567,44 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 	}
 }
 
-void CInstancing_Shader::Udt_Shader_Variables_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List) {
-	pd3d_Command_List->SetGraphicsRootShaderResourceView(2, m_pd3d_CB_Objects->GetGPUVirtualAddress());
+void CInstancing_Shader::Prepare_Render_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List) {
+	pd3d_Command_List->SetPipelineState(m_ppd3d_Pipeline_States[1]);
+}
 
-	for (int i = 0; i < m_nObjects; ++i) {
-		m_pCB_Mapped_Objects[i].m_xmf4_Color = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+D3D12_SHADER_BYTECODE CInstancing_Shader::Crt_Vertex_Shader_4_Bounding_Box(ID3DBlob** ppd3d_Shader_Blob) {
+	return (CShader::Compile_Shader_From_File(L"Shaders.hlsl", "VSInstancing4BoudingBox", "vs_5_1", ppd3d_Shader_Blob));
+}
+
+void CInstancing_Shader::Crt_Shader_4_Bounding_Box(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type) {
+	ID3DBlob* pd3d_Vertex_Shader_Blob = NULL;
+	ID3DBlob* pd3d_Pixel_Shader_Blob = NULL;
+
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC d3d_Pipeline_State_Desc;
+	ZeroMemory(&d3d_Pipeline_State_Desc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+	d3d_Pipeline_State_Desc.pRootSignature = pd3d_RootSignature;
+	d3d_Pipeline_State_Desc.VS = Crt_Vertex_Shader_4_Bounding_Box(&pd3d_Vertex_Shader_Blob);
+	d3d_Pipeline_State_Desc.PS = Crt_Pixel_Shader(&pd3d_Pixel_Shader_Blob);
+	d3d_Pipeline_State_Desc.RasterizerState = Crt_Rasterizer_State();
+	d3d_Pipeline_State_Desc.BlendState = Crt_Blend_State();
+	d3d_Pipeline_State_Desc.DepthStencilState = Crt_Depth_Stencil_State();
+	d3d_Pipeline_State_Desc.InputLayout = Crt_Input_Layout();
+	d3d_Pipeline_State_Desc.SampleMask = UINT_MAX;
+	d3d_Pipeline_State_Desc.PrimitiveTopologyType = d3d_Primitive_Topology_Type;
+	d3d_Pipeline_State_Desc.NumRenderTargets = 1;
+	d3d_Pipeline_State_Desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	d3d_Pipeline_State_Desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	d3d_Pipeline_State_Desc.SampleDesc.Count = 1;
+	d3d_Pipeline_State_Desc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
+	pd3d_Device->CreateGraphicsPipelineState(&d3d_Pipeline_State_Desc, __uuidof(ID3D12PipelineState), (void**)&m_ppd3d_Pipeline_States[1]);
+
+	if (pd3d_Vertex_Shader_Blob) {
+		pd3d_Vertex_Shader_Blob->Release();
+	}
+	if (pd3d_Pixel_Shader_Blob) {
+		pd3d_Pixel_Shader_Blob->Release();
+	}
+
+	if (d3d_Pipeline_State_Desc.InputLayout.pInputElementDescs) {
+		delete[] d3d_Pipeline_State_Desc.InputLayout.pInputElementDescs;
 	}
 }

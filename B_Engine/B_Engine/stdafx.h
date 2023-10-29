@@ -63,9 +63,9 @@ using Microsoft::WRL::ComPtr;
 
 // Cube data
 #define CUBE_WIDTH 10.0f
-#define CUBE_INIT_RING_NUMBER 10
+#define CUBE_INIT_RING_NUMBER 2
 #define CUBE_MAX_NUMBER 10000
-#define CUBE_DEFAULT_COLOR 0.2f
+#define CUBE_DEFAULT_COLOR 0.75f
 
 // player data
 #define PLAYER_MAX_VELOCITY 50.0f
@@ -73,7 +73,7 @@ using Microsoft::WRL::ComPtr;
 #define PLAYER_GRAVITY 100.0f
 #define PLAYER_FRICTION 50.0f
 #define PLAYER_MOVE_DISTANCE 100.0f
-#define PLAYER_PICKING_DISTANCE 20.0f
+#define PLAYER_PICKING_DISTANCE 100.0f
 
 // VK data
 #define VK_W 0x57

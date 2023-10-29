@@ -414,7 +414,7 @@ CSphere_Mesh::~CSphere_Mesh() {
 //
 CBounding_Box_Mesh::CBounding_Box_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, float fWidth, float fHeight, float fDepth) {
 	m_nVertices = 12 * 2;
-	m_nStride = sizeof(DirectX::XMFLOAT3);
+	m_nStride = sizeof(CDiffused_Vertex);
 	m_nOffset = 0;
 	m_nSlot = 0;
 	m_d3d_Primitive_Topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
@@ -423,44 +423,46 @@ CBounding_Box_Mesh::CBounding_Box_Mesh(ID3D12Device* pd3d_Device, ID3D12Graphics
 	float fy = fHeight * 0.5f;
 	float fz = fDepth * 0.5f;
 
+	DirectX::XMFLOAT4 xmf4_Color = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+
 	m_pVertices = new CDiffused_Vertex[m_nVertices];
-	m_pVertices[0] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, +fy, -fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-	m_pVertices[1] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, +fy, +fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_pVertices[0] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, +fy, -fz), xmf4_Color);
+	m_pVertices[1] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, +fy, +fz), xmf4_Color);
 
-	m_pVertices[2] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, +fy, +fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-	m_pVertices[3] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, +fy, +fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_pVertices[2] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, +fy, +fz), xmf4_Color);
+	m_pVertices[3] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, +fy, +fz), xmf4_Color);
 
-	m_pVertices[4] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, +fy, +fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-	m_pVertices[5] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, +fy, -fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_pVertices[4] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, +fy, +fz), xmf4_Color);
+	m_pVertices[5] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, +fy, -fz), xmf4_Color);
 
-	m_pVertices[6] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, +fy, -fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-	m_pVertices[7] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, +fy, -fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-
-	//
-	m_pVertices[8] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, -fy, -fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-	m_pVertices[9] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, -fy, +fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-
-	m_pVertices[10] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, -fy, +fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-	m_pVertices[11] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, -fy, +fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-
-	m_pVertices[12] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, -fy, +fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-	m_pVertices[13] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, -fy, -fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-
-	m_pVertices[14] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, -fy, -fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-	m_pVertices[15] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, -fy, -fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_pVertices[6] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, +fy, -fz), xmf4_Color);
+	m_pVertices[7] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, +fy, -fz), xmf4_Color);
 
 	//
-	m_pVertices[16] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, -fy, -fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-	m_pVertices[17] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, +fy, -fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_pVertices[8] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, -fy, -fz), xmf4_Color);
+	m_pVertices[9] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, -fy, +fz), xmf4_Color);
 
-	m_pVertices[18] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, -fy, +fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-	m_pVertices[19] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, +fy, +fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_pVertices[10] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, -fy, +fz), xmf4_Color);
+	m_pVertices[11] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, -fy, +fz), xmf4_Color);
 
-	m_pVertices[20] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, -fy, +fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-	m_pVertices[21] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, +fy, +fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_pVertices[12] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, -fy, +fz), xmf4_Color);
+	m_pVertices[13] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, -fy, -fz), xmf4_Color);
 
-	m_pVertices[22] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, -fy, -fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
-	m_pVertices[23] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, +fy, -fz), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
+	m_pVertices[14] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, -fy, -fz), xmf4_Color);
+	m_pVertices[15] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, -fy, -fz), xmf4_Color);
+
+	//
+	m_pVertices[16] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, -fy, -fz), xmf4_Color);
+	m_pVertices[17] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, +fy, -fz), xmf4_Color);
+
+	m_pVertices[18] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, -fy, +fz), xmf4_Color);
+	m_pVertices[19] = CDiffused_Vertex(DirectX::XMFLOAT3(-fx, +fy, +fz), xmf4_Color);
+
+	m_pVertices[20] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, -fy, +fz), xmf4_Color);
+	m_pVertices[21] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, +fy, +fz), xmf4_Color);
+
+	m_pVertices[22] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, -fy, -fz), xmf4_Color);
+	m_pVertices[23] = CDiffused_Vertex(DirectX::XMFLOAT3(+fx, +fy, -fz), xmf4_Color);
 
 	m_pd3d_Vertex_Buffer = Crt_Buffer_Resource(pd3d_Device, pd3d_Command_List, m_pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3d_Vertex_Upload_Buffer);
 
