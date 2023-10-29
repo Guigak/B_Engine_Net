@@ -184,6 +184,8 @@ void CScene::Release_Objects() {
 	for (int i = 0; i < m_nShaders; ++i) {
 		m_ppShaders[i]->Release_Shader_Variables();
 		m_ppShaders[i]->Release_Objects();
+
+		delete m_ppShaders[i];
 	}
 
 	if (m_ppShaders) {

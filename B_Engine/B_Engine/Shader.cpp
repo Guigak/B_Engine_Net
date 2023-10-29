@@ -646,20 +646,20 @@ void CUI_Shader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d
 }
 
 void CUI_Shader::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
-	//int i = 0;
-	//
-	//m_nObjects = 1;
+	int i = 0;
+	
+	m_nObjects = 1;
 
-	//m_ppObjects = new CObject * [m_nObjects];
+	m_ppObjects = new CObject * [m_nObjects];
 
-	//CObject* pObject = NULL;
-	//pObject = new CObject;
-	//pObject->Set_Color(0.0f, 0.0f, 0.0f, 0.0f);
+	CObject* pObject = NULL;
+	pObject = new CObject;
+	pObject->Set_Color(0.0f, 0.0f, 0.0f, 0.0f);
 
-	//CUI_Box_Mesh* pUI_Box_Mesh = new CUI_Box_Mesh(pd3d_Device, pd3d_Command_List, 0.0f, 0.0f, 0.025f, 0.025f);
-	//pObject->Set_Mesh(pUI_Box_Mesh);
+	CUI_Box_Mesh* pUI_Box_Mesh = new CUI_Box_Mesh(pd3d_Device, pd3d_Command_List, 0.0f, 0.0f, 0.025f, 0.025f);
+	pObject->Set_Mesh(pUI_Box_Mesh);
 
-	//m_ppObjects[i++] = pObject;
+	m_ppObjects[i++] = pObject;
 
-	//Crt_Shader_Variables(pd3d_Device, pd3d_Command_List);
+	Crt_Shader_Variables(pd3d_Device, pd3d_Command_List);
 }
