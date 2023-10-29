@@ -297,7 +297,7 @@ void CPlayer::Prepare_Render() {
 void CPlayer::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera) {
 	DWORD nCamera_Mode = (pCamera) ? pCamera->Get_Mode() : 0x00;
 
-	if (nCamera_Mode == THIRD_PERSON_CAMERA) {
+/*	if (nCamera_Mode == THIRD_PERSON_CAMERA)*/ {
 		if (m_pShader) {
 			m_pShader->Render(pd3d_Command_List, pCamera);
 			CObject::Render(pd3d_Command_List, pCamera);
@@ -340,7 +340,7 @@ CCamera* CAirplane_Player::Chg_Camera(DWORD nNew_Camera_Mode, float fElapsed_Tim
 		m_pCamera = CPlayer::Chg_Camera(FIRST_PERSON_CAMERA, nCurrent_Camera_Mode);
 		m_pCamera->Set_Lag_Time(0.0f);
 		m_pCamera->Set_Offset(DirectX::XMFLOAT3(0.0f, 20.0f, 0.0f));
-		m_pCamera->Gernerate_Projection_Matrix(60.0f, ASPECT_RATIO, 1.01f, 5000.0f);
+		m_pCamera->Gernerate_Projection_Matrix(60.0f, ASPECT_RATIO, CAMERA_NEAR_DISTANCE, CAMERA_FAR_DISTANCE);
 		m_pCamera->Set_Viewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->Set_ScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 		break;
@@ -352,7 +352,7 @@ CCamera* CAirplane_Player::Chg_Camera(DWORD nNew_Camera_Mode, float fElapsed_Tim
 		m_pCamera = CPlayer::Chg_Camera(SPACESHIP_CAMERA, nCurrent_Camera_Mode);
 		m_pCamera->Set_Lag_Time(0.0f);
 		m_pCamera->Set_Offset(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
-		m_pCamera->Gernerate_Projection_Matrix(60.0f, ASPECT_RATIO, 1.01f, 5000.0f);
+		m_pCamera->Gernerate_Projection_Matrix(60.0f, ASPECT_RATIO, CAMERA_NEAR_DISTANCE, CAMERA_FAR_DISTANCE);
 		m_pCamera->Set_Viewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->Set_ScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 		break;
@@ -364,7 +364,7 @@ CCamera* CAirplane_Player::Chg_Camera(DWORD nNew_Camera_Mode, float fElapsed_Tim
 		m_pCamera = CPlayer::Chg_Camera(THIRD_PERSON_CAMERA, nCurrent_Camera_Mode);
 		m_pCamera->Set_Lag_Time(0.25f);
 		m_pCamera->Set_Offset(DirectX::XMFLOAT3(0.0f, 20.0f, -50.0f));
-		m_pCamera->Gernerate_Projection_Matrix(60.0f, ASPECT_RATIO, 1.01f, 5000.0f);
+		m_pCamera->Gernerate_Projection_Matrix(60.0f, ASPECT_RATIO, CAMERA_NEAR_DISTANCE, CAMERA_FAR_DISTANCE);
 		m_pCamera->Set_Viewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->Set_ScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 		break;
@@ -420,8 +420,8 @@ CCamera* CCube_Player::Chg_Camera(DWORD nNew_Camera_Mode, float fElapsed_Time) {
 		Set_Max_Gravity(PLAYER_MAX_GRAVITY);
 		m_pCamera = CPlayer::Chg_Camera(FIRST_PERSON_CAMERA, nCurrent_Camera_Mode);
 		m_pCamera->Set_Lag_Time(0.0f);
-		m_pCamera->Set_Offset(DirectX::XMFLOAT3(0.0f, CUBE_WIDTH * 8 / 5, 0.0f));
-		m_pCamera->Gernerate_Projection_Matrix(60.0f, ASPECT_RATIO, 1.01f, 5000.0f);
+		m_pCamera->Set_Offset(DirectX::XMFLOAT3(0.0f, CUBE_WIDTH * 3 / 5, 0.0f));
+		m_pCamera->Gernerate_Projection_Matrix(60.0f, ASPECT_RATIO, CAMERA_NEAR_DISTANCE, CAMERA_FAR_DISTANCE);
 		m_pCamera->Set_Viewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->Set_ScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 		break;
@@ -435,7 +435,7 @@ CCamera* CCube_Player::Chg_Camera(DWORD nNew_Camera_Mode, float fElapsed_Time) {
 		m_pCamera = CPlayer::Chg_Camera(THIRD_PERSON_CAMERA, nCurrent_Camera_Mode);
 		m_pCamera->Set_Lag_Time(0.0f);
 		m_pCamera->Set_Offset(DirectX::XMFLOAT3(0.0f, 40.0f, -50.0f));
-		m_pCamera->Gernerate_Projection_Matrix(60.0f, ASPECT_RATIO, 1.01f, 5000.0f);
+		m_pCamera->Gernerate_Projection_Matrix(60.0f, ASPECT_RATIO, CAMERA_NEAR_DISTANCE, CAMERA_FAR_DISTANCE);
 		m_pCamera->Set_Viewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->Set_ScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 		break;

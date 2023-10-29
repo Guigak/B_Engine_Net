@@ -69,3 +69,13 @@ VS_INSTANCING_OUTPUT VSInstancing4BoudingBox(VS_INSTANCING_INPUT input, uint nIn
 float4 PSInstancing(VS_INSTANCING_OUTPUT input) : SV_TARGET{
 	return input.color;
 }
+
+//
+VS_OUTPUT VSUI(VS_INPUT input) {
+	VS_OUTPUT output;
+
+	output.position = float4(input.position, 1.0f);
+	output.color = input.color;
+
+	return output;
+}

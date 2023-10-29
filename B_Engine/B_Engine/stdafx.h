@@ -67,6 +67,8 @@ using Microsoft::WRL::ComPtr;
 #define CUBE_MAX_NUMBER 10000
 #define CUBE_DEFAULT_COLOR 0.75f
 
+#define BOUNDING_BOX_OFFSET 0.03f
+
 // player data
 #define PLAYER_MAX_VELOCITY 50.0f
 #define PLAYER_MAX_GRAVITY 50.0f
@@ -74,6 +76,10 @@ using Microsoft::WRL::ComPtr;
 #define PLAYER_FRICTION 50.0f
 #define PLAYER_MOVE_DISTANCE 100.0f
 #define PLAYER_PICKING_DISTANCE 100.0f
+
+// camera data
+#define CAMERA_NEAR_DISTANCE 1.0f
+#define CAMERA_FAR_DISTANCE 5000.0f
 
 // VK data
 #define VK_W 0x57

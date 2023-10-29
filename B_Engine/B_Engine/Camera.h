@@ -138,5 +138,3 @@ public :
 	virtual void Update(DirectX::XMFLOAT3& xmf3_LookAt, float fElapsed_Time);
 	virtual void Set_LookAt(DirectX::XMFLOAT3& xmf3_LookAt);
 };
-
-// todo : define in Camera.cpp

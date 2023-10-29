@@ -147,3 +147,15 @@ public :
 	D3D12_SHADER_BYTECODE Crt_Vertex_Shader_4_Bounding_Box(ID3DBlob** ppd3d_Shader_Blob);
 	void Crt_Shader_4_Bounding_Box(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
 };
+
+//
+class CUI_Shader : public CObjects_Shader {	// todo
+public :
+	CUI_Shader();
+	virtual ~CUI_Shader();
+
+	virtual D3D12_INPUT_LAYOUT_DESC Crt_Input_Layout();
+	virtual D3D12_SHADER_BYTECODE Crt_Vertex_Shader(ID3DBlob** ppd3d_Shader_Blob);
+	virtual D3D12_SHADER_BYTECODE Crt_Pixel_Shader(ID3DBlob** ppd3d_Shader_Blob);
+	virtual void Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
+};

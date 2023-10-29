@@ -128,3 +128,10 @@ public :
 	CBounding_Box_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, float fWidth, float fHeight, float fDepth);
 	virtual ~CBounding_Box_Mesh();
 };
+
+//
+class CUI_Box_Mesh : public CMesh {
+public :
+	CUI_Box_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, float fPosition_x, float fPosition_y, float fWidth, float fHeight, DirectX::XMFLOAT4 xmf4_Color = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
+	virtual ~CUI_Box_Mesh();
+};

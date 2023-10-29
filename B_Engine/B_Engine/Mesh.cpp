@@ -486,3 +486,48 @@ CBounding_Box_Mesh::~CBounding_Box_Mesh() {
 //		pd3d_Command_List->DrawInstanced(m_nVertices, nInstances, m_nOffset, 0);
 //	}
 //}
+
+//
+CUI_Box_Mesh::CUI_Box_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List,float fPosition_x, float fPosition_y, float fWidth, float fHeight, DirectX::XMFLOAT4 xmf4_Color) {
+	m_nVertices = 4;
+	m_nStride = sizeof(CDiffused_Vertex);
+	m_d3d_Primitive_Topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+
+	float fleft = fPosition_x - fWidth * 0.5f;
+	float ftop = fPosition_y + fHeight * 0.5f;
+	float fright = fPosition_x + fWidth * 0.5f;
+	float fbottom = fPosition_y - fHeight * 0.5f;
+	float fz = CAMERA_NEAR_DISTANCE;
+
+	m_pVertices = new CDiffused_Vertex[m_nVertices];
+	m_pVertices[0] = CDiffused_Vertex(DirectX::XMFLOAT3(fleft, ftop, fz), xmf4_Color);
+	m_pVertices[1] = CDiffused_Vertex(DirectX::XMFLOAT3(fright, ftop, fz), xmf4_Color);
+	m_pVertices[2] = CDiffused_Vertex(DirectX::XMFLOAT3(fright, fbottom, fz), xmf4_Color);
+	m_pVertices[3] = CDiffused_Vertex(DirectX::XMFLOAT3(fleft, fbottom, fz), xmf4_Color);
+
+	m_pd3d_Vertex_Buffer = Crt_Buffer_Resource(pd3d_Device, pd3d_Command_List, m_pVertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3d_Vertex_Upload_Buffer);
+
+	m_d3d_Vertex_Buffer_View.BufferLocation = m_pd3d_Vertex_Buffer->GetGPUVirtualAddress();
+	m_d3d_Vertex_Buffer_View.StrideInBytes = m_nStride;
+	m_d3d_Vertex_Buffer_View.SizeInBytes = m_nStride * m_nVertices;
+
+	//
+	m_nIndices = 6;
+	m_pnIndices = new UINT[m_nIndices];
+
+	m_pnIndices[0] = 0;
+	m_pnIndices[1] = 1;
+	m_pnIndices[2] = 2;
+	m_pnIndices[3] = 0;
+	m_pnIndices[4] = 2;
+	m_pnIndices[5] = 3;
+
+	m_pd3d_Index_Buffer = Crt_Buffer_Resource(pd3d_Device, pd3d_Command_List, m_pnIndices, sizeof(UINT) * m_nIndices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_pd3d_Index_Upload_Buffer);
+
+	m_d3d_Index_Buffer_View.BufferLocation = m_pd3d_Index_Buffer->GetGPUVirtualAddress();
+	m_d3d_Index_Buffer_View.Format = DXGI_FORMAT_R32_UINT;
+	m_d3d_Index_Buffer_View.SizeInBytes = sizeof(UINT) * m_nIndices;
+}
+
+CUI_Box_Mesh::~CUI_Box_Mesh() {
+}
