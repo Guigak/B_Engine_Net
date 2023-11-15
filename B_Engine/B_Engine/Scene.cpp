@@ -162,18 +162,23 @@ void CScene::Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera) {
 void CScene::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
 	m_pd3d_Graphics_RootSignature = Crt_Graphics_RootSignature(pd3d_Device);
 
-	m_nShaders = 2;
+	m_nShaders = 3;
 	m_ppShaders = new CObjects_Shader * [m_nShaders];
 
-	CObjects_Shader* pObject_Shader = new CInstancing_Shader;
+	CObjects_Shader* pObject_Shader = new CInstancing_Shader;	// cube
 	m_ppShaders[0] = pObject_Shader;
 	m_ppShaders[0]->Crt_Shader(pd3d_Device, m_pd3d_Graphics_RootSignature);
 	m_ppShaders[0]->Build_Objects(pd3d_Device, pd3d_Command_List);
 
-	pObject_Shader = new CUI_Shader;
+	pObject_Shader = new CPlayers_Shader;	// player
 	m_ppShaders[1] = pObject_Shader;
 	m_ppShaders[1]->Crt_Shader(pd3d_Device, m_pd3d_Graphics_RootSignature);
 	m_ppShaders[1]->Build_Objects(pd3d_Device, pd3d_Command_List);
+
+	pObject_Shader = new CUI_Shader;	// ui
+	m_ppShaders[2] = pObject_Shader;
+	m_ppShaders[2]->Crt_Shader(pd3d_Device, m_pd3d_Graphics_RootSignature);
+	m_ppShaders[2]->Build_Objects(pd3d_Device, pd3d_Command_List);
 }
 
 void CScene::Release_Objects() {

@@ -63,13 +63,16 @@ using Microsoft::WRL::ComPtr;
 
 // Cube data
 #define CUBE_WIDTH 10.0f
-#define CUBE_INIT_RING_NUMBER 2
+#define CUBE_INIT_RING_NUMBER 10
 #define CUBE_MAX_NUMBER 10000
 #define CUBE_DEFAULT_COLOR 0.75f
 
 #define BOUNDING_BOX_OFFSET 0.03f
 
 // player data
+#define PLAYER_MAX_NUMBER 3
+#define PLAYER_DEFAULT_COLOR DirectX::XMFLOAT4(0.0f, 0.5f, 0.5f, 0.0f)
+
 #define PLAYER_MAX_VELOCITY 50.0f
 #define PLAYER_MAX_GRAVITY 50.0f
 #define PLAYER_GRAVITY 100.0f

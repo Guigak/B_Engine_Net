@@ -610,6 +610,37 @@ void CInstancing_Shader::Crt_Shader_4_Bounding_Box(ID3D12Device* pd3d_Device, ID
 }
 
 //
+CPlayers_Shader::CPlayers_Shader() {
+}
+
+CPlayers_Shader::~CPlayers_Shader() {
+}
+
+void CPlayers_Shader::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
+	m_nObjects = 1;
+
+	m_ppObjects = new CObject * [PLAYER_MAX_NUMBER] { NULL };
+
+	CObject* pObject = NULL;
+
+	for (int i = 0; i < PLAYER_MAX_NUMBER; ++i) {
+		pObject = new CObject();
+		pObject->Set_Position(0.0f, -50.0f, 0.0f);
+		pObject->Set_Color(PLAYER_DEFAULT_COLOR);
+		m_ppObjects[i] = pObject;
+	}
+
+	CCube_Mesh* pCube_Mesh = new CCube_Mesh(pd3d_Device, pd3d_Command_List, CUBE_WIDTH * 2 / 3, CUBE_WIDTH * 8 / 5, CUBE_WIDTH * 2 / 3);
+	m_ppObjects[0]->Set_Mesh(pCube_Mesh);
+
+	CBounding_Box_Mesh* pBounding_Box_Mesh = new CBounding_Box_Mesh(pd3d_Device, pd3d_Command_List, CUBE_WIDTH * 2 / 3 + BOUNDING_BOX_OFFSET, CUBE_WIDTH * 8 / 5 + BOUNDING_BOX_OFFSET, CUBE_WIDTH * 2 / 3 + BOUNDING_BOX_OFFSET);
+	m_ppObjects[0]->Set_Bounding_Box_Mesh(pBounding_Box_Mesh);
+
+	Crt_Shader_Variables(pd3d_Device, pd3d_Command_List);
+}
+
+
+//
 CUI_Shader::CUI_Shader() {
 }
 

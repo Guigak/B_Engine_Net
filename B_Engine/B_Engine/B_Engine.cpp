@@ -11,6 +11,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 
 bool g_bConsole = false;
+bool g_bActive = true;
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -22,6 +23,8 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 CFramework gFramework;
 
 // console function
+void Prcs_Console_Msg(char* sMessage);
+
 DWORD WINAPI Prcs_Console(LPVOID argument) {
     AllocConsole();
     SetConsoleTitle(TEXT("커맨드 창"));
@@ -41,6 +44,7 @@ DWORD WINAPI Prcs_Console(LPVOID argument) {
 
         if (num == -1) {
             g_bConsole = false;
+            g_bActive = false;
             break;
         }
     }
@@ -239,6 +243,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
+
+    if (!g_bActive) {
+        PostQuitMessage(0);
+    }
+
     return 0;
 }
 
@@ -260,4 +269,11 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+
+
+// console function
+void Prcs_Console_Msg(char* sMessage) {
+
 }
