@@ -174,16 +174,7 @@ void CFramework::Crt_D3D_Device() {
 
 	UINT ndxgi_Factory_Flags = 0;
 
-#if defined(_DEBUG)
-	ID3D12Debug* pd3d_Debug_Controller = NULL;
-	hResult = D3D12GetDebugInterface(__uuidof(ID3D12Debug), (void**)&pd3d_Debug_Controller);
 
-	if (pd3d_Debug_Controller) {
-		pd3d_Debug_Controller->EnableDebugLayer();
-		pd3d_Debug_Controller->Release();
-	}
-	ndxgi_Factory_Flags |= DXGI_CREATE_FACTORY_DEBUG;
-#endif
 
 	hResult = CreateDXGIFactory2(ndxgi_Factory_Flags, __uuidof(IDXGIFactory4), (void**)&m_pdxgi_Factory);
 
