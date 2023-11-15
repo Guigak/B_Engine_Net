@@ -431,7 +431,7 @@ void CFramework::Anim_Objects() {
 
 //#define _WITH_PLAYER_TOP
 void CFramework::Adavance_Frame() {
-	m_Timer.Tick(0.0f);
+	m_Timer.Tick(60.0f);
 
 	Prcs_Input();
 	Anim_Objects();

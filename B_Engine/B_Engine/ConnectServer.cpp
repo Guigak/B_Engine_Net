@@ -2,6 +2,7 @@
 #include "Common.h"
 
 #define SERVERPORT 9000
+int time = 500;
 
 bool Connect_To_Server(char* sServer_IP)
 {
@@ -22,12 +23,32 @@ bool Connect_To_Server(char* sServer_IP)
 	serverAddr.sin_family = AF_INET;
 	inet_pton(AF_INET, sServer_IP, &serverAddr.sin_addr);
 	serverAddr.sin_port = htons(SERVERPORT);
-	if (connect(sock, (struct sockaddr*)&serverAddr, sizeof(serverAddr))
-		== SOCKET_ERROR) {
+	int retval = connect(sock, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
+	if (retval == SOCKET_ERROR) {
 		err_quit("connect Fail - Connect_To_ServeR(char)");
 		return false;
 	}
 
 
-	return true;
+	//==============================
+	// 데이터 받기(파일 이름 고정 길이)
+	//==============================
+	while (1) {
+
+		
+		retval = recv(sock, (char*)&time, sizeof(int), MSG_WAITALL);
+		if (retval == SOCKET_ERROR) {
+			err_display("recv()");
+			break;
+		}
+		else if (retval == 0)
+			break;
+	}
+
+
+	// 소켓 닫기
+	closesocket(sock);
+
+	// 윈속 종료
+	WSACleanup();
 }
