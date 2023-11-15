@@ -473,9 +473,9 @@ void CFramework::Adavance_Frame() {
 	m_pd3d_Command_List->ClearDepthStencilView(d3d_Dsv_CPU_Descriptor_Handle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
 
-	if (m_pPlayer) {
-		m_pPlayer->Render(m_pd3d_Command_List, m_pCamera);
-	}
+	//if (m_pPlayer) {
+	//	m_pPlayer->Render(m_pd3d_Command_List, m_pCamera);
+	//}
 
 	d3d_ResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3d_ResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;

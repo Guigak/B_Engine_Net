@@ -12,6 +12,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 
 bool g_bConsole = false;
+bool g_bActive = true;
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -23,6 +24,8 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 CFramework gFramework;
 
 // console function
+void Prcs_Console_Cmd();
+
 DWORD WINAPI Prcs_Console(LPVOID argument) {
     AllocConsole();
     SetConsoleTitle(TEXT("커맨드 창"));
@@ -34,18 +37,9 @@ DWORD WINAPI Prcs_Console(LPVOID argument) {
     _tsetlocale(LC_ALL, _T(""));
 
     //
-    int num = 0;
+    Prcs_Console_Cmd();
 
-    while (1) {
-        scanf("%d", &num);
-        printf("%d", num);
-
-        if (num == -1) {
-            g_bConsole = false;
-            break;
-        }
-    }
-
+    //
     HWND hWndConsole = GetConsoleWindow();
     ShowWindow(hWndConsole, SW_HIDE);
 
@@ -66,7 +60,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // TODO: 여기에 코드를 입력합니다.
 
     // TODO: 테스트용 나중에 지우기, 2019180031 - 서버에 연결
-    Connect_To_Server((char*)("127.0.0.1"));
+    //Connect_To_Server((char*)("127.0.0.1"));
 
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -243,6 +237,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
+
+    if (!g_bActive) {
+        PostQuitMessage(0);
+    }
+
     return 0;
 }
 
@@ -264,4 +263,29 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+
+
+// console function
+void Prcs_Console_Cmd() {
+    char cmd[10] = { 0 };
+
+    while (1) {
+        printf("\n커맨드를 입력해주세요.\n");
+        printf("커맨드 창 종료 - exit\n");
+        printf("프로그램 종료 - quit\n");
+
+        scanf_s("%s", cmd, (int)sizeof(cmd));
+
+        if (!strcmp(cmd, "exit")) {
+            g_bConsole = false;
+            break;
+        }
+        else if (!strcmp(cmd, "quit")) {
+            g_bConsole = false;
+            g_bActive = false;
+            break;
+        }
+    }
 }
