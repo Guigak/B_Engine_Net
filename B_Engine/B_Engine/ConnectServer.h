@@ -6,6 +6,10 @@ void CreateKeyInputServerSocket(char* sServer_IP);
 
 SOCKET GetKeyInputSocket();
 
+void SetPlayerNumber(int pn);
+int GetPlayerNumber();
+
+
 struct KeyInput
 {
 	int key;

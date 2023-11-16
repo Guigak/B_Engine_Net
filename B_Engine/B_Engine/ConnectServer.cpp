@@ -1,10 +1,13 @@
 #include "ConnectServer.h"
 #include "Common.h"
 
+#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+
 #define SERVERPORT 9000
 #define KEYINPUTSERVERPORT 9001
 int time = 500;
 SOCKET KeyInputSocket;
+int PlayerNumber{};
 
 bool Connect_To_Server(char* sServer_IP)
 {
@@ -31,6 +34,12 @@ bool Connect_To_Server(char* sServer_IP)
 		return false;
 	}
 
+	// PlayerNumber 받기
+	int playerNumber{};
+	recv(sock, (char*)&playerNumber, sizeof(playerNumber), 0);
+	SetPlayerNumber(playerNumber);
+	AllocConsole();
+	printf("내 플레이어 번호: %d\n", GetPlayerNumber());
 
 	//==============================
 	// 데이터 받기(파일 이름 고정 길이)
@@ -83,4 +92,13 @@ void CreateKeyInputServerSocket(char* sServer_IP)
 		err_quit("connect Fail - CreateKeyInputServerSocket(char)");
 		return;
 	}
+}
+
+void SetPlayerNumber(int pn)
+{
+	PlayerNumber = pn;
+}
+int GetPlayerNumber()
+{
+	return PlayerNumber;
 }
