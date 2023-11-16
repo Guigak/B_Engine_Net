@@ -7,6 +7,7 @@
 #define KEYINPUTSERVERPORT 9001
 int time = 500;
 SOCKET KeyInputSocket;
+SOCKET sock;
 int PlayerNumber{};
 
 bool Connect_To_Server(char* sServer_IP)
@@ -16,7 +17,7 @@ bool Connect_To_Server(char* sServer_IP)
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return false;
 
-	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+	sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock == INVALID_SOCKET) {
 		err_quit("Socket Fail - Connect_To_Server(char)");
 		return false;
@@ -39,27 +40,6 @@ bool Connect_To_Server(char* sServer_IP)
 	recv(sock, (char*)&playerNumber, sizeof(playerNumber), 0);
 	SetPlayerNumber(playerNumber);
 
-	//==============================
-	// 데이터 받기(파일 이름 고정 길이)
-	//==============================
-	//while (1) {
-	//
-	//	
-	//	retval = recv(sock, (char*)&time, sizeof(int), MSG_WAITALL);
-	//	if (retval == SOCKET_ERROR) {
-	//		err_display("recv()");
-	//		break;
-	//	}
-	//	else if (retval == 0)
-	//		break;
-	//}
-	//
-	//
-	//// 소켓 닫기
-	//closesocket(sock);
-	//
-	//// 윈속 종료
-	//WSACleanup();
 }
 
 SOCKET GetKeyInputSocket() { return KeyInputSocket; }
@@ -109,4 +89,24 @@ bool GetPlayerBuffer(DWORD key)
 void SetPlayerBuffer(DWORD key, bool bSet)
 {
 	PlayerKeyBuffer[key] = bSet;
+}
+
+DWORD WINAPI Get_Time(LPVOID arg)
+{
+	int retval = 0;
+	while (1) {
+		retval = recv(sock, (char*)&time, sizeof(int), MSG_WAITALL);
+		if (retval == SOCKET_ERROR) {
+			err_display("recv()");
+			break;
+		}
+		else if (retval == 0)
+			break;
+	}
+	
+	// 소켓 닫기
+	closesocket(sock);
+	// 윈속 종료
+	WSACleanup();
+	return 0;
 }

@@ -12,11 +12,11 @@ int GetPlayerNumber();
 bool GetPlayerBuffer(DWORD key);
 void SetPlayerBuffer(DWORD key, bool bSet);
 
+DWORD WINAPI Get_Time(LPVOID arg);		// 시간값 받는 루프
+
 struct KeyInput
 {
 	int key;
 	bool keydown;
 	int PlayerNumber;
 };
-
-//int time = 500;				// 서버 시간 변수
