@@ -546,15 +546,22 @@ void CFramework::Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM l
 }
 
 void CFramework::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam) {
-	static UCHAR pKey_Buffer[256];
-	if(nMsg_ID==WM_KEYDOWN || nMsg_ID==WM_KEYUP)
+	if((nMsg_ID==WM_KEYDOWN&&!GetPlayerBuffer(wParam)) || (nMsg_ID==WM_KEYUP&&GetPlayerBuffer(wParam)))
 	{
-		//GetKeyboardState(pKey_Buffer);
 		KeyInput senddata;
+		if (nMsg_ID == WM_KEYDOWN)
+		{
+			senddata.keydown = true;
+			SetPlayerBuffer(wParam, true);
+		}
+		else
+		{
+			senddata.keydown = false;
+			SetPlayerBuffer(wParam, false);
+		}
 		senddata.key = (int)wParam;
-		senddata.keydown = true;
+		senddata.PlayerNumber = GetPlayerNumber();
 		send(GetKeyInputSocket(), (const char*)&senddata, sizeof(senddata), 0);
-		
 	}
 	switch (nMsg_ID) {
 	case WM_KEYUP :

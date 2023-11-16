@@ -38,8 +38,6 @@ bool Connect_To_Server(char* sServer_IP)
 	int playerNumber{};
 	recv(sock, (char*)&playerNumber, sizeof(playerNumber), 0);
 	SetPlayerNumber(playerNumber);
-	AllocConsole();
-	printf("내 플레이어 번호: %d\n", GetPlayerNumber());
 
 	//==============================
 	// 데이터 받기(파일 이름 고정 길이)
@@ -101,4 +99,14 @@ void SetPlayerNumber(int pn)
 int GetPlayerNumber()
 {
 	return PlayerNumber;
+}
+
+bool PlayerKeyBuffer[256];
+bool GetPlayerBuffer(DWORD key)
+{
+	return PlayerKeyBuffer[key];
+}
+void SetPlayerBuffer(DWORD key, bool bSet)
+{
+	PlayerKeyBuffer[key] = bSet;
 }
