@@ -1,4 +1,5 @@
 #include "Framework.h"
+#include "ConnectServer.h"
 
 CFramework::CFramework() {
 	m_pdxgi_Factory = NULL;
@@ -545,6 +546,16 @@ void CFramework::Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM l
 }
 
 void CFramework::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam) {
+	static UCHAR pKey_Buffer[256];
+	if(nMsg_ID==WM_KEYDOWN || nMsg_ID==WM_KEYUP)
+	{
+		//GetKeyboardState(pKey_Buffer);
+		KeyInput senddata;
+		senddata.key = (int)wParam;
+		senddata.keydown = true;
+		send(GetKeyInputSocket(), (const char*)&senddata, sizeof(senddata), 0);
+		
+	}
 	switch (nMsg_ID) {
 	case WM_KEYUP :
 		switch (wParam) {

@@ -60,7 +60,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // TODO: 여기에 코드를 입력합니다.
 
     // TODO: 테스트용 나중에 지우기, 2019180031 - 서버에 연결
-    //Connect_To_Server((char*)("127.0.0.1"));
+    Connect_To_Server((char*)("127.0.0.1"));
+    CreateKeyInputServerSocket((char*)("127.0.0.1"));
 
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
