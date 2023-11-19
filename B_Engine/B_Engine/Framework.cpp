@@ -434,6 +434,10 @@ void CFramework::Anim_Objects() {
 void CFramework::Adavance_Frame() {
 	m_Timer.Tick(60.0f);
 
+	// GetAllPlayerData
+	GetAllPlayerData();
+
+
 	Prcs_Input();
 	Anim_Objects();
 
@@ -706,5 +710,13 @@ void CFramework::Prcs_Selected_Object(DWORD dwDirection, float fDelta_x, float f
 	}
 	else if ((fDelta_x != 0.0f) || (fDelta_y != 0.0f)) {
 		m_pSelected_Object->Rotate(fDelta_y, fDelta_x, 0.0f);
+	}
+}
+
+void CFramework::GetAllPlayerData()
+{
+	if(m_pScene)
+	{
+		m_pScene->GetAllPlayerData();
 	}
 }

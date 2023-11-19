@@ -118,5 +118,9 @@ public :
 	// picking
 public :
 	void Prcs_Selected_Object(DWORD dwDirection, float fDelta_x, float fDelta_y);
+
+	//Server
+public:
+	void GetAllPlayerData();
 };
 

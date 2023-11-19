@@ -159,6 +159,8 @@ void CScene::Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera) {
 	}
 }
 
+
+
 void CScene::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
 	m_pd3d_Graphics_RootSignature = Crt_Graphics_RootSignature(pd3d_Device);
 
@@ -230,5 +232,14 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCame
 void CScene::Release_Upload_Buffers() {
 	for (int i = 0; i < m_nShaders; ++i) {
 		m_ppShaders[i]->Release_Upload_Buffers();
+	}
+}
+
+void CScene::GetAllPlayerData()
+{
+	
+	if(m_ppShaders[1])
+	{
+		((CPlayers_Shader*)m_ppShaders[1])->GetAllPlayerData();
 	}
 }

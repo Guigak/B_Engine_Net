@@ -1,4 +1,5 @@
 #include "Shader.h"
+#include "ConnectServer.h"
 
 CShader::CShader() {
 }
@@ -617,7 +618,7 @@ CPlayers_Shader::~CPlayers_Shader() {
 }
 
 void CPlayers_Shader::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
-	m_nObjects = 1;
+	m_nObjects = PLAYER_MAX_NUMBER;
 
 	m_ppObjects = new CObject * [PLAYER_MAX_NUMBER] { NULL };
 
@@ -637,6 +638,18 @@ void CPlayers_Shader::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCom
 	m_ppObjects[0]->Set_Bounding_Box_Mesh(pBounding_Box_Mesh);
 
 	Crt_Shader_Variables(pd3d_Device, pd3d_Command_List);
+}
+
+void CPlayers_Shader::GetAllPlayerData()
+{
+	struct Player_Info player_info[PLAYER_MAX_NUMBER];
+	recv(GetRecvPlayerSocket(), (char*)&player_info, sizeof(struct Player_Info) * PLAYER_MAX_NUMBER, MSG_WAITALL);
+	for(int i=0; i<PLAYER_MAX_NUMBER; ++i)
+	{
+		m_ppObjects[i]->Set_Position(player_info[i].fPosition_x, player_info[i].fPosition_y, player_info[i].fPosition_z);
+		// TODO: Look 벡터 설정 예정
+
+	}
 }
 
 

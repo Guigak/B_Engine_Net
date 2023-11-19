@@ -6,11 +6,13 @@
 #define SERVERPORT			9000
 #define KEYINPUTSERVERPORT	9001
 #define CUBESERVERPORT		9002
+#define RECVPLAYERDATAPORT	9003
 
 int now_time = 500;
 SOCKET KeyInputSocket;
 SOCKET CubeSocket;
 SOCKET sock;
+SOCKET RecvPlayerDataSocket;
 int PlayerNumber{};
 
 bool Connect_To_Server(char* sServer_IP)
@@ -104,6 +106,38 @@ void CreateCubeServerSocket(char* sServer_IP)
 }
 
 SOCKET GetCubeSocket() { return CubeSocket; };
+
+void CreateRecvPlayerDataSocket(char* sServer_IP)
+{
+	// 소켓 설정
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		return;
+
+	RecvPlayerDataSocket = socket(AF_INET, SOCK_STREAM, 0);
+	if (RecvPlayerDataSocket == INVALID_SOCKET) {
+		printf("Socket Fail - CreateRecvPlayerDataSocket(char)");
+		err_quit("Socket Fail - CreateRecvPlayerDataSocket(char)");
+		return;
+	}
+
+	//서버에 연결
+	struct sockaddr_in serverAddr;
+	memset(&serverAddr, 0, sizeof(serverAddr));
+	serverAddr.sin_family = AF_INET;
+	inet_pton(AF_INET, sServer_IP, &serverAddr.sin_addr);
+	serverAddr.sin_port = htons(RECVPLAYERDATAPORT);
+	int retval = connect(RecvPlayerDataSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
+	if (retval == SOCKET_ERROR) {
+		printf("connect Fail - CreateRecvPlayerDataSocket(char)");
+		err_quit("connect Fail - CreateRecvPlayerDataSocket(char)");
+		return;
+	}
+
+}
+
+SOCKET GetRecvPlayerSocket() { return RecvPlayerDataSocket; }
+
 
 //void Send_Cube_Info(DirectX::XMFLOAT3 xmf3_Position, DirectX::XMFLOAT4 m_xmf4_Color)
 //{

@@ -46,5 +46,9 @@ public :
 
 	void Delete_Cube_Object(int Client_x, int Client_y, CCamera* pCamera);
 	void Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera);
+
+	//Server
+public:
+	void GetAllPlayerData();
 };
 
