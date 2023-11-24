@@ -125,6 +125,7 @@ public :
 	CFirst_Person_Camera(CCamera* pCamera);
 	virtual ~CFirst_Person_Camera() {}
 
+	virtual void Update(DirectX::XMFLOAT3& xmf3_LookAt, float fElapsed_Time);
 	virtual void Rotate(float fPitch = 0.0f, float fYaw = 0.0f, float fRoll = 0.0f);
 };
 

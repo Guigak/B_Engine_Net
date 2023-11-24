@@ -47,10 +47,12 @@ public :
 	void Delete_Cube_Object(int Client_x, int Client_y, CCamera* pCamera);
 	void Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera);
 
-	void Add_Cube_Object_4_Server(CObject* pObject);
+	CObject** Get_Objects_From_Shader(int nShader_Index);
+	int Get_Object_Num_From_Shader(int nShader_Index);
 
+	void Add_Cube_Object_4_Server(CObject* pObject);
 	//Server
 public:
-	void GetAllPlayerData();
+	void GetAllPlayerData(CPlayer* m_pPlayer);
 };
 

@@ -119,8 +119,13 @@ public :
 public :
 	void Prcs_Selected_Object(DWORD dwDirection, float fDelta_x, float fDelta_y);
 
+	// player collision
+public :
+	void Chk_Collision_Player_N_Cube();
+
 	//Server
 public:
-	void GetAllPlayerData();
+	void RecvMyLookVectorToServer();
+	void GetAllPlayerData(CPlayer* m_pPlayer);
 };
 

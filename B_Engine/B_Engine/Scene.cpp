@@ -1,5 +1,7 @@
 #include "Scene.h"
 
+#include "ConnectServer.h"
+
 CScene::CScene() {
 }
 
@@ -162,7 +164,25 @@ void CScene::Add_Cube_Object_4_Server(CObject* pObject)
 	if (pObject)	m_ppShaders[0]->Add_Cube_Object_Server(pObject);
 }
 
+CObject** CScene::Get_Objects_From_Shader(int nShader_Index) {
+	if (m_nShaders > nShader_Index) {
+		if (m_ppShaders[nShader_Index]) {
+			return m_ppShaders[nShader_Index]->Get_Objects();
+		}
+	}
 
+	return NULL;
+}
+
+int CScene::Get_Object_Num_From_Shader(int nShader_Index) {
+	if (m_nShaders > nShader_Index) {
+		if (m_ppShaders[nShader_Index]) {
+			return m_ppShaders[nShader_Index]->Get_Object_Num();
+		}
+	}
+
+	return 0;
+}
 
 void CScene::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
 	m_pd3d_Graphics_RootSignature = Crt_Graphics_RootSignature(pd3d_Device);
@@ -238,11 +258,13 @@ void CScene::Release_Upload_Buffers() {
 	}
 }
 
-void CScene::GetAllPlayerData()
+
+
+void CScene::GetAllPlayerData(CPlayer* m_pPlayer)
 {
 	
 	if(m_ppShaders[1])
 	{
-		((CPlayers_Shader*)m_ppShaders[1])->GetAllPlayerData();
+		((CPlayers_Shader*)m_ppShaders[1])->GetAllPlayerData(m_pPlayer);
 	}
 }

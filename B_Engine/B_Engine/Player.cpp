@@ -67,13 +67,15 @@ void CPlayer::Move(DirectX::XMFLOAT3& xmf3_Shift, bool bVelocity) {
 		m_xmf3_Position = Vector3::Add(m_xmf3_Position, xmf3_Shift);
 
 		if (m_pCamera) {
-			m_pCamera->Move(xmf3_Shift);
+			//m_pCamera->Move(xmf3_Shift);
 		}
 	}
 }
 
 void CPlayer::Move(float fOffset_x, float fOffset_y, float fOffset_z) {
+	DirectX::XMFLOAT3 xmf3_Offset = DirectX::XMFLOAT3(fOffset_x, fOffset_y, fOffset_z);
 
+	Move(xmf3_Offset, false);
 }
 
 void CPlayer::Rotate(float x, float y, float z) {
@@ -159,6 +161,60 @@ void CPlayer::Rotate(float x, float y, float z) {
 	m_xmf3_Up = Vector3::Cross_Product(m_xmf3_Look, m_xmf3_Right, true);
 }
 
+//void CPlayer::Update(float fElapsed_Time) {
+//	m_xmf3_Velocity = Vector3::Add(m_xmf3_Velocity, Vector3::Multiply(m_xmf3_Gravity, fElapsed_Time, false));
+//
+//	float fLength = sqrtf(m_xmf3_Velocity.x * m_xmf3_Velocity.x + m_xmf3_Velocity.z * m_xmf3_Velocity.z);
+//	float fMax_Velocity = m_fMax_Velocity * fElapsed_Time;
+//
+//	if (fLength > m_fMax_Velocity) {
+//		m_xmf3_Velocity.x *= (m_fMax_Velocity / fLength);
+//		m_xmf3_Velocity.z *= (m_fMax_Velocity / fLength);
+//	}
+//
+//	float fMax_Gravity = m_fMax_Gravity * fElapsed_Time;
+//	fLength = sqrtf(m_xmf3_Velocity.y * m_xmf3_Velocity.y);
+//
+//	if (fLength > m_fMax_Gravity) {
+//		m_xmf3_Velocity.y *= (m_fMax_Gravity / fLength);
+//	}
+//
+//	DirectX::XMFLOAT3 xmf3_Velocity = Vector3::Multiply(m_xmf3_Velocity, fElapsed_Time, false);
+//	Move(xmf3_Velocity, false);
+//
+//	if (m_pPlayer_Udt_Context) {
+//		Player_Udt_Callback(fElapsed_Time);
+//	}
+//
+//	DWORD nCamera_Mode = m_pCamera->Get_Mode();
+//	if (nCamera_Mode == THIRD_PERSON_CAMERA) {
+//		m_pCamera->Update(m_xmf3_Position, fElapsed_Time);
+//	}
+//
+//	m_pCamera->Update(m_xmf3_Position, fElapsed_Time);
+//
+//	if (m_pCamera_Udt_Context) {
+//		Camera_Udt_Callback(fElapsed_Time);
+//	}
+//	if (nCamera_Mode == THIRD_PERSON_CAMERA) {
+//		m_pCamera->Set_LookAt(m_xmf3_Position);
+//	}
+//
+//	m_pCamera->Regenerate_View_Matrix();
+//
+//	fLength = Vector3::Length(m_xmf3_Velocity);
+//	float fDeceleration = m_fFriction * fElapsed_Time;
+//
+//	if (fDeceleration > fLength) {
+//		fDeceleration = fLength;
+//	}
+//
+//	//
+//	m_xmf3_Velocity = Vector3::Add(m_xmf3_Velocity, Vector3::Multiply(m_xmf3_Velocity, -fDeceleration, true));
+//
+//	Prepare_Render();
+//}
+
 void CPlayer::Update(float fElapsed_Time) {
 	m_xmf3_Velocity = Vector3::Add(m_xmf3_Velocity, Vector3::Multiply(m_xmf3_Gravity, fElapsed_Time, false));
 
@@ -177,8 +233,8 @@ void CPlayer::Update(float fElapsed_Time) {
 		m_xmf3_Velocity.y *= (m_fMax_Gravity / fLength);
 	}
 
-	DirectX::XMFLOAT3 xmf3_Velocity = Vector3::Multiply(m_xmf3_Velocity, fElapsed_Time, false);
-	Move(xmf3_Velocity, false);
+	m_xmf3_Calculated_Vel = Vector3::Multiply(m_xmf3_Velocity, fElapsed_Time, false);
+	//Move(xmf3_Velocity, false);
 
 	if (m_pPlayer_Udt_Context) {
 		Player_Udt_Callback(fElapsed_Time);
@@ -188,6 +244,8 @@ void CPlayer::Update(float fElapsed_Time) {
 	if (nCamera_Mode == THIRD_PERSON_CAMERA) {
 		m_pCamera->Update(m_xmf3_Position, fElapsed_Time);
 	}
+
+	m_pCamera->Update(m_xmf3_Position, fElapsed_Time);
 
 	if (m_pCamera_Udt_Context) {
 		Camera_Udt_Callback(fElapsed_Time);
@@ -205,7 +263,13 @@ void CPlayer::Update(float fElapsed_Time) {
 		fDeceleration = fLength;
 	}
 
-	m_xmf3_Velocity = Vector3::Add(m_xmf3_Velocity, Vector3::Multiply(m_xmf3_Velocity, -fDeceleration, true));
+	//
+	DirectX::XMFLOAT3 xmf3_Friction = Vector3::Add(m_xmf3_Velocity, Vector3::Multiply(m_xmf3_Velocity, -fDeceleration, true));
+
+	m_xmf3_Velocity.x = xmf3_Friction.x;
+	m_xmf3_Velocity.z = xmf3_Friction.z;
+
+	Prepare_Render();
 }
 
 void CPlayer::Crt_Shader_Variables(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
@@ -297,6 +361,9 @@ void CPlayer::Prepare_Render() {
 void CPlayer::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera) {
 	DWORD nCamera_Mode = (pCamera) ? pCamera->Get_Mode() : 0x00;
 
+	m_pCamera->Regenerate_View_Matrix();
+	m_pCamera->Udt_Shader_Variables(pd3d_Command_List);
+
 /*	if (nCamera_Mode == THIRD_PERSON_CAMERA)*/ {
 		if (m_pShader) {
 			m_pShader->Render(pd3d_Command_List, pCamera);
@@ -304,6 +371,167 @@ void CPlayer::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCam
 		}
 	}
 }
+
+void CPlayer::Prcs_Collision(CObject* pObject) {
+	// asix Y
+	DirectX::BoundingOrientedBox d3d_OBB_Player = Get_OBB();
+	DirectX::BoundingOrientedBox d3d_OBB_Object = pObject->Get_OBB();
+
+	if (d3d_OBB_Player.Intersects(d3d_OBB_Object)) {
+		DirectX::XMFLOAT3 xmf3_Object_Position = pObject->Get_Position();
+		float fNew_Position_Y = 0.0f;
+
+		if (m_xmf3_Velocity.y < 0) {
+			m_xmf4x4_World._42 = m_xmf3_Position.y = xmf3_Object_Position.y + CUBE_WIDTH / 2 + PLAYER_HEIGHT / 2 + PLAYER_COLLISION_OFFSET;
+		}
+		else {
+			m_xmf4x4_World._42 = m_xmf3_Position.y = xmf3_Object_Position.y - CUBE_WIDTH / 2 - PLAYER_HEIGHT / 2 - PLAYER_COLLISION_OFFSET;
+		}
+
+		//OutputDebugStringA("충돌함\n");
+	}
+
+	// asix X
+	d3d_OBB_Player = Get_OBB();
+
+	if (d3d_OBB_Player.Intersects(d3d_OBB_Object)) {
+		DirectX::XMFLOAT3 xmf3_Object_Position = pObject->Get_Position();
+		float fNew_Position_X = 0.0f;
+
+		if (m_xmf3_Velocity.x < 0) {
+			m_xmf4x4_World._41 = m_xmf3_Position.x = xmf3_Object_Position.x + CUBE_WIDTH / 2 + PLAYER_WIDTH / 2 + PLAYER_COLLISION_OFFSET;
+		}
+		else {
+			m_xmf4x4_World._41 = m_xmf3_Position.x = xmf3_Object_Position.x - CUBE_WIDTH / 2 - PLAYER_WIDTH / 2 - PLAYER_COLLISION_OFFSET;
+		}
+
+		//OutputDebugStringA("충돌함\n");
+	}
+}
+
+void CPlayer::Udt_N_Prcs_Collision(CObject** ppObject, int nObjects) {
+	DirectX::XMFLOAT3 xmf3_Player_Position = Get_Position();
+	DirectX::XMFLOAT3 xmf3_Cube_Position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	float fLength = 0.0f;
+
+	std::vector<int> vCrashed_Objs;
+
+	for (int i = 0; i < nObjects; ++i) {
+		xmf3_Cube_Position = ppObject[i]->Get_Position();
+
+		fLength = Vector3::Length(Vector3::Subtract(xmf3_Player_Position, xmf3_Cube_Position));
+
+		if (fLength < PLAYER_COLLISION_LENGTH) {
+			vCrashed_Objs.push_back(i);
+		}
+	}
+
+	DirectX::BoundingOrientedBox d3d_OBB_Player;
+	DirectX::BoundingOrientedBox d3d_OBB_Object;
+
+	// axis Y
+	Move(0.0f, m_xmf3_Calculated_Vel.y, 0.0f);
+	Prepare_Render();
+
+	//
+	for (int& num : vCrashed_Objs) {
+		d3d_OBB_Player = Get_OBB();
+		d3d_OBB_Object = ppObject[num]->Get_OBB();
+
+		if (d3d_OBB_Player.Intersects(d3d_OBB_Object)) {
+			DirectX::XMFLOAT3 xmf3_Object_Position = ppObject[num]->Get_Position();
+			float fNew_Position_Y = 0.0f;
+
+			if (m_xmf3_Calculated_Vel.y < 0) {
+				m_xmf4x4_World._42 = m_xmf3_Position.y = xmf3_Object_Position.y + CUBE_WIDTH / 2 + PLAYER_HEIGHT / 2 + PLAYER_COLLISION_OFFSET;
+			}
+			else {
+				m_xmf4x4_World._42 = m_xmf3_Position.y = xmf3_Object_Position.y - CUBE_WIDTH / 2 - PLAYER_HEIGHT / 2 - PLAYER_COLLISION_OFFSET;
+			}
+		}
+	}
+
+	// axis x
+	Move(m_xmf3_Calculated_Vel.x, 0.0f, 0.0f);
+	Prepare_Render();
+
+	//
+	for (int& num : vCrashed_Objs) {
+		d3d_OBB_Player = Get_OBB();
+		d3d_OBB_Object = ppObject[num]->Get_OBB();
+
+		if (d3d_OBB_Player.Intersects(d3d_OBB_Object)) {
+			DirectX::XMFLOAT3 xmf3_Object_Position = ppObject[num]->Get_Position();
+			float fNew_Position_X = 0.0f;
+
+			if (m_xmf3_Calculated_Vel.x < 0) {
+				m_xmf4x4_World._41 = m_xmf3_Position.x = xmf3_Object_Position.x + CUBE_WIDTH / 2 + PLAYER_WIDTH / 2 + PLAYER_COLLISION_OFFSET;
+			}
+			else {
+				m_xmf4x4_World._41 = m_xmf3_Position.x = xmf3_Object_Position.x - CUBE_WIDTH / 2 - PLAYER_WIDTH / 2 - PLAYER_COLLISION_OFFSET;
+			}
+		}
+	}
+
+	// axis z
+	Move(0.0f, 0.0f, m_xmf3_Calculated_Vel.z);
+	Prepare_Render();
+
+	//
+	for (int& num : vCrashed_Objs) {
+		d3d_OBB_Player = Get_OBB();
+		d3d_OBB_Object = ppObject[num]->Get_OBB();
+
+		if (d3d_OBB_Player.Intersects(d3d_OBB_Object)) {
+			DirectX::XMFLOAT3 xmf3_Object_Position = ppObject[num]->Get_Position();
+			float fNew_Position_Z = 0.0f;
+
+			if (m_xmf3_Calculated_Vel.z < 0) {
+				m_xmf4x4_World._42 = m_xmf3_Position.z = xmf3_Object_Position.z + CUBE_WIDTH / 2 + PLAYER_WIDTH / 2 + PLAYER_COLLISION_OFFSET;
+			}
+			else {
+				m_xmf4x4_World._42 = m_xmf3_Position.z = xmf3_Object_Position.z - CUBE_WIDTH / 2 - PLAYER_WIDTH / 2 - PLAYER_COLLISION_OFFSET;
+			}
+		}
+	}
+}
+
+//void CPlayer::Prcs_Collision(CObject* pObject) {
+//	// asix Y
+//	DirectX::BoundingOrientedBox d3d_OBB_Player = Get_OBB();
+//	DirectX::BoundingOrientedBox d3d_OBB_Object = pObject->Get_OBB();
+//
+//	if (d3d_OBB_Player.Intersects(d3d_OBB_Object)) {
+//		DirectX::XMFLOAT3 xmf3_Object_Position = pObject->Get_Position();
+//		float fNew_Position_Y = 0.0f;
+//
+//		if (m_xmf3_Velocity.y < 0) {
+//			m_xmf4x4_World._42 = m_xmf3_Position.y = xmf3_Object_Position.y + CUBE_WIDTH / 2 + PLAYER_HEIGHT / 2 - PLAYER_COLLISION_OFFSET;
+//		}
+//		else {
+//			m_xmf4x4_World._42 = m_xmf3_Position.y = xmf3_Object_Position.y - CUBE_WIDTH / 2 - PLAYER_HEIGHT / 2 + PLAYER_COLLISION_OFFSET;
+//		}
+//
+//		//OutputDebugStringA("충돌함\n");
+//	}
+//
+//	// asix X
+//	//d3d_OBB_Player = Get_OBB();
+//
+//	//if (d3d_OBB_Player.Intersects(d3d_OBB_Object)) {
+//	//	DirectX::XMFLOAT3 xmf3_Object_Position = pObject->Get_Position();
+//	//	float fNew_Position_X = 0.0f;
+//
+//	//	if (m_xmf3_Velocity.x < 0) {
+//	//		m_xmf4x4_World._41 = m_xmf3_Position.x = xmf3_Object_Position.x + CUBE_WIDTH / 2 + PLAYER_WIDTH / 2 + PLAYER_COLLISION_OFFSET;
+//	//	}
+//	//	else {
+//	//		m_xmf4x4_World._41 = m_xmf3_Position.x = xmf3_Object_Position.x - CUBE_WIDTH / 2 - PLAYER_WIDTH / 2 - PLAYER_COLLISION_OFFSET;
+//	//	}
+//
+//	//	//OutputDebugStringA("충돌함\n");
+//	//}
+//}
 
 CAirplane_Player::CAirplane_Player(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, ID3D12RootSignature* pd3d_Graphics_RootSignature) {
 	CMesh* pAirplane_Mesh = new CAirPlane_Mesh(pd3d_Device, pd3d_Command_List, 20.0f, 20.0f, 4.0f, DirectX::XMFLOAT4(0.0f, 0.5f, 0.0f, 0.0f));
@@ -387,7 +615,7 @@ void CAirplane_Player::Prepare_Render() {
 }
 
 CCube_Player::CCube_Player(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, ID3D12RootSignature* pd3d_Graphics_RootSignature) {
-	CMesh* pCube_Mesh = new CCube_Mesh(pd3d_Device, pd3d_Command_List, CUBE_WIDTH * 2 / 3, CUBE_WIDTH * 8 / 5, CUBE_WIDTH * 2 / 3);
+	CMesh* pCube_Mesh = new CCube_Mesh(pd3d_Device, pd3d_Command_List, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH);
 
 	Set_Mesh(pCube_Mesh);
 
@@ -415,7 +643,7 @@ CCamera* CCube_Player::Chg_Camera(DWORD nNew_Camera_Mode, float fElapsed_Time) {
 	switch (nNew_Camera_Mode) {
 	case FIRST_PERSON_CAMERA:
 		Set_Friction(PLAYER_FRICTION);
-		//Set_Gravity(DirectX::XMFLOAT3(0.0f, -PLAYER_GRAVITY, 0.0f));
+		Set_Gravity(DirectX::XMFLOAT3(0.0f, -PLAYER_GRAVITY, 0.0f));
 		Set_Max_Velocity(PLAYER_MAX_VELOCITY);
 		Set_Max_Gravity(PLAYER_MAX_GRAVITY);
 		m_pCamera = CPlayer::Chg_Camera(FIRST_PERSON_CAMERA, nCurrent_Camera_Mode);

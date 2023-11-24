@@ -116,6 +116,10 @@ public :
 	//++ ¼­¹ö¿ë add cube
 	virtual void Add_Cube_Object_Server(CObject* pObject) {};
 	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {};
+
+	//
+	CObject** Get_Objects() { return m_ppObjects; };
+	int Get_Object_Num() { return m_nObjects; };
 };
 
 //
@@ -160,9 +164,11 @@ public :
 
 	virtual void Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List);
 
+	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
+
 	//Server
 public:
-	void GetAllPlayerData();
+	void GetAllPlayerData(CPlayer* m_pPlayer);
 };
 
 //

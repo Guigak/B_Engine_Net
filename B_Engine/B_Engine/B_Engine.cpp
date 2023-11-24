@@ -64,6 +64,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     CreateKeyInputServerSocket((char*)("127.0.0.1"));
     CreateCubeServerSocket((char*)("127.0.0.1"));
     CreateRecvPlayerDataSocket((char*)"127.0.0.1");
+    CreateSendLookVectorSocket((char*)"127.0.0.1");
 
     // 시간 스레드 생성
     HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);

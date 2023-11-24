@@ -35,6 +35,9 @@ protected :
 
 	CCamera* m_pCamera = NULL;
 
+	//
+	DirectX::XMFLOAT3 m_xmf3_Calculated_Vel;
+
 public :
 	CPlayer();
 	virtual ~CPlayer();
@@ -83,6 +86,10 @@ public :
 
 	virtual void Prepare_Render();
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera = NULL);
+
+	//
+	virtual void Prcs_Collision(CObject* pObject);
+	virtual void Udt_N_Prcs_Collision(CObject** ppObject, int nObjects);
 };
 
 //

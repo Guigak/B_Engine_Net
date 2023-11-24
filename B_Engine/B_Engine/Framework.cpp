@@ -112,12 +112,12 @@ void CFramework::OnDestroy() {
 		m_pdxgi_Factory->Release();
 	}
 
-#if defined(_DEBUG)
-	IDXGIDebug1* pdxgi_Debug = NULL;
-	DXGIGetDebugInterface1(0, __uuidof(IDXGIDebug1), (void**)&pdxgi_Debug);
-	HRESULT hResult = pdxgi_Debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL);
-	pdxgi_Debug->Release();
-#endif
+//#if defined(_DEBUG)
+//	IDXGIDebug1* pdxgi_Debug = NULL;
+//	DXGIGetDebugInterface1(0, __uuidof(IDXGIDebug1), (void**)&pdxgi_Debug);
+//	HRESULT hResult = pdxgi_Debug->ReportLiveObjects/(DXGI_DEBUG_ALL, /DXGI_DEBUG_RLO_DETAIL);
+//	pdxgi_Debug->Release();
+//#endif
 }
 
 void CFramework::Crt_SwapChain() {
@@ -416,7 +416,7 @@ void CFramework::Prcs_Input() {
 			}
 		}
 		if (dwDirection) {
-			m_pPlayer->Move(dwDirection, PLAYER_MOVE_DISTANCE * m_Timer.Get_Elapsed_Time(), false);
+			//m_pPlayer->Move(dwDirection, PLAYER_MOVE_DISTANCE * m_Timer.Get_Elapsed_Time(), true);
 		}
 	}
 
@@ -427,15 +427,24 @@ void CFramework::Anim_Objects() {
 	if (m_pScene) {
 		m_pScene->Anim_Objects(m_Timer.Get_Elapsed_Time());
 	}
+
+	//
+	Chk_Collision_Player_N_Cube();
+
+	m_pCamera->Udt_Shader_Variables(m_pd3d_Command_List);
 }
 
 
 //#define _WITH_PLAYER_TOP
 void CFramework::Adavance_Frame() {
-	m_Timer.Tick(60.0f);
+	m_Timer.Tick(30.0f);
+
+	// RecvMyLookVectorToServer
+	RecvMyLookVectorToServer();
 
 	// GetAllPlayerData
-	GetAllPlayerData();
+	// 플레이어 위치 동기화
+	GetAllPlayerData(m_pPlayer);
 
 	// 받은 박스 정보 설치
 	m_pScene->Add_Cube_Object_4_Server(Get_m_pServerObjects());
@@ -480,9 +489,9 @@ void CFramework::Adavance_Frame() {
 	m_pd3d_Command_List->ClearDepthStencilView(d3d_Dsv_CPU_Descriptor_Handle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
 
-	//if (m_pPlayer) {
-	//	m_pPlayer->Render(m_pd3d_Command_List, m_pCamera);
-	//}
+	if (m_pPlayer) {
+		m_pPlayer->Render(m_pd3d_Command_List, m_pCamera);
+	}
 
 	d3d_ResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3d_ResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
@@ -702,10 +711,38 @@ void CFramework::Prcs_Selected_Object(DWORD dwDirection, float fDelta_x, float f
 	}
 }
 
-void CFramework::GetAllPlayerData()
+void CFramework::Chk_Collision_Player_N_Cube() {
+	if (!m_pPlayer) {
+		return;
+	}
+
+	CObject** ppCube_Objects = m_pScene->Get_Objects_From_Shader(0);	// 0 : Cube Shader Index
+	int nObjects = m_pScene->Get_Object_Num_From_Shader(0);
+
+	if (ppCube_Objects == NULL) {
+		return;
+	}
+	
+	m_pPlayer->Udt_N_Prcs_Collision(ppCube_Objects, nObjects);
+}
+
+void CFramework::RecvMyLookVectorToServer()
+{
+	if(m_pCamera)
+	{
+		struct Look_Data data;
+		data.PlayerNumber = GetPlayerNumber();
+		data.fLook_x = m_pPlayer->Get_Look().x;
+		data.fLook_z = m_pPlayer->Get_Look().z;
+		send(GetSendLookVectorSocket(), (char*)&data, sizeof(struct Look_Data), 0);
+	}
+	
+}
+
+void CFramework::GetAllPlayerData(CPlayer* m_pPlayer)
 {
 	if(m_pScene)
 	{
-		m_pScene->GetAllPlayerData();
+		m_pScene->GetAllPlayerData(m_pPlayer);
 	}
 }

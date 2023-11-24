@@ -217,6 +217,11 @@ CCube_Mesh::~CCube_Mesh()
 {
 }
 
+DirectX::BoundingOrientedBox CCube_Mesh::Get_OBB() {
+	//return DirectX::BoundingOrientedBox(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), DirectX::XMFLOAT3(CUBE_WIDTH * 0.5f, CUBE_WIDTH * 0.5f, CUBE_WIDTH * 0.5f), DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	return m_xmOOBB;
+}
+
 
 //
 CAirPlane_Mesh::CAirPlane_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, float fWidth, float fHeight, float fDepth, DirectX::XMFLOAT4 xmf4_Color) : CMesh(pd3d_Device, pd3d_Command_List){

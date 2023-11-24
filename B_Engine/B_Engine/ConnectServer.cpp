@@ -7,12 +7,14 @@
 #define KEYINPUTSERVERPORT	9001
 #define CUBESERVERPORT		9002
 #define RECVPLAYERDATAPORT	9003
+#define SENDLOOKVECTORPORT  9004
 
 int now_time = 500;
 SOCKET KeyInputSocket;
 SOCKET CubeSocket;
 SOCKET sock;
 SOCKET RecvPlayerDataSocket;
+SOCKET SendLookVectorSocket;
 int PlayerNumber{};
 
 CObject* m_pSeverObjects = NULL;
@@ -140,6 +142,39 @@ void CreateRecvPlayerDataSocket(char* sServer_IP)
 }
 
 SOCKET GetRecvPlayerSocket() { return RecvPlayerDataSocket; }
+
+void CreateSendLookVectorSocket(char* sServer_IP)
+{
+	// 소켓 설정
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		return;
+
+	SendLookVectorSocket = socket(AF_INET, SOCK_STREAM, 0);
+	if (SendLookVectorSocket == INVALID_SOCKET) {
+		printf("Socket Fail - CreateSendLookVectorSocket(char)");
+		err_quit("Socket Fail - CreateSendLookVectorSocket(char)");
+		return;
+	}
+
+	//서버에 연결
+	struct sockaddr_in serverAddr;
+	memset(&serverAddr, 0, sizeof(serverAddr));
+	serverAddr.sin_family = AF_INET;
+	inet_pton(AF_INET, sServer_IP, &serverAddr.sin_addr);
+	serverAddr.sin_port = htons(SENDLOOKVECTORPORT);
+	int retval = connect(SendLookVectorSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
+	if (retval == SOCKET_ERROR) {
+		printf("connect Fail - CreateSendLookVectorSocket(char)");
+		err_quit("connect Fail - CreateSendLookVectorSocket(char)");
+		return;
+	}
+}
+
+SOCKET GetSendLookVectorSocket()
+{
+	return SendLookVectorSocket;
+}
 
 
 void SetPlayerNumber(int pn)

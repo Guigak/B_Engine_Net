@@ -8,12 +8,14 @@ bool Connect_To_Server(char* sServer_IP);
 void CreateKeyInputServerSocket(char* sServer_IP);
 void CreateCubeServerSocket(char* sServer_IP);
 void CreateRecvPlayerDataSocket(char* sServer_IP);
+void CreateSendLookVectorSocket(char* sServer_IP);
 
 
 // ╪рдо Getter
 SOCKET GetKeyInputSocket();
 SOCKET GetCubeSocket();
 SOCKET GetRecvPlayerSocket();
+SOCKET GetSendLookVectorSocket();
 
 void SetPlayerNumber(int pn);
 int GetPlayerNumber();
@@ -44,3 +46,8 @@ struct Cube_Info {
 	float fColor_r, fColor_g, fColor_b;
 };
 
+struct Look_Data
+{
+	int PlayerNumber;
+	float fLook_x, fLook_z;
+};

@@ -21,6 +21,9 @@
 // io
 #include <iostream>
 
+//
+#include <vector>
+
 // Timer 관련
 #include <Mmsystem.h>
 
@@ -71,15 +74,21 @@ using Microsoft::WRL::ComPtr;
 #define BOUNDING_BOX_OFFSET 0.03f
 
 // player data
+#define PLAYER_HEIGHT CUBE_WIDTH * 8 / 5
+#define PLAYER_WIDTH CUBE_WIDTH * 2 / 3
+
 #define PLAYER_MAX_NUMBER 3
 #define PLAYER_DEFAULT_COLOR DirectX::XMFLOAT4(0.0f, 0.5f, 0.5f, 0.0f)
 
-#define PLAYER_MAX_VELOCITY 50.0f
-#define PLAYER_MAX_GRAVITY 50.0f
+#define PLAYER_MAX_VELOCITY 75.0f
+#define PLAYER_MAX_GRAVITY 75.0f
 #define PLAYER_GRAVITY 100.0f
-#define PLAYER_FRICTION 50.0f
-#define PLAYER_MOVE_DISTANCE 100.0f
+#define PLAYER_FRICTION 500.0f
+#define PLAYER_MOVE_DISTANCE 200.0f
 #define PLAYER_PICKING_DISTANCE 100.0f
+
+#define PLAYER_COLLISION_LENGTH 20.0f
+#define PLAYER_COLLISION_OFFSET 0.001f
 
 // camera data
 #define CAMERA_NEAR_DISTANCE 1.0f

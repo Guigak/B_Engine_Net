@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include "ConnectServer.h"
+#include "Player.h"
 
 CShader::CShader() {
 }
@@ -649,16 +650,36 @@ void CPlayers_Shader::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCom
 	Crt_Shader_Variables(pd3d_Device, pd3d_Command_List);
 }
 
-void CPlayers_Shader::GetAllPlayerData()
+void CPlayers_Shader::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera)
+{
+	DirectX::XMFLOAT3 my_loc = m_ppObjects[GetPlayerNumber()]->Get_Position();
+	m_ppObjects[GetPlayerNumber()]->Set_Position(0.0f, -50.0f, 0.0f);
+
+	CInstancing_Shader::Render(pd3d_Command_List, pCamera);
+
+	for (int i = 0; i < m_nObjects; ++i) {
+		if (m_ppObjects[i]) {
+			m_ppObjects[i]->Render(pd3d_Command_List, pCamera);
+		}
+	}
+
+	m_ppObjects[GetPlayerNumber()]->Set_Position(my_loc);
+}
+
+
+
+void CPlayers_Shader::GetAllPlayerData(CPlayer* m_pPlayer)
 {
 	struct Player_Info player_info[PLAYER_MAX_NUMBER];
 	recv(GetRecvPlayerSocket(), (char*)&player_info, sizeof(struct Player_Info) * PLAYER_MAX_NUMBER, MSG_WAITALL);
+	
 	for(int i=0; i<PLAYER_MAX_NUMBER; ++i)
 	{
 		m_ppObjects[i]->Set_Position(player_info[i].fPosition_x, player_info[i].fPosition_y, player_info[i].fPosition_z);
-		// TODO: Look 벡터 설정 예정
-
+		m_ppObjects[i]->Set_Look_xz(player_info[i].fLook_x, player_info[i].fLook_z);
 	}
+	DirectX::XMFLOAT3 player_location{player_info[GetPlayerNumber()].fPosition_x, player_info[GetPlayerNumber()].fPosition_y, player_info[GetPlayerNumber()].fPosition_z};
+	m_pPlayer->Set_Position(player_location);
 }
 
 

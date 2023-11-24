@@ -64,8 +64,13 @@ public :
 	DirectX::XMFLOAT3 Get_Up();
 	DirectX::XMFLOAT3 Get_Right();
 
+	//
+	DirectX::BoundingOrientedBox Get_OBB();
+
 	void Set_Position(float x, float y, float z);
 	void Set_Position(DirectX::XMFLOAT3 xmf3_Position);
+
+	void Set_Look_xz(float x, float z);
 
 	void Move_Right(float fDistance = 1.0f);
 	void Move_Up(float fDistance = 1.0f);

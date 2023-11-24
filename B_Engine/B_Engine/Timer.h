@@ -7,7 +7,7 @@ const ULONG MAX_SAMPLE_COUNT = 50;
 class CTimer {
 private :
 	bool m_bHardware_Has_Performance_Counter;
-	float m_fTime_Scale;
+	double m_fTime_Scale;
 	float m_fElapsed_Time;
 	__int64 m_nCurrent_Time;
 	__int64 m_nLast_Time;
