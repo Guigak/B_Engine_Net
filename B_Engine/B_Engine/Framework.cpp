@@ -415,7 +415,7 @@ void CFramework::Prcs_Input() {
 			}
 		}
 		if (dwDirection) {
-			m_pPlayer->Move(dwDirection, PLAYER_MOVE_DISTANCE * m_Timer.Get_Elapsed_Time(), false);
+			m_pPlayer->Move(dwDirection, PLAYER_MOVE_DISTANCE * m_Timer.Get_Elapsed_Time(), true);
 		}
 	}
 
@@ -426,12 +426,17 @@ void CFramework::Anim_Objects() {
 	if (m_pScene) {
 		m_pScene->Anim_Objects(m_Timer.Get_Elapsed_Time());
 	}
+
+	//
+	Chk_Collision_Player_N_Cube();
+
+	m_pCamera->Udt_Shader_Variables(m_pd3d_Command_List);
 }
 
 
 //#define _WITH_PLAYER_TOP
 void CFramework::Adavance_Frame() {
-	m_Timer.Tick(0.0f);
+	m_Timer.Tick(30.0f);
 
 	Prcs_Input();
 	Anim_Objects();
@@ -473,9 +478,9 @@ void CFramework::Adavance_Frame() {
 	m_pd3d_Command_List->ClearDepthStencilView(d3d_Dsv_CPU_Descriptor_Handle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
 
-	//if (m_pPlayer) {
-	//	m_pPlayer->Render(m_pd3d_Command_List, m_pCamera);
-	//}
+	if (m_pPlayer) {
+		m_pPlayer->Render(m_pd3d_Command_List, m_pCamera);
+	}
 
 	d3d_ResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3d_ResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
@@ -537,7 +542,7 @@ void CFramework::Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM l
 	case WM_RBUTTONUP :
 		break;
 	case WM_MOUSEMOVE :
-		m_pSelected_Object = m_pScene->Pick_Object_Pointed_By_Cursor(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera);
+		//m_pSelected_Object = m_pScene->Pick_Object_Pointed_By_Cursor(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera);
 		break;
 	default :
 		break;
@@ -676,4 +681,19 @@ void CFramework::Prcs_Selected_Object(DWORD dwDirection, float fDelta_x, float f
 	else if ((fDelta_x != 0.0f) || (fDelta_y != 0.0f)) {
 		m_pSelected_Object->Rotate(fDelta_y, fDelta_x, 0.0f);
 	}
+}
+
+void CFramework::Chk_Collision_Player_N_Cube() {
+	if (!m_pPlayer) {
+		return;
+	}
+
+	CObject** ppCube_Objects = m_pScene->Get_Objects_From_Shader(0);	// 0 : Cube Shader Index
+	int nObjects = m_pScene->Get_Object_Num_From_Shader(0);
+
+	if (ppCube_Objects == NULL) {
+		return;
+	}
+	
+	m_pPlayer->Udt_N_Prcs_Collision(ppCube_Objects, nObjects);
 }

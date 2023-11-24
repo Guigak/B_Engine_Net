@@ -114,6 +114,10 @@ public :
 	//
 	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {};
 	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {};
+
+	//
+	CObject** Get_Objects() { return m_ppObjects; };
+	int Get_Object_Num() { return m_nObjects; };
 };
 
 //

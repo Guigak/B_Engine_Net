@@ -60,6 +60,8 @@ void CCamera::Release_Shader_Variables() {
 }
 
 void CCamera::Udt_Shader_Variables(ID3D12GraphicsCommandList* pd3d_Command_List) {
+	Regenerate_View_Matrix();
+
 	DirectX::XMFLOAT4X4 xmf4x4_View;
 	DirectX::XMStoreFloat4x4(&xmf4x4_View, DirectX::XMMatrixTranspose(DirectX::XMLoadFloat4x4(&m_xmf4x4_View)));
 	pd3d_Command_List->SetGraphicsRoot32BitConstants(1, 16, &xmf4x4_View, 0);
@@ -82,6 +84,8 @@ void CCamera::Generate_View_Matrix(DirectX::XMFLOAT3 xmf3_Position, DirectX::XMF
 }
 
 void CCamera::Regenerate_View_Matrix() {
+	Update(m_pPlayer->Get_Position(), 0.0f);
+
 	m_xmf3_Look = Vector3::Normalize(m_xmf3_Look);
 	m_xmf3_Right = Vector3::Cross_Product(m_xmf3_Up, m_xmf3_Look, true);
 	m_xmf3_Up = Vector3::Cross_Product(m_xmf3_Look, m_xmf3_Right, true);
@@ -186,6 +190,34 @@ CFirst_Person_Camera::CFirst_Person_Camera(CCamera* pCamera) {
 	}
 }
 
+void CFirst_Person_Camera::Update(DirectX::XMFLOAT3& xmf3_LookAt, float fElapsed_Time) {
+	if (!m_pPlayer) {
+		return;
+	}
+
+	DirectX::XMFLOAT4X4 xmf4x4_Rotate = Matrix4x4::Identity();
+	DirectX::XMFLOAT3 xmf3_Right = m_pPlayer->Get_Right_Vector();
+	DirectX::XMFLOAT3 xmf3_Up = m_pPlayer->Get_Up_Vector();
+	DirectX::XMFLOAT3 xmf3_Look = m_pPlayer->Get_Look_Vector();
+
+	xmf4x4_Rotate._11 = xmf3_Right.x;
+	xmf4x4_Rotate._21 = xmf3_Up.x;
+	xmf4x4_Rotate._31 = xmf3_Look.x;
+
+	xmf4x4_Rotate._12 = xmf3_Right.y;
+	xmf4x4_Rotate._22 = xmf3_Up.y;
+	xmf4x4_Rotate._32 = xmf3_Look.y;
+
+	xmf4x4_Rotate._13 = xmf3_Right.z;
+	xmf4x4_Rotate._23 = xmf3_Up.z;
+	xmf4x4_Rotate._33 = xmf3_Look.z;
+
+	DirectX::XMFLOAT3 xmf3_Offset = Vector3::Transform_Coord(m_xmf3_Offset, xmf4x4_Rotate);
+	DirectX::XMFLOAT3 xmf3_Position = Vector3::Add(m_pPlayer->Get_Position(), xmf3_Offset);
+
+	Set_Position(xmf3_Position);
+}
+
 void CFirst_Person_Camera::Rotate(float fPitch, float fYaw, float fRoll) {
 	if (fPitch != 0.0f)
 	{
@@ -211,9 +243,9 @@ void CFirst_Person_Camera::Rotate(float fPitch, float fYaw, float fRoll) {
 		DirectX::XMFLOAT3 xmf3_Look = m_pPlayer->Get_Look_Vector();
 		DirectX::XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationAxis(DirectX::XMLoadFloat3(&xmf3_Look), DirectX::XMConvertToRadians(fRoll));
 
-		m_xmf3_Position = Vector3::Subtract(m_xmf3_Position, m_pPlayer->Get_Position());
-		m_xmf3_Position = Vector3::Transform_Coord(m_xmf3_Position, xmmtxRotate);
-		m_xmf3_Position = Vector3::Add(m_xmf3_Position, m_pPlayer->Get_Position());
+		//m_xmf3_Position = Vector3::Subtract(m_xmf3_Position, m_pPlayer->Get_Position());
+		//m_xmf3_Position = Vector3::Transform_Coord(m_xmf3_Position, xmmtxRotate);
+		//m_xmf3_Position = Vector3::Add(m_xmf3_Position, m_pPlayer->Get_Position());
 
 		m_xmf3_Look = Vector3::Transform_Normal(m_xmf3_Look, xmmtxRotate);
 		m_xmf3_Up = Vector3::Transform_Normal(m_xmf3_Up, xmmtxRotate);

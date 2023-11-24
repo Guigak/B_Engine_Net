@@ -90,7 +90,7 @@ public :
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, UINT nInstances = 1);
 
 	//
-	DirectX::BoundingOrientedBox Get_OOBB() { return m_xmOOBB; }
+	virtual DirectX::BoundingOrientedBox Get_OBB() { return m_xmOOBB; }
 
 	//
 	int Chk_Ray_Intersection(DirectX::XMFLOAT3& xmf3_Ray_Position, DirectX::XMFLOAT3& xmf3_Ray_Direction, float* pfNear_Hit_Distance, int* nPrimitive_Number = NULL);
@@ -106,6 +106,9 @@ class CCube_Mesh : public CMesh {
 public :
 	CCube_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, float fWidth = 2.0f, float fHeight = 2.0f, float fDepth = 2.0f);
 	virtual ~CCube_Mesh();
+
+	//
+	virtual DirectX::BoundingOrientedBox Get_OBB();
 };
 
 //

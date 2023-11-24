@@ -4,7 +4,7 @@ CTimer::CTimer() {
 	if (QueryPerformanceFrequency((LARGE_INTEGER*)&m_nPerformance_Frequency)) {
 		m_bHardware_Has_Performance_Counter = TRUE;
 		QueryPerformanceCounter((LARGE_INTEGER*)&m_nLast_Time);
-		m_fTime_Scale = 1.0f / m_nPerformance_Frequency;
+		m_fTime_Scale = 1.0f / (double)m_nPerformance_Frequency;
 	}
 	else {
 		m_bHardware_Has_Performance_Counter = FALSE;
@@ -32,6 +32,11 @@ void CTimer::Reset() {
 }
 
 void CTimer::Tick(float fLock_FPS) {
+	if (m_bStopped) {
+		m_fElapsed_Time = 0.0f;
+		return;
+	}
+
 	if (m_bHardware_Has_Performance_Counter) {
 		QueryPerformanceCounter((LARGE_INTEGER*)&m_nCurrent_Time);
 	}
@@ -39,7 +44,7 @@ void CTimer::Tick(float fLock_FPS) {
 		m_nCurrent_Time = timeGetTime();
 	}
 
-	float fElapsed_Time = (m_nCurrent_Time - m_nLast_Time) * m_fTime_Scale;
+	float fElapsed_Time = float((m_nCurrent_Time - m_nLast_Time) * m_fTime_Scale);
 
 	if (fLock_FPS > 0.0f) {
 		while (fElapsed_Time < (1.0f / fLock_FPS)) {
@@ -50,7 +55,7 @@ void CTimer::Tick(float fLock_FPS) {
 				m_nCurrent_Time = timeGetTime();
 			}
 
-			fElapsed_Time = (m_nCurrent_Time - m_nLast_Time) * m_fTime_Scale;
+			fElapsed_Time = float((m_nCurrent_Time - m_nLast_Time) * m_fTime_Scale);
 		}
 	}
 
