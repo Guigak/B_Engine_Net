@@ -6,6 +6,7 @@ bool Connect_To_Server(char* sServer_IP);
 void CreateKeyInputServerSocket(char* sServer_IP);
 void CreateCubeServerSocket(char* sServer_IP);
 void CreateRecvPlayerDataSocket(char* sServer_IP);
+void CreateSendLookVectorSocket(char* sServer_IP);
 
 //void Send_Cube_Info(DirectX::XMFLOAT3 xmf3_Position, DirectX::XMFLOAT4 m_xmf4_Color);
 
@@ -13,6 +14,7 @@ void CreateRecvPlayerDataSocket(char* sServer_IP);
 SOCKET GetKeyInputSocket();
 SOCKET GetCubeSocket();
 SOCKET GetRecvPlayerSocket();
+SOCKET GetSendLookVectorSocket();
 
 void SetPlayerNumber(int pn);
 int GetPlayerNumber();
@@ -38,4 +40,10 @@ struct Player_Info
 struct Cube_Info {
 	float fPosition_x, fPosition_y, fPosition_z;
 	float fColor_r, fColor_g, fColor_b;
+};
+
+struct Look_Data
+{
+	int PlayerNumber;
+	float fLook_x, fLook_z;
 };

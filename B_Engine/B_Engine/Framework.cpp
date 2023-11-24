@@ -112,12 +112,12 @@ void CFramework::OnDestroy() {
 		m_pdxgi_Factory->Release();
 	}
 
-#if defined(_DEBUG)
-	IDXGIDebug1* pdxgi_Debug = NULL;
-	DXGIGetDebugInterface1(0, __uuidof(IDXGIDebug1), (void**)&pdxgi_Debug);
-	HRESULT hResult = pdxgi_Debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL);
-	pdxgi_Debug->Release();
-#endif
+//#if defined(_DEBUG)
+//	IDXGIDebug1* pdxgi_Debug = NULL;
+//	DXGIGetDebugInterface1(0, __uuidof(IDXGIDebug1), (void**)&pdxgi_Debug);
+//	HRESULT hResult = pdxgi_Debug->ReportLiveObjects/(DXGI_DEBUG_ALL, /DXGI_DEBUG_RLO_DETAIL);
+//	pdxgi_Debug->Release();
+//#endif
 }
 
 void CFramework::Crt_SwapChain() {
@@ -416,7 +416,7 @@ void CFramework::Prcs_Input() {
 			}
 		}
 		if (dwDirection) {
-			m_pPlayer->Move(dwDirection, PLAYER_MOVE_DISTANCE * m_Timer.Get_Elapsed_Time(), true);
+			//m_pPlayer->Move(dwDirection, PLAYER_MOVE_DISTANCE * m_Timer.Get_Elapsed_Time(), true);
 		}
 	}
 
@@ -438,6 +438,9 @@ void CFramework::Anim_Objects() {
 //#define _WITH_PLAYER_TOP
 void CFramework::Adavance_Frame() {
 	m_Timer.Tick(30.0f);
+
+	// RecvMyLookVectorToServer
+	RecvMyLookVectorToServer();
 
 	// GetAllPlayerData
 	GetAllPlayerData();
@@ -730,6 +733,20 @@ void CFramework::Chk_Collision_Player_N_Cube() {
 	}
 	
 	m_pPlayer->Udt_N_Prcs_Collision(ppCube_Objects, nObjects);
+}
+
+void CFramework::RecvMyLookVectorToServer()
+{
+	if(m_pCamera)
+	{
+		struct Look_Data data;
+		data.PlayerNumber = GetPlayerNumber();
+		data.fLook_x = m_pPlayer->Get_Look().x;
+		data.fLook_z = m_pPlayer->Get_Look().z;
+		printf("%d 번쨰 플레이어인데, %f, %f 를 쳐다보고있음\n", data.PlayerNumber, data.fLook_x, data.fLook_z);
+		send(GetSendLookVectorSocket(), (char*)&data, sizeof(struct Look_Data), 0);
+	}
+	
 }
 
 void CFramework::GetAllPlayerData()

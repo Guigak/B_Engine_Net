@@ -1,5 +1,7 @@
 #include "Scene.h"
 
+#include "ConnectServer.h"
+
 CScene::CScene() {
 }
 
@@ -252,6 +254,8 @@ void CScene::Release_Upload_Buffers() {
 		m_ppShaders[i]->Release_Upload_Buffers();
 	}
 }
+
+
 
 void CScene::GetAllPlayerData()
 {

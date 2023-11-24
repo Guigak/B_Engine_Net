@@ -125,6 +125,7 @@ public :
 
 	//Server
 public:
+	void RecvMyLookVectorToServer();
 	void GetAllPlayerData();
 };
 

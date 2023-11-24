@@ -640,6 +640,8 @@ void CPlayers_Shader::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCom
 	Crt_Shader_Variables(pd3d_Device, pd3d_Command_List);
 }
 
+
+
 void CPlayers_Shader::GetAllPlayerData()
 {
 	struct Player_Info player_info[PLAYER_MAX_NUMBER];
