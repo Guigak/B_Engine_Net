@@ -122,5 +122,9 @@ public :
 	// player collision
 public :
 	void Chk_Collision_Player_N_Cube();
+
+	//Server
+public:
+	void GetAllPlayerData();
 };
 

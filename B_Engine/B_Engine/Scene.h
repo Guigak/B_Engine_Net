@@ -47,8 +47,8 @@ public :
 	void Delete_Cube_Object(int Client_x, int Client_y, CCamera* pCamera);
 	void Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera);
 
-	//
-	CObject** Get_Objects_From_Shader(int nShader_Index);
-	int Get_Object_Num_From_Shader(int nShader_Index);
+	//Server
+public:
+	void GetAllPlayerData();
 };
 

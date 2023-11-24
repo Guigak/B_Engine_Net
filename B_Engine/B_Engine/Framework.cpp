@@ -1,4 +1,5 @@
 #include "Framework.h"
+#include "ConnectServer.h"
 
 CFramework::CFramework() {
 	m_pdxgi_Factory = NULL;
@@ -438,6 +439,10 @@ void CFramework::Anim_Objects() {
 void CFramework::Adavance_Frame() {
 	m_Timer.Tick(30.0f);
 
+	// GetAllPlayerData
+	GetAllPlayerData();
+
+
 	Prcs_Input();
 	Anim_Objects();
 
@@ -536,13 +541,25 @@ void CFramework::Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM l
 	case WM_RBUTTONDOWN :
 		if (m_bCaptured) {
 			m_pScene->Add_Cube_Object(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera);
+			if (m_pSelected_Object) {
+				//Send_Cube_Info(m_pSelected_Object->Get_Position(), m_pSelected_Object->Get_Color());
+				float x = m_pSelected_Object->Get_Position().x;
+				float y = m_pSelected_Object->Get_Position().y;
+				float z = m_pSelected_Object->Get_Position().z;
+				float r = m_pSelected_Object->Get_Color().x;
+				float g = m_pSelected_Object->Get_Color().y;
+				float b = m_pSelected_Object->Get_Color().z;
+
+				struct Cube_Info cube(x, y, z, r, g, b);
+				send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
+			}
 		}
 		break;
 	case WM_LBUTTONUP :
 	case WM_RBUTTONUP :
 		break;
 	case WM_MOUSEMOVE :
-		//m_pSelected_Object = m_pScene->Pick_Object_Pointed_By_Cursor(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera);
+		m_pSelected_Object = m_pScene->Pick_Object_Pointed_By_Cursor(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera);
 		break;
 	default :
 		break;
@@ -550,6 +567,23 @@ void CFramework::Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM l
 }
 
 void CFramework::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam) {
+	if((nMsg_ID==WM_KEYDOWN&&!GetPlayerBuffer(wParam)) || (nMsg_ID==WM_KEYUP&&GetPlayerBuffer(wParam)))
+	{
+		KeyInput senddata;
+		if (nMsg_ID == WM_KEYDOWN)
+		{
+			senddata.keydown = true;
+			SetPlayerBuffer(wParam, true);
+		}
+		else
+		{
+			senddata.keydown = false;
+			SetPlayerBuffer(wParam, false);
+		}
+		senddata.key = (int)wParam;
+		senddata.PlayerNumber = GetPlayerNumber();
+		send(GetKeyInputSocket(), (const char*)&senddata, sizeof(senddata), 0);
+	}
 	switch (nMsg_ID) {
 	case WM_KEYUP :
 		switch (wParam) {
@@ -696,4 +730,12 @@ void CFramework::Chk_Collision_Player_N_Cube() {
 	}
 	
 	m_pPlayer->Udt_N_Prcs_Collision(ppCube_Objects, nObjects);
+}
+
+void CFramework::GetAllPlayerData()
+{
+	if(m_pScene)
+	{
+		m_pScene->GetAllPlayerData();
+	}
 }
