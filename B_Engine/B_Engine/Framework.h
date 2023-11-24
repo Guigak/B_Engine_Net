@@ -126,6 +126,6 @@ public :
 	//Server
 public:
 	void RecvMyLookVectorToServer();
-	void GetAllPlayerData();
+	void GetAllPlayerData(CPlayer* m_pPlayer);
 };
 

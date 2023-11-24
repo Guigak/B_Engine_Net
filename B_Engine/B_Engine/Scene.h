@@ -52,6 +52,6 @@ public :
 
 	//Server
 public:
-	void GetAllPlayerData();
+	void GetAllPlayerData(CPlayer* m_pPlayer);
 };
 

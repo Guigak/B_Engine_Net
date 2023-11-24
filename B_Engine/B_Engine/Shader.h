@@ -160,9 +160,11 @@ public :
 
 	virtual void Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List);
 
+	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
+
 	//Server
 public:
-	void GetAllPlayerData();
+	void GetAllPlayerData(CPlayer* m_pPlayer);
 };
 
 //

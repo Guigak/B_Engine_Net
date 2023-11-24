@@ -443,7 +443,8 @@ void CFramework::Adavance_Frame() {
 	RecvMyLookVectorToServer();
 
 	// GetAllPlayerData
-	GetAllPlayerData();
+	// 플레이어 위치 동기화
+	GetAllPlayerData(m_pPlayer);
 
 
 	Prcs_Input();
@@ -748,10 +749,10 @@ void CFramework::RecvMyLookVectorToServer()
 	
 }
 
-void CFramework::GetAllPlayerData()
+void CFramework::GetAllPlayerData(CPlayer* m_pPlayer)
 {
 	if(m_pScene)
 	{
-		m_pScene->GetAllPlayerData();
+		m_pScene->GetAllPlayerData(m_pPlayer);
 	}
 }

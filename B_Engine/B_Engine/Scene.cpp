@@ -257,11 +257,11 @@ void CScene::Release_Upload_Buffers() {
 
 
 
-void CScene::GetAllPlayerData()
+void CScene::GetAllPlayerData(CPlayer* m_pPlayer)
 {
 	
 	if(m_ppShaders[1])
 	{
-		((CPlayers_Shader*)m_ppShaders[1])->GetAllPlayerData();
+		((CPlayers_Shader*)m_ppShaders[1])->GetAllPlayerData(m_pPlayer);
 	}
 }
