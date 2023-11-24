@@ -743,7 +743,6 @@ void CFramework::RecvMyLookVectorToServer()
 		data.PlayerNumber = GetPlayerNumber();
 		data.fLook_x = m_pPlayer->Get_Look().x;
 		data.fLook_z = m_pPlayer->Get_Look().z;
-		printf("%d 번쨰 플레이어인데, %f, %f 를 쳐다보고있음\n", data.PlayerNumber, data.fLook_x, data.fLook_z);
 		send(GetSendLookVectorSocket(), (char*)&data, sizeof(struct Look_Data), 0);
 	}
 	
