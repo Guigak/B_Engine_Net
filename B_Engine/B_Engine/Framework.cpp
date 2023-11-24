@@ -437,6 +437,8 @@ void CFramework::Adavance_Frame() {
 	// GetAllPlayerData
 	GetAllPlayerData();
 
+	// 받은 박스 정보 설치
+	m_pScene->Add_Cube_Object_4_Server(Get_m_pServerObjects());
 
 	Prcs_Input();
 	Anim_Objects();
@@ -536,18 +538,6 @@ void CFramework::Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM l
 	case WM_RBUTTONDOWN :
 		if (m_bCaptured) {
 			m_pScene->Add_Cube_Object(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera);
-			if (m_pSelected_Object) {
-				//Send_Cube_Info(m_pSelected_Object->Get_Position(), m_pSelected_Object->Get_Color());
-				float x = m_pSelected_Object->Get_Position().x;
-				float y = m_pSelected_Object->Get_Position().y;
-				float z = m_pSelected_Object->Get_Position().z;
-				float r = m_pSelected_Object->Get_Color().x;
-				float g = m_pSelected_Object->Get_Color().y;
-				float b = m_pSelected_Object->Get_Color().z;
-
-				struct Cube_Info cube(x, y, z, r, g, b);
-				send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
-			}
 		}
 		break;
 	case WM_LBUTTONUP :
@@ -555,7 +545,6 @@ void CFramework::Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM l
 		break;
 	case WM_MOUSEMOVE :
 		m_pSelected_Object = m_pScene->Pick_Object_Pointed_By_Cursor(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera);
-		
 		break;
 	default :
 		break;

@@ -66,7 +66,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     CreateRecvPlayerDataSocket((char*)"127.0.0.1");
 
     // 시간 스레드 생성
-    HANDLE hThread = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);
+    HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);
+
+    // Cube Input 스레드 생성
+    HANDLE hThread2 = CreateThread(NULL, 0, Add_Cube_Object_From_Server, NULL, 0, NULL);
 
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);

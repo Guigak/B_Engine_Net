@@ -531,8 +531,17 @@ void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, 
 		pObject = new CObject();
 		pObject->Set_Position(xmf3_Position);
 		pObject->Set_Color(0.5f, 0.0f, 0.0f, 0.0f);
-		m_ppObjects[m_nObjects++] = pObject;
+		//m_ppObjects[m_nObjects++] = pObject;
+
+		// 피킹된 곳의 설치될 큐브 정보 보내기 + 플레이어 당 큐브 색 추가해야 됌
+		struct Cube_Info cube(xmf3_Position.x, xmf3_Position.y, xmf3_Position.z, 0.5f, 0.0f, 0.0f);
+		send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
 	}
+}
+
+void CInstancing_Shader::Add_Cube_Object_Server(CObject* pObject)
+{
+	m_ppObjects[m_nObjects++] = pObject;
 }
 
 void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {

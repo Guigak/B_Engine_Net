@@ -154,9 +154,12 @@ void CScene::Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera) {
 	float fHit_Distance = FLT_MAX;
 	float fNearest_Hit_Distance = FLT_MAX;
 
-	for (int i = 0; i < m_nShaders; ++i) {
-		m_ppShaders[i]->Add_Cube_Object(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
-	}
+	m_ppShaders[0]->Add_Cube_Object(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
+}
+
+void CScene::Add_Cube_Object_4_Server(CObject* pObject)
+{
+	if (pObject)	m_ppShaders[0]->Add_Cube_Object_Server(pObject);
 }
 
 

@@ -86,7 +86,7 @@ public :
 
 //
 class CObjects_Shader : public CShader {
-protected :
+protected:
 	CObject** m_ppObjects = NULL;
 	int m_nObjects = 0;
 
@@ -113,6 +113,8 @@ public :
 
 	//
 	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {};
+	//++ 서버용 add cube
+	virtual void Add_Cube_Object_Server(CObject* pObject) {};
 	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {};
 };
 
@@ -140,6 +142,8 @@ public :
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
 
 	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
+	//++ 서버용 add cube
+	virtual void Add_Cube_Object_Server(CObject* pObject);
 	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
 
 	// for bounding box

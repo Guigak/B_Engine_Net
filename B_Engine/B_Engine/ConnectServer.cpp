@@ -15,6 +15,9 @@ SOCKET sock;
 SOCKET RecvPlayerDataSocket;
 int PlayerNumber{};
 
+CObject* m_pSeverObjects = NULL;
+CObject* Get_m_pServerObjects() { return m_pSeverObjects; }
+
 bool Connect_To_Server(char* sServer_IP)
 {
 	// 소켓 설정
@@ -139,18 +142,6 @@ void CreateRecvPlayerDataSocket(char* sServer_IP)
 SOCKET GetRecvPlayerSocket() { return RecvPlayerDataSocket; }
 
 
-//void Send_Cube_Info(DirectX::XMFLOAT3 xmf3_Position, DirectX::XMFLOAT4 m_xmf4_Color)
-//{
-//	struct Cube_Info cube(xmf3_Position.x, xmf3_Position.y, xmf3_Position.z, m_xmf4_Color.x, m_xmf4_Color.y, m_xmf4_Color.z);
-//	int retval = send(CubeSocket, (char*)&remainingSeconds, sizeof(int), 0);
-//	if (retval == SOCKET_ERROR) {
-//		err_display("send()");
-//		break;
-//	}
-//}
-
-
-
 void SetPlayerNumber(int pn)
 {
 	PlayerNumber = pn;
@@ -176,7 +167,7 @@ DWORD WINAPI Get_Time(LPVOID arg)
 	while (1) {
 		retval = recv(sock, (char*)&now_time, sizeof(int), MSG_WAITALL);
 		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
+			err_display("Time recv()");
 			break;
 		}
 		else if (retval == 0)
@@ -185,6 +176,35 @@ DWORD WINAPI Get_Time(LPVOID arg)
 	
 	// 소켓 닫기
 	closesocket(sock);
+	// 윈속 종료
+	WSACleanup();
+	return 0;
+}
+
+
+DWORD WINAPI Add_Cube_Object_From_Server(LPVOID arg)
+{
+	int retval = 0;
+	struct Cube_Info CubeInput;
+	while (1) {
+		retval = recv(CubeSocket, (char*)&CubeInput, sizeof(Cube_Info), MSG_WAITALL);
+		if (retval == SOCKET_ERROR) {
+			err_display("Cube_Infor recv()");
+			break;
+		}
+		else if (retval == 0)
+			break;
+
+		m_pSeverObjects = new CObject();
+		m_pSeverObjects->Set_Position(CubeInput.fPosition_x, CubeInput.fPosition_y, CubeInput.fPosition_z);
+		m_pSeverObjects->Set_Color(CubeInput.fColor_r, CubeInput.fColor_g, CubeInput.fColor_b, 0.0f);
+
+		printf("입력받은 큐브 정보 위치 : %.2f, %.2f, %.2f\n", CubeInput.fPosition_x, CubeInput.fPosition_y, CubeInput.fPosition_z);
+	}
+	
+
+	// 소켓 닫기
+	closesocket(CubeSocket);
 	// 윈속 종료
 	WSACleanup();
 	return 0;
