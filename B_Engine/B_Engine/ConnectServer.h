@@ -28,6 +28,10 @@ DWORD WINAPI Add_Cube_Object_From_Server(LPVOID arg); // 큐브 생성 스레드
 
 CObject* Get_m_pServerObjects();		// 서버로 부터 받은 오브젝트 Geter
 
+//
+bool Get_Con();
+void Set_Con(bool bNew_Con);
+
 struct KeyInput
 {
 	int key;

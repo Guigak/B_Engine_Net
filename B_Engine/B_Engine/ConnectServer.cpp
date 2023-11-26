@@ -1,7 +1,7 @@
 #include "ConnectServer.h"
 #include "Common.h"
 
-#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+//#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 
 #define SERVERPORT			9000
 #define KEYINPUTSERVERPORT	9001
@@ -19,6 +19,17 @@ int PlayerNumber{};
 
 CObject* m_pSeverObjects = NULL;
 CObject* Get_m_pServerObjects() { return m_pSeverObjects; }
+
+//
+bool bConnected = false;
+
+bool Get_Con() {
+	return bConnected;
+}
+
+void Set_Con(bool bNew_Con) {
+	bConnected = bNew_Con;
+}
 
 bool Connect_To_Server(char* sServer_IP)
 {
