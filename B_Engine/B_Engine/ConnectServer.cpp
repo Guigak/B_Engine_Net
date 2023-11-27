@@ -25,6 +25,8 @@ void Release_m_pServerObjects() { m_pSeverObjects = NULL; }
 bool Get_AddorDelete_Cube() { return AddorDelete; }
 void Release_AddorDelete_Cube() { AddorDelete = NULL; }
 
+DirectX::XMFLOAT3 Player_Cube_Color;
+DirectX::XMFLOAT3 Get_Player_Cube_Color() { return Player_Cube_Color; }
 
 //
 bool bConnected = false;
@@ -65,7 +67,7 @@ bool Connect_To_Server(char* sServer_IP)
 	// PlayerNumber 받기
 	int playerNumber{};
 	recv(sock, (char*)&playerNumber, sizeof(playerNumber), 0);
-	SetPlayerNumber(playerNumber);
+	SetPlayerNumberAndColor(playerNumber);
 
 }
 
@@ -194,9 +196,22 @@ SOCKET GetSendLookVectorSocket()
 }
 
 
-void SetPlayerNumber(int pn)
+void SetPlayerNumberAndColor(int pn)
 {
 	PlayerNumber = pn;
+	switch (pn % 3)
+	{
+	case 0:
+		Player_Cube_Color = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);	// player 1 cube - red
+		return;
+	case 1:
+		Player_Cube_Color = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);	// player 2 cube - green
+		return;
+	case 2:
+		Player_Cube_Color = DirectX::XMFLOAT3(0.0f, 0.0f, 1.0f);	// player 3 cube - blue
+		return;
+
+	}
 }
 int GetPlayerNumber()
 {
@@ -234,7 +249,7 @@ DWORD WINAPI Get_Time(LPVOID arg)
 }
 
 
-DWORD WINAPI Add_Cube_Object_From_Server(LPVOID arg)
+DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg)
 {
 	int retval = 0;
 	struct Cube_Info CubeInput;
@@ -251,8 +266,10 @@ DWORD WINAPI Add_Cube_Object_From_Server(LPVOID arg)
 		m_pSeverObjects->Set_Position(CubeInput.fPosition_x, CubeInput.fPosition_y, CubeInput.fPosition_z);
 		m_pSeverObjects->Set_Color(CubeInput.fColor_r, CubeInput.fColor_g, CubeInput.fColor_b, 0.0f);
 		AddorDelete = CubeInput.AddorDelete;
-		printf("입력받은 큐브 정보 위치 : %.2f, %.2f, %.2f\n", CubeInput.fPosition_x, CubeInput.fPosition_y, CubeInput.fPosition_z);
+
 		printf("**큐브 %s**\n", AddorDelete ? "설치" : "삭제");
+		printf("입력받은 큐브 정보 위치 : %.2f, %.2f, %.2f\n", CubeInput.fPosition_x, CubeInput.fPosition_y, CubeInput.fPosition_z);
+		printf("입력받은 큐브 정보  색 : %.2f, %.2f, %.2f\n", CubeInput.fColor_r, CubeInput.fColor_g, CubeInput.fColor_b);
 	}
 	
 

@@ -290,7 +290,7 @@ void Prcs_Console_Cmd() {
             HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);
 
             // Cube Input 스레드 생성
-            HANDLE hThread2 = CreateThread(NULL, 0, Add_Cube_Object_From_Server, NULL, 0, NULL);
+            HANDLE hThread2 = CreateThread(NULL, 0, Get_Cube_Object_From_Server, NULL, 0, NULL);
 
             //
             Set_Con(true);
