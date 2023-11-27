@@ -446,8 +446,8 @@ void CFramework::Adavance_Frame() {
 	// 플레이어 위치 동기화
 	GetAllPlayerData(m_pPlayer);
 
-	// 받은 박스 정보 설치
-	m_pScene->Add_Cube_Object_4_Server(Get_m_pServerObjects());
+	// 받은 박스 정보 설치 및 삭제
+	m_pScene->Check_Cube_Object_4_Server(Get_m_pServerObjects());
 
 	Prcs_Input();
 	Anim_Objects();

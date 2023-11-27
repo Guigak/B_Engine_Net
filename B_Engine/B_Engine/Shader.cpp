@@ -535,7 +535,7 @@ void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, 
 		//m_ppObjects[m_nObjects++] = pObject;
 
 		// 피킹된 곳의 설치될 큐브 정보 보내기 + 플레이어 당 큐브 색 추가해야 됌
-		struct Cube_Info cube(xmf3_Position.x, xmf3_Position.y, xmf3_Position.z, 0.5f, 0.0f, 0.0f);
+		struct Cube_Info cube(xmf3_Position.x, xmf3_Position.y, xmf3_Position.z, 0.5f, 0.0f, 0.0f, true);
 		send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
 	}
 }
@@ -543,6 +543,8 @@ void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, 
 void CInstancing_Shader::Add_Cube_Object_Server(CObject* pObject)
 {
 	m_ppObjects[m_nObjects++] = pObject;
+	Release_m_pServerObjects();
+	Release_AddorDelete_Cube();
 }
 
 void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {
@@ -567,6 +569,41 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 			return;
 		}
 
+		// 피킹된 곳의 삭제될 큐브 정보 보내기 + 플레이어 당 큐브 색 추가해야 됌
+		struct Cube_Info cube(m_ppObjects[nSelected_Index]->Get_Position().x, m_ppObjects[nSelected_Index]->Get_Position().y, m_ppObjects[nSelected_Index]->Get_Position().z, 0.5f, 0.0f, 0.0f, false);
+		send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
+
+		// 기존 삭제 코드 제거
+		/*m_ppObjects[nSelected_Index]->Release();
+		m_ppObjects[nSelected_Index] = NULL;
+
+		if (nSelected_Index != m_nObjects - 1) {
+			m_ppObjects[nSelected_Index] = m_ppObjects[m_nObjects - 1];
+		}
+
+		--m_nObjects;*/
+	}
+}
+
+void CInstancing_Shader::Delete_Cube_Object_Server(CObject* pObject)
+{
+	int nIntersected = 0;
+	CObject* pSelected_Object = NULL;
+	int nSelected_Index = 0;
+
+
+	for (int i = 0; i < m_nObjects; ++i) {
+		if (CompareXMFLOAT3(m_ppObjects[i]->Get_Position(), pObject->Get_Position())) {
+			pSelected_Object = m_ppObjects[i];
+			nSelected_Index = i;
+		}
+	}
+
+	if (pSelected_Object) {
+		if (nSelected_Index < (CUBE_INIT_RING_NUMBER * 2 + 1) * (CUBE_INIT_RING_NUMBER * 2 + 1)) {
+			return;
+		}
+
 		m_ppObjects[nSelected_Index]->Release();
 		m_ppObjects[nSelected_Index] = NULL;
 
@@ -576,6 +613,8 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 
 		--m_nObjects;
 	}
+	Release_m_pServerObjects();
+	Release_AddorDelete_Cube();
 }
 
 void CInstancing_Shader::Prepare_Render_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List) {

@@ -60,6 +60,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // TODO: 여기에 코드를 입력합니다.
 
     // TODO: 테스트용 나중에 지우기, 2019180031 - 서버에 연결
+    // 127.0.0.1    - local host
+    // 25.55.51.203 - 윤석's ip
     Connect_To_Server((char*)("127.0.0.1"));
     CreateKeyInputServerSocket((char*)("127.0.0.1"));
     CreateCubeServerSocket((char*)("127.0.0.1"));

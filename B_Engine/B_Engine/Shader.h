@@ -69,6 +69,10 @@ public:
 
 	virtual void Prepare_Render(ID3D12GraphicsCommandList* pd3d_Command_List);
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
+
+	bool CompareXMFLOAT3(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b) {
+		return (a.x == b.x && a.y == b.y && a.z == b.z);
+	}
 };
 
 class CDiffused_Shader : public CShader {
@@ -113,9 +117,12 @@ public :
 
 	//
 	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {};
-	//++ 서버용 add cube
-	virtual void Add_Cube_Object_Server(CObject* pObject) {};
+	
 	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {};
+
+	//++ 서버용 Add and Delete cube
+	virtual void Add_Cube_Object_Server(CObject* pObject) {};
+	virtual void Delete_Cube_Object_Server(CObject* pObject) {};
 
 	//
 	CObject** Get_Objects() { return m_ppObjects; };
@@ -146,9 +153,12 @@ public :
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
 
 	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
+	
+	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
+
 	//++ 서버용 add cube
 	virtual void Add_Cube_Object_Server(CObject* pObject);
-	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
+	virtual void Delete_Cube_Object_Server(CObject* pObject);
 
 	// for bounding box
 	virtual void Prepare_Render_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List);

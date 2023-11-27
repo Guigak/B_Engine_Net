@@ -18,7 +18,13 @@ SOCKET SendLookVectorSocket;
 int PlayerNumber{};
 
 CObject* m_pSeverObjects = NULL;
+bool AddorDelete = NULL;
+
 CObject* Get_m_pServerObjects() { return m_pSeverObjects; }
+void Release_m_pServerObjects() { m_pSeverObjects = NULL; }
+bool Get_AddorDelete_Cube() { return AddorDelete; }
+void Release_AddorDelete_Cube() { AddorDelete = NULL; }
+
 
 bool Connect_To_Server(char* sServer_IP)
 {
@@ -233,8 +239,9 @@ DWORD WINAPI Add_Cube_Object_From_Server(LPVOID arg)
 		m_pSeverObjects = new CObject();
 		m_pSeverObjects->Set_Position(CubeInput.fPosition_x, CubeInput.fPosition_y, CubeInput.fPosition_z);
 		m_pSeverObjects->Set_Color(CubeInput.fColor_r, CubeInput.fColor_g, CubeInput.fColor_b, 0.0f);
-
+		AddorDelete = CubeInput.AddorDelete;
 		printf("입력받은 큐브 정보 위치 : %.2f, %.2f, %.2f\n", CubeInput.fPosition_x, CubeInput.fPosition_y, CubeInput.fPosition_z);
+		printf("**큐브 %s**\n", AddorDelete ? "설치" : "삭제");
 	}
 	
 

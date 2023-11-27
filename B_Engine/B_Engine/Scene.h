@@ -50,8 +50,10 @@ public :
 	CObject** Get_Objects_From_Shader(int nShader_Index);
 	int Get_Object_Num_From_Shader(int nShader_Index);
 
-	void Add_Cube_Object_4_Server(CObject* pObject);
+
 	//Server
+	void Check_Cube_Object_4_Server(CObject* pObject);
+
 public:
 	void GetAllPlayerData(CPlayer* m_pPlayer);
 };
