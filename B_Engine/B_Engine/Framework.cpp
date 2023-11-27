@@ -416,7 +416,9 @@ void CFramework::Prcs_Input() {
 			}
 		}
 		if (dwDirection) {
-			//m_pPlayer->Move(dwDirection, PLAYER_MOVE_DISTANCE * m_Timer.Get_Elapsed_Time(), true);
+			if (!Get_Con()) {
+				m_pPlayer->Move(dwDirection, PLAYER_MOVE_DISTANCE * m_Timer.Get_Elapsed_Time(), true);
+			}
 		}
 	}
 
@@ -439,15 +441,17 @@ void CFramework::Anim_Objects() {
 void CFramework::Adavance_Frame() {
 	m_Timer.Tick(30.0f);
 
-	// RecvMyLookVectorToServer
-	RecvMyLookVectorToServer();
+	if (Get_Con()) {
+		// RecvMyLookVectorToServer
+		RecvMyLookVectorToServer();
 
-	// GetAllPlayerData
-	// 플레이어 위치 동기화
-	GetAllPlayerData(m_pPlayer);
+		// GetAllPlayerData
+		// 플레이어 위치 동기화
+		GetAllPlayerData(m_pPlayer);
 
-	// 받은 박스 정보 설치 및 삭제
-	m_pScene->Check_Cube_Object_4_Server(Get_m_pServerObjects());
+		// 받은 박스 정보 설치 및 삭제
+		m_pScene->Check_Cube_Object_4_Server(Get_m_pServerObjects());
+	}
 
 	Prcs_Input();
 	Anim_Objects();

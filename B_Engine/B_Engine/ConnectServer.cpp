@@ -1,7 +1,7 @@
 #include "ConnectServer.h"
 #include "Common.h"
 
-#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+//#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 
 #define SERVERPORT			9000
 #define KEYINPUTSERVERPORT	9001
@@ -25,6 +25,17 @@ void Release_m_pServerObjects() { m_pSeverObjects = NULL; }
 bool Get_AddorDelete_Cube() { return AddorDelete; }
 void Release_AddorDelete_Cube() { AddorDelete = NULL; }
 
+
+//
+bool bConnected = false;
+
+bool Get_Con() {
+	return bConnected;
+}
+
+void Set_Con(bool bNew_Con) {
+	bConnected = bNew_Con;
+}
 
 bool Connect_To_Server(char* sServer_IP)
 {

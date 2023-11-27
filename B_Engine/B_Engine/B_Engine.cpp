@@ -59,21 +59,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // TODO: 여기에 코드를 입력합니다.
 
-    // TODO: 테스트용 나중에 지우기, 2019180031 - 서버에 연결
-    // 127.0.0.1    - local host
-    // 25.55.51.203 - 윤석's ip
-    Connect_To_Server((char*)("127.0.0.1"));
-    CreateKeyInputServerSocket((char*)("127.0.0.1"));
-    CreateCubeServerSocket((char*)("127.0.0.1"));
-    CreateRecvPlayerDataSocket((char*)"127.0.0.1");
-    CreateSendLookVectorSocket((char*)"127.0.0.1");
-
-    // 시간 스레드 생성
-    HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);
-
-    // Cube Input 스레드 생성
-    HANDLE hThread2 = CreateThread(NULL, 0, Add_Cube_Object_From_Server, NULL, 0, NULL);
-
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_BENGINE, szWindowClass, MAX_LOADSTRING);
@@ -285,11 +270,31 @@ void Prcs_Console_Cmd() {
 
     while (1) {
         printf("\n커맨드를 입력해주세요.\n");
+        printf("서버 연결 - connect\n");
         printf("커맨드 창 종료 - exit\n");
         printf("프로그램 종료 - quit\n");
 
         scanf_s("%s", cmd, (int)sizeof(cmd));
 
+        if (!strcmp(cmd, "connect")) {
+            // TODO: 테스트용 나중에 지우기, 2019180031 - 서버에 연결
+            // 127.0.0.1    - local host
+            // 25.55.51.203 - 윤석's hamachi ip
+            Connect_To_Server((char*)("127.0.0.1"));
+            CreateKeyInputServerSocket((char*)("127.0.0.1"));
+            CreateCubeServerSocket((char*)("127.0.0.1"));
+            CreateRecvPlayerDataSocket((char*)"127.0.0.1");
+            CreateSendLookVectorSocket((char*)"127.0.0.1");
+
+            // 시간 스레드 생성
+            HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);
+
+            // Cube Input 스레드 생성
+            HANDLE hThread2 = CreateThread(NULL, 0, Add_Cube_Object_From_Server, NULL, 0, NULL);
+
+            //
+            Set_Con(true);
+        }
         if (!strcmp(cmd, "exit")) {
             g_bConsole = false;
             break;

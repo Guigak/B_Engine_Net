@@ -27,12 +27,13 @@ DWORD WINAPI Get_Time(LPVOID arg);		// 시간값 받는 루프
 DWORD WINAPI Add_Cube_Object_From_Server(LPVOID arg); // 큐브 생성 스레드
 
 CObject* Get_m_pServerObjects();		// 서버로 부터 받은 오브젝트 Geter
-
 void Release_m_pServerObjects();		// 생성후 전달 받은 오브젝트 제거
-
 bool Get_AddorDelete_Cube();			// 설치 삭제 bool getter
+void Release_AddorDelete_Cube();		// AddorDelete release
 
-void Release_AddorDelete_Cube();
+//
+bool Get_Con();
+void Set_Con(bool bNew_Con);
 
 struct KeyInput
 {
