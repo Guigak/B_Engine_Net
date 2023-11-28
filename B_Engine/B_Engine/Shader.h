@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "Object.h"
 #include "Camera.h"
-#include "ConnectServer.h"
 //
 
 struct CB_GAMEOBJECT_INFO {

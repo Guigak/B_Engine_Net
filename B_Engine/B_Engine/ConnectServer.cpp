@@ -17,19 +17,10 @@ SOCKET RecvPlayerDataSocket;
 SOCKET SendLookVectorSocket;
 int PlayerNumber{};
 
-//CObject* m_pServerObject = NULL;
-//
-//bool AddorDelete = NULL;
-
-//CObject* Get_m_pServerObject() { return m_pServerObject; }
-//void Release_m_pServerObjects() { m_pServerObject = NULL; }
-
 std::vector<Cube_Info> m_vServerObjects;
 std::vector<Cube_Info> Get_m_vServerObjects() { return m_vServerObjects; }
 void Release_m_vServerObjects() { m_vServerObjects.clear(); }
 
-//bool Get_AddorDelete_Cube() { return AddorDelete; }
-//void Release_AddorDelete_Cube() { AddorDelete = NULL; }
 
 DirectX::XMFLOAT3 Player_Cube_Color;
 DirectX::XMFLOAT3 Get_Player_Cube_Color() { return Player_Cube_Color; }

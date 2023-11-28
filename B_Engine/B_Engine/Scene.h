@@ -3,7 +3,6 @@
 #include "Timer.h"
 #include "Shader.h"
 #include "Object.h"
-#include "ConnectServer.h"
 
 class CScene {
 protected :

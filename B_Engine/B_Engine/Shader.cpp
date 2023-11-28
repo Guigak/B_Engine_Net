@@ -548,8 +548,6 @@ void CInstancing_Shader::Add_Cube_Object_Server(Cube_Info pObject)
 	pTmpObject->Set_Position(pObject.fPosition_x, pObject.fPosition_y, pObject.fPosition_z);
 	pTmpObject->Set_Color(pObject.fColor_r, pObject.fColor_g, pObject.fColor_b, 0.0f);
 	m_ppObjects[m_nObjects++] = pTmpObject;
-	//Release_m_pServerObjects();
-	//Release_AddorDelete_Cube();
 }
 
 void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {

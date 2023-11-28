@@ -101,6 +101,8 @@ using Microsoft::WRL::ComPtr;
 #define VK_D 0x44
 
 // IP data
+// 127.0.0.1    - local host
+// 25.55.51.203 - 윤석's hamachi ip
 #define IP_ADDRESS "25.55.51.203"
 
 // 임시로 여기에다 두었다.
