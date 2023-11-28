@@ -528,11 +528,14 @@ void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, 
 			break;
 		}
 
-		//CObject* pObject = NULL;
-		//pObject = new CObject();
-		//pObject->Set_Position(xmf3_Position);
-		//pObject->Set_Color(0.5f, 0.0f, 0.0f, 0.0f);
-		//m_ppObjects[m_nObjects++] = pObject;
+		// 기존 설치 연결 안됐을시
+		if (!Get_Con()) {
+			CObject* pObject = NULL;
+			pObject = new CObject();
+			pObject->Set_Position(xmf3_Position);
+			pObject->Set_Color(0.5f, 0.0f, 0.0f, 0.0f);
+			m_ppObjects[m_nObjects++] = pObject;
+		}
 
 		// 피킹된 곳의 설치될 큐브 정보 보내기 + 플레이어 당 큐브 색 추가해야 됌
 		DirectX::XMFLOAT3 xmf3Color = Get_Player_Cube_Color();
@@ -579,15 +582,16 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 			false);
 		send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
 
-		// 기존 삭제 코드 제거
-		/*m_ppObjects[nSelected_Index]->Release();
-		m_ppObjects[nSelected_Index] = NULL;
+		// 기존 설치 연결 안됐을시
+		if (!Get_Con()) {
+			m_ppObjects[nSelected_Index]->Release();
+			m_ppObjects[nSelected_Index] = NULL;
 
-		if (nSelected_Index != m_nObjects - 1) {
-			m_ppObjects[nSelected_Index] = m_ppObjects[m_nObjects - 1];
+			if (nSelected_Index != m_nObjects - 1) {
+				m_ppObjects[nSelected_Index] = m_ppObjects[m_nObjects - 1];
+			}
+			--m_nObjects;
 		}
-
-		--m_nObjects;*/
 	}
 }
 

@@ -196,6 +196,7 @@ SOCKET GetSendLookVectorSocket()
 void SetPlayerNumberAndColor(int pn)
 {
 	PlayerNumber = pn;
+	// 여기에 clear 넣어주세용
 	switch (pn % 3)
 	{
 	case 0:
