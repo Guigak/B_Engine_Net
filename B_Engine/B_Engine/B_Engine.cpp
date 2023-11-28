@@ -14,11 +14,23 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름�
 bool g_bConsole = false;
 bool g_bActive = true;
 
+HWND hWnd;
+
+#define CHAT_BOX_WIDTH 500
+#define CHAT_BOX_HEIGHT 300
+HWND childHWND;
+bool ShowChatBox = false;
+bool PressingReturn = false;
+std::string InputString = "";
+void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg);
+
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
+
+LRESULT CALLBACK ChildProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 // Framework
 CFramework gFramework;
@@ -62,13 +74,45 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_BENGINE, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
+    //MyRegisterClass(hInstance);
+    WNDCLASSEXW wcex;
+
+    wcex.cbSize = sizeof(WNDCLASSEX);
+
+    wcex.style = CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc = WndProc;
+    wcex.cbClsExtra = 0;
+    wcex.cbWndExtra = 0;
+    wcex.hInstance = hInstance;
+    wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_BENGINE));
+    wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    //wcex.lpszMenuName   = MAKEINTRESOURCEW(IDC_BENGINE);
+    wcex.lpszMenuName = NULL;
+    wcex.lpszClassName = szWindowClass;
+    wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+
+    RegisterClassExW(&wcex);
+
+
+    // TODO: ChildWindow 만들고서 생성하기
+    
+    wcex.hCursor = LoadCursor(NULL, IDC_CROSS);
+    wcex.lpfnWndProc = ChildProc;
+    wcex.lpszClassName = TEXT("ChildCls");
+    wcex.hbrBackground = (HBRUSH)GetStockObject(LTGRAY_BRUSH);
+    RegisterClassExW(&wcex);
+
+
+    
+
 
     // 애플리케이션 초기화를 수행합니다:
     if (!InitInstance (hInstance, nCmdShow))
     {
         return FALSE;
     }
+
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_BENGINE));
 
@@ -123,6 +167,8 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hIconSm        = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
     return RegisterClassExW(&wcex);
+
+
 }
 
 //
@@ -144,7 +190,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    RECT rcWnd = { 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
    AdjustWindowRect(&rcWnd, dwStyle, FALSE);
 
-   HWND hWnd = CreateWindowW(szWindowClass, szTitle, dwStyle,
+	hWnd = CreateWindowW(szWindowClass, szTitle, dwStyle,
       CW_USEDEFAULT, CW_USEDEFAULT, rcWnd.right - rcWnd.left, rcWnd.bottom - rcWnd.top, nullptr, nullptr, hInstance, nullptr);
 
    if (!hWnd)
@@ -174,10 +220,29 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - 종료 메시지를 게시하고 반환합니다.
 //
 //
+#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
+    case WM_CREATE:
+	    {
+        RECT rect;
+        GetWindowRect(hWnd, &rect);
+        childHWND = CreateWindow(TEXT("ChildCls"), NULL, WS_POPUP | WS_VISIBLE,
+            rect.left + 10, rect.bottom - CHAT_BOX_HEIGHT-10, CHAT_BOX_WIDTH, CHAT_BOX_HEIGHT, hWnd, (HMENU)NULL, hInst, NULL);
+        ShowWindow(childHWND, SW_HIDE);
+	    }
+        
+        break;
+    case WM_MOVE:
+	    {
+        RECT rect;
+        GetWindowRect(hWnd, &rect);
+        SetWindowPos(childHWND, HWND_TOPMOST, rect.left + 10, rect.bottom - CHAT_BOX_HEIGHT - 10, CHAT_BOX_WIDTH, CHAT_BOX_HEIGHT, NULL);
+	    }
+        
+        break;
     case WM_COMMAND:
         {
             int wmId = LOWORD(wParam);
@@ -225,6 +290,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             g_bConsole = true;
         }
+
+
+        SetChatBoxOpenClose(wParam, message);
 
         gFramework.Prcs_Msg_Wnd(hWnd, message, wParam, lParam);
         break;
@@ -305,4 +373,103 @@ void Prcs_Console_Cmd() {
             break;
         }
     }
+}
+
+HDC hdc;
+HDC memdc;
+HBRUSH blackBrush, whiteBrush;
+LRESULT CALLBACK ChildProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    //if (!ShowChatBox) return DefWindowProc(hWnd, uMsg, wParam, lParam);
+    PAINTSTRUCT ps;
+    
+    switch (uMsg) {
+    case WM_CREATE:
+        blackBrush = CreateSolidBrush(RGB(50, 50, 50));
+        whiteBrush = CreateSolidBrush(RGB(245, 245, 245));
+        break;
+    case WM_PAINT:
+	    {
+			hdc = BeginPaint(hWnd, &ps);
+            SelectObject(hdc, whiteBrush);
+            RECT inputrect = { 0,CHAT_BOX_HEIGHT - 30,CHAT_BOX_WIDTH,CHAT_BOX_HEIGHT };
+            FillRect(hdc, &inputrect, whiteBrush);
+			TextOutA(hdc,10,CHAT_BOX_HEIGHT-20, InputString.c_str(), InputString.size());
+
+            SelectObject(hdc, blackBrush);
+            RECT outputrect = { 0,0,CHAT_BOX_WIDTH,CHAT_BOX_HEIGHT-30 };
+            FillRect(hdc, &outputrect, blackBrush);
+            
+            
+    		EndPaint(hWnd, &ps);
+	    }
+        
+        break;
+    case WM_KEYDOWN:
+	    {
+            if(wParam==VK_BACK)
+            {
+	            if(!InputString.empty())
+	            {
+                    InputString.pop_back();
+	            }
+            }else
+            {
+                if(wParam!=VK_RETURN&&wParam!=229 && wParam!=190)//엔터, 한영키
+                {
+                    if (wParam == ' ') InputString.push_back(' ');
+                    char c = (char)wParam;
+                    if(isalnum(c))
+                    {
+                        if (isalpha(c)) c += ('a' - 'A');
+                        InputString.push_back(c);
+                    }
+                }
+            }
+	    }
+        SetChatBoxOpenClose(wParam, uMsg);
+        break;
+    case WM_KEYUP:
+        SetChatBoxOpenClose(wParam, uMsg);
+        InvalidateRect(hWnd, NULL, true);
+        break;
+    case WM_DESTROY:
+        DeleteObject(blackBrush);
+        DeleteObject(whiteBrush);
+        PostQuitMessage(0);
+        break;
+    }
+    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg)
+{
+    if (wParam == VK_RETURN)
+    {
+        if (uMsg == WM_KEYDOWN)
+        {
+            if (!PressingReturn)
+            {
+                if (!ShowChatBox)
+                {
+                    ShowWindow(childHWND, SW_SHOW);
+                    ShowChatBox = true;
+                }
+                else
+                {
+                    //엔터키 다시 눌러서 채팅창 닫기
+                    ShowWindow(childHWND, SW_HIDE);
+                    ShowChatBox = false;
+
+                    InputString.clear();
+                }
+                PressingReturn = true;
+            }
+        }
+        else
+        {
+            PressingReturn = false;
+        }
+    }
+    SendMessage(childHWND, WM_PAINT, NULL, NULL);
 }
