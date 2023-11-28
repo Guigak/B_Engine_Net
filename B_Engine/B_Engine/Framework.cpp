@@ -730,6 +730,10 @@ void CFramework::Chk_Collision_Player_N_Cube() {
 	m_pPlayer->Udt_N_Prcs_Collision(ppCube_Objects, nObjects);
 }
 
+void CFramework::Clr_Cube_Objects() {
+	m_pScene->Clr_Cube_Objects();
+}
+
 void CFramework::RecvMyLookVectorToServer()
 {
 	if(m_pCamera)

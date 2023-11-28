@@ -589,6 +589,19 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 	}
 }
 
+void CInstancing_Shader::Clr_Cube_Objects() {
+	int nDefault_Objects = (CUBE_INIT_RING_NUMBER * 2 + 1) * (CUBE_INIT_RING_NUMBER * 2 + 1);
+
+	for (int i = nDefault_Objects; i < m_nObjects; ++i) {
+		if (m_ppObjects[i]) {
+			m_ppObjects[i]->Release();
+			m_ppObjects[i] = NULL;
+		}
+	}
+
+	m_nObjects = nDefault_Objects;
+}
+
 void CInstancing_Shader::Delete_Cube_Object_Server(CObject* pObject)
 {
 	int nIntersected = 0;

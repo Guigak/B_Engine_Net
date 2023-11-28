@@ -159,6 +159,10 @@ void CScene::Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera) {
 	m_ppShaders[0]->Add_Cube_Object(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
 }
 
+void CScene::Clr_Cube_Objects() {
+	((CInstancing_Shader*)m_ppShaders[0])->Clr_Cube_Objects();
+}
+
 void CScene::Check_Cube_Object_4_Server(CObject* pObject)
 {
 	if (pObject)

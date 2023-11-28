@@ -156,6 +156,8 @@ public :
 	
 	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
 
+	void Clr_Cube_Objects();
+
 	//++ ¼­¹ö¿ë add cube
 	virtual void Add_Cube_Object_Server(CObject* pObject);
 	virtual void Delete_Cube_Object_Server(CObject* pObject);
