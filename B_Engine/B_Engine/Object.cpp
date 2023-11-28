@@ -131,6 +131,14 @@ void CObject::Set_Look_xz(float x, float z)
 {
 	m_xmf4x4_World._31 = x;
 	m_xmf4x4_World._33 = z;
+
+	DirectX::XMFLOAT3 xmf3_Look = Get_Look();
+	DirectX::XMFLOAT3 xmf3_Up = Get_Up();
+	DirectX::XMFLOAT3 xmf3_Right = Vector3::Cross_Product(xmf3_Up, xmf3_Look, true);
+	
+	m_xmf4x4_World._11 = xmf3_Right.x;
+	m_xmf4x4_World._12 = xmf3_Right.y;
+	m_xmf4x4_World._13 = xmf3_Right.z;
 }
 
 DirectX::XMFLOAT3 CObject::Get_Up() {
