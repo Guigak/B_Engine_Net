@@ -439,7 +439,7 @@ void CFramework::Anim_Objects() {
 
 //#define _WITH_PLAYER_TOP
 void CFramework::Adavance_Frame() {
-	m_Timer.Tick(30.0f);
+	m_Timer.Tick(100.0f);
 
 	if (Get_Con()) {
 		// RecvMyLookVectorToServer
