@@ -450,7 +450,7 @@ void CFramework::Adavance_Frame() {
 		GetAllPlayerData(m_pPlayer);
 
 		// 받은 박스 정보 설치 및 삭제
-		m_pScene->Check_Cube_Object_4_Server(Get_m_pServerObjects());
+		m_pScene->Check_Cube_Object_4_Server(Get_m_vServerObjects());
 	}
 
 	Prcs_Input();
@@ -728,6 +728,10 @@ void CFramework::Chk_Collision_Player_N_Cube() {
 	}
 	
 	m_pPlayer->Udt_N_Prcs_Collision(ppCube_Objects, nObjects);
+}
+
+void CFramework::Clr_Cube_Objects() {
+	m_pScene->Clr_Cube_Objects();
 }
 
 void CFramework::RecvMyLookVectorToServer()

@@ -123,6 +123,9 @@ public :
 public :
 	void Chk_Collision_Player_N_Cube();
 
+	// about cube
+	void Clr_Cube_Objects();
+
 	//Server
 public:
 	void RecvMyLookVectorToServer();

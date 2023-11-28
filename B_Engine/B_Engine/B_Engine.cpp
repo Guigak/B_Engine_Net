@@ -339,6 +339,7 @@ void Prcs_Console_Cmd() {
     while (1) {
         printf("\n커맨드를 입력해주세요.\n");
         printf("서버 연결 - connect\n");
+        printf("큐브 클리어 - clear");
         printf("커맨드 창 종료 - exit\n");
         printf("프로그램 종료 - quit\n");
 
@@ -346,13 +347,12 @@ void Prcs_Console_Cmd() {
 
         if (!strcmp(cmd, "connect")) {
             // TODO: 테스트용 나중에 지우기, 2019180031 - 서버에 연결
-            // 127.0.0.1    - local host
-            // 25.55.51.203 - 윤석's hamachi ip
-            Connect_To_Server((char*)("127.0.0.1"));
-            CreateKeyInputServerSocket((char*)("127.0.0.1"));
-            CreateCubeServerSocket((char*)("127.0.0.1"));
-            CreateRecvPlayerDataSocket((char*)"127.0.0.1");
-            CreateSendLookVectorSocket((char*)"127.0.0.1");
+            
+            Connect_To_Server(IP_ADDRESS);
+            CreateKeyInputServerSocket(IP_ADDRESS);
+            CreateCubeServerSocket(IP_ADDRESS);
+            CreateRecvPlayerDataSocket(IP_ADDRESS);
+            CreateSendLookVectorSocket(IP_ADDRESS);
 
             // 시간 스레드 생성
             HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);
@@ -363,7 +363,10 @@ void Prcs_Console_Cmd() {
             //
             Set_Con(true);
         }
-        if (!strcmp(cmd, "exit")) {
+        else if (!strcmp(cmd, "clear")) {
+            gFramework.Clr_Cube_Objects();
+        }
+        else if (!strcmp(cmd, "exit")) {
             g_bConsole = false;
             break;
         }

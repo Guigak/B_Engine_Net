@@ -47,12 +47,14 @@ public :
 	void Delete_Cube_Object(int Client_x, int Client_y, CCamera* pCamera);
 	void Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera);
 
+	void Clr_Cube_Objects();
+
 	CObject** Get_Objects_From_Shader(int nShader_Index);
 	int Get_Object_Num_From_Shader(int nShader_Index);
 
 
 	//Server
-	void Check_Cube_Object_4_Server(CObject* pObject);
+	void Check_Cube_Object_4_Server(std::vector<Cube_Info> pObject);
 
 public:
 	void GetAllPlayerData(CPlayer* m_pPlayer);

@@ -528,11 +528,14 @@ void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, 
 			break;
 		}
 
-		//CObject* pObject = NULL;
-		//pObject = new CObject();
-		//pObject->Set_Position(xmf3_Position);
-		//pObject->Set_Color(0.5f, 0.0f, 0.0f, 0.0f);
-		//m_ppObjects[m_nObjects++] = pObject;
+		// 기존 설치 연결 안됐을시
+		if (!Get_Con()) {
+			CObject* pObject = NULL;
+			pObject = new CObject();
+			pObject->Set_Position(xmf3_Position);
+			pObject->Set_Color(0.5f, 0.0f, 0.0f, 0.0f);
+			m_ppObjects[m_nObjects++] = pObject;
+		}
 
 		// 피킹된 곳의 설치될 큐브 정보 보내기 + 플레이어 당 큐브 색 추가해야 됌
 		DirectX::XMFLOAT3 xmf3Color = Get_Player_Cube_Color();
@@ -541,11 +544,13 @@ void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, 
 	}
 }
 
-void CInstancing_Shader::Add_Cube_Object_Server(CObject* pObject)
+void CInstancing_Shader::Add_Cube_Object_Server(Cube_Info pObject)
 {
-	m_ppObjects[m_nObjects++] = pObject;
-	Release_m_pServerObjects();
-	Release_AddorDelete_Cube();
+	CObject* pTmpObject = NULL;
+	pTmpObject = new CObject();
+	pTmpObject->Set_Position(pObject.fPosition_x, pObject.fPosition_y, pObject.fPosition_z);
+	pTmpObject->Set_Color(pObject.fColor_r, pObject.fColor_g, pObject.fColor_b, 0.0f);
+	m_ppObjects[m_nObjects++] = pTmpObject;
 }
 
 void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {
@@ -577,19 +582,33 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 			false);
 		send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
 
-		// 기존 삭제 코드 제거
-		/*m_ppObjects[nSelected_Index]->Release();
-		m_ppObjects[nSelected_Index] = NULL;
+		// 기존 설치 연결 안됐을시
+		if (!Get_Con()) {
+			m_ppObjects[nSelected_Index]->Release();
+			m_ppObjects[nSelected_Index] = NULL;
 
-		if (nSelected_Index != m_nObjects - 1) {
-			m_ppObjects[nSelected_Index] = m_ppObjects[m_nObjects - 1];
+			if (nSelected_Index != m_nObjects - 1) {
+				m_ppObjects[nSelected_Index] = m_ppObjects[m_nObjects - 1];
+			}
+			--m_nObjects;
 		}
-
-		--m_nObjects;*/
 	}
 }
 
-void CInstancing_Shader::Delete_Cube_Object_Server(CObject* pObject)
+void CInstancing_Shader::Clr_Cube_Objects() {
+	int nDefault_Objects = (CUBE_INIT_RING_NUMBER * 2 + 1) * (CUBE_INIT_RING_NUMBER * 2 + 1);
+
+	for (int i = nDefault_Objects; i < m_nObjects; ++i) {
+		if (m_ppObjects[i]) {
+			m_ppObjects[i]->Release();
+			m_ppObjects[i] = NULL;
+		}
+	}
+
+	m_nObjects = nDefault_Objects;
+}
+
+void CInstancing_Shader::Delete_Cube_Object_Server(Cube_Info pObject)
 {
 	int nIntersected = 0;
 	CObject* pSelected_Object = NULL;
@@ -597,7 +616,8 @@ void CInstancing_Shader::Delete_Cube_Object_Server(CObject* pObject)
 
 
 	for (int i = 0; i < m_nObjects; ++i) {
-		if (CompareXMFLOAT3(m_ppObjects[i]->Get_Position(), pObject->Get_Position())) {
+		if (CompareXMFLOAT3(m_ppObjects[i]->Get_Position(), DirectX::XMFLOAT3(pObject.fPosition_x, pObject.fPosition_y, pObject.fPosition_z)) )
+		{
 			pSelected_Object = m_ppObjects[i];
 			nSelected_Index = i;
 		}
@@ -617,8 +637,6 @@ void CInstancing_Shader::Delete_Cube_Object_Server(CObject* pObject)
 
 		--m_nObjects;
 	}
-	Release_m_pServerObjects();
-	Release_AddorDelete_Cube();
 }
 
 void CInstancing_Shader::Prepare_Render_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List) {
