@@ -279,13 +279,12 @@ void Prcs_Console_Cmd() {
 
         if (!strcmp(cmd, "connect")) {
             // TODO: 테스트용 나중에 지우기, 2019180031 - 서버에 연결
-            // 127.0.0.1    - local host
-            // 25.55.51.203 - 윤석's hamachi ip
-            Connect_To_Server((char*)("127.0.0.1"));
-            CreateKeyInputServerSocket((char*)("127.0.0.1"));
-            CreateCubeServerSocket((char*)("127.0.0.1"));
-            CreateRecvPlayerDataSocket((char*)"127.0.0.1");
-            CreateSendLookVectorSocket((char*)"127.0.0.1");
+            
+            Connect_To_Server(IP_ADDRESS);
+            CreateKeyInputServerSocket(IP_ADDRESS);
+            CreateCubeServerSocket(IP_ADDRESS);
+            CreateRecvPlayerDataSocket(IP_ADDRESS);
+            CreateSendLookVectorSocket(IP_ADDRESS);
 
             // 시간 스레드 생성
             HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);

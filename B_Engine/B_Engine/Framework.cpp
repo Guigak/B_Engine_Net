@@ -450,7 +450,7 @@ void CFramework::Adavance_Frame() {
 		GetAllPlayerData(m_pPlayer);
 
 		// 받은 박스 정보 설치 및 삭제
-		m_pScene->Check_Cube_Object_4_Server(Get_m_pServerObjects());
+		m_pScene->Check_Cube_Object_4_Server(Get_m_vServerObjects());
 	}
 
 	Prcs_Input();

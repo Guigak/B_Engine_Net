@@ -163,22 +163,25 @@ void CScene::Clr_Cube_Objects() {
 	((CInstancing_Shader*)m_ppShaders[0])->Clr_Cube_Objects();
 }
 
-void CScene::Check_Cube_Object_4_Server(CObject* pObject)
+void CScene::Check_Cube_Object_4_Server(std::vector<Cube_Info> pObject)
 {
-	if (pObject)
+	if (!pObject.empty())
 	{
-		if (Get_AddorDelete_Cube()) 
-		{
-			m_ppShaders[0]->Add_Cube_Object_Server(pObject);
-		}
-
-		else
-		{
-			for (int i = 0; i < m_nShaders; ++i) 
+		for (auto p : pObject) {
+			if (p.AddorDelete)
 			{
-				m_ppShaders[i]->Delete_Cube_Object_Server(pObject);
+				m_ppShaders[0]->Add_Cube_Object_Server(p);
+			}
+
+			else
+			{
+				for (int i = 0; i < m_nShaders; ++i)
+				{
+					m_ppShaders[i]->Delete_Cube_Object_Server(p);
+				}
 			}
 		}
+		Release_m_vServerObjects();
 	}
 }
 

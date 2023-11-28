@@ -54,7 +54,7 @@ public :
 
 
 	//Server
-	void Check_Cube_Object_4_Server(CObject* pObject);
+	void Check_Cube_Object_4_Server(std::vector<Cube_Info> pObject);
 
 public:
 	void GetAllPlayerData(CPlayer* m_pPlayer);

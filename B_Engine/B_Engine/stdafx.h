@@ -100,6 +100,19 @@ using Microsoft::WRL::ComPtr;
 #define VK_S 0x53
 #define VK_D 0x44
 
+// IP data
+// 127.0.0.1    - local host
+// 25.55.51.203 - 윤석's hamachi ip
+#define IP_ADDRESS "25.55.51.203"
+
+// 임시로 여기에다 두었다.
+struct Cube_Info {
+	float fPosition_x, fPosition_y, fPosition_z;
+	float fColor_r, fColor_g, fColor_b;
+	bool AddorDelete;
+};
+
+
 // fullscreen default
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
