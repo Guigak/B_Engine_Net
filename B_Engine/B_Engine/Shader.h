@@ -3,7 +3,7 @@
 #include "stdafx.h"
 #include "Object.h"
 #include "Camera.h"
-
+#include "ConnectServer.h"
 //
 
 struct CB_GAMEOBJECT_INFO {
@@ -121,8 +121,8 @@ public :
 	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {};
 
 	//++ 서버용 Add and Delete cube
-	virtual void Add_Cube_Object_Server(CObject* pObject) {};
-	virtual void Delete_Cube_Object_Server(CObject* pObject) {};
+	virtual void Add_Cube_Object_Server(Cube_Info pObject) {};
+	virtual void Delete_Cube_Object_Server(Cube_Info pObject) {};
 
 	//
 	CObject** Get_Objects() { return m_ppObjects; };
@@ -157,8 +157,8 @@ public :
 	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
 
 	//++ 서버용 add cube
-	virtual void Add_Cube_Object_Server(CObject* pObject);
-	virtual void Delete_Cube_Object_Server(CObject* pObject);
+	virtual void Add_Cube_Object_Server(Cube_Info pObject);
+	virtual void Delete_Cube_Object_Server(Cube_Info pObject);
 
 	// for bounding box
 	virtual void Prepare_Render_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List);

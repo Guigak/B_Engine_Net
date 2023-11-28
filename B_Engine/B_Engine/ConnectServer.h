@@ -26,10 +26,10 @@ void SetPlayerBuffer(DWORD key, bool bSet);
 DWORD WINAPI Get_Time(LPVOID arg);		// 시간값 받는 루프
 DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg); // 큐브 생성 스레드
 
-CObject* Get_m_pServerObjects();		// 서버로 부터 받은 오브젝트 Geter
-void Release_m_pServerObjects();		// 생성후 전달 받은 오브젝트 제거
-bool Get_AddorDelete_Cube();			// 설치 삭제 bool getter
-void Release_AddorDelete_Cube();		// AddorDelete release
+// 서버로 부터 받은 오브젝트 Getter
+std::vector<Cube_Info> Get_m_vServerObjects();
+// 서버로 부터 받은 오브젝트 Release
+void Release_m_vServerObjects();
 
 DirectX::XMFLOAT3 Get_Player_Cube_Color();	// send 하기위한 cube_color getter
 
@@ -50,14 +50,10 @@ struct Player_Info
 	float fLook_x, fLook_z;
 };
 
-struct Cube_Info {
-	float fPosition_x, fPosition_y, fPosition_z;
-	float fColor_r, fColor_g, fColor_b;
-	bool AddorDelete;
-};
 
 struct Look_Data
 {
 	int PlayerNumber;
 	float fLook_x, fLook_z;
 };
+

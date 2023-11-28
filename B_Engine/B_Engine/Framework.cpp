@@ -439,7 +439,7 @@ void CFramework::Anim_Objects() {
 
 //#define _WITH_PLAYER_TOP
 void CFramework::Adavance_Frame() {
-	m_Timer.Tick(30.0f);
+	m_Timer.Tick(100.0f);
 
 	if (Get_Con()) {
 		// RecvMyLookVectorToServer
@@ -450,7 +450,7 @@ void CFramework::Adavance_Frame() {
 		GetAllPlayerData(m_pPlayer);
 
 		// 받은 박스 정보 설치 및 삭제
-		m_pScene->Check_Cube_Object_4_Server(Get_m_pServerObjects());
+		m_pScene->Check_Cube_Object_4_Server(Get_m_vServerObjects());
 	}
 
 	Prcs_Input();

@@ -17,13 +17,19 @@ SOCKET RecvPlayerDataSocket;
 SOCKET SendLookVectorSocket;
 int PlayerNumber{};
 
-CObject* m_pSeverObjects = NULL;
-bool AddorDelete = NULL;
+//CObject* m_pServerObject = NULL;
+//
+//bool AddorDelete = NULL;
 
-CObject* Get_m_pServerObjects() { return m_pSeverObjects; }
-void Release_m_pServerObjects() { m_pSeverObjects = NULL; }
-bool Get_AddorDelete_Cube() { return AddorDelete; }
-void Release_AddorDelete_Cube() { AddorDelete = NULL; }
+//CObject* Get_m_pServerObject() { return m_pServerObject; }
+//void Release_m_pServerObjects() { m_pServerObject = NULL; }
+
+std::vector<Cube_Info> m_vServerObjects;
+std::vector<Cube_Info> Get_m_vServerObjects() { return m_vServerObjects; }
+void Release_m_vServerObjects() { m_vServerObjects.clear(); }
+
+//bool Get_AddorDelete_Cube() { return AddorDelete; }
+//void Release_AddorDelete_Cube() { AddorDelete = NULL; }
 
 DirectX::XMFLOAT3 Player_Cube_Color;
 DirectX::XMFLOAT3 Get_Player_Cube_Color() { return Player_Cube_Color; }
@@ -262,17 +268,13 @@ DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg)
 		else if (retval == 0)
 			break;
 
-		m_pSeverObjects = new CObject();
-		m_pSeverObjects->Set_Position(CubeInput.fPosition_x, CubeInput.fPosition_y, CubeInput.fPosition_z);
-		m_pSeverObjects->Set_Color(CubeInput.fColor_r, CubeInput.fColor_g, CubeInput.fColor_b, 0.0f);
-		AddorDelete = CubeInput.AddorDelete;
+		m_vServerObjects.push_back(CubeInput);
 
-		printf("**큐브 %s**\n", AddorDelete ? "설치" : "삭제");
+		printf("**큐브 %s**\n", CubeInput.AddorDelete ? "설치" : "삭제");
 		printf("입력받은 큐브 정보 위치 : %.2f, %.2f, %.2f\n", CubeInput.fPosition_x, CubeInput.fPosition_y, CubeInput.fPosition_z);
 		printf("입력받은 큐브 정보  색 : %.2f, %.2f, %.2f\n", CubeInput.fColor_r, CubeInput.fColor_g, CubeInput.fColor_b);
 	}
 	
-
 	// 소켓 닫기
 	closesocket(CubeSocket);
 	// 윈속 종료
