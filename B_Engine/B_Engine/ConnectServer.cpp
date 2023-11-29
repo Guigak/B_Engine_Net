@@ -36,7 +36,7 @@ void Set_Con(bool bNew_Con) {
 	bConnected = bNew_Con;
 }
 
-bool Connect_To_Server(char* sServer_IP)
+bool Connect_To_Server(const char* sServer_IP)
 {
 	// 家南 汲沥
 	WSADATA wsa;
@@ -70,7 +70,7 @@ bool Connect_To_Server(char* sServer_IP)
 
 SOCKET GetKeyInputSocket() { return KeyInputSocket; }
 
-void CreateKeyInputServerSocket(char* sServer_IP)
+void CreateKeyInputServerSocket(const char* sServer_IP)
 {
 	// 家南 汲沥
 	WSADATA wsa;
@@ -98,7 +98,7 @@ void CreateKeyInputServerSocket(char* sServer_IP)
 	}
 }
 
-void CreateCubeServerSocket(char* sServer_IP)
+void CreateCubeServerSocket(const char* sServer_IP)
 {
 	// 家南 汲沥
 	WSADATA wsa;
@@ -128,7 +128,7 @@ void CreateCubeServerSocket(char* sServer_IP)
 
 SOCKET GetCubeSocket() { return CubeSocket; };
 
-void CreateRecvPlayerDataSocket(char* sServer_IP)
+void CreateRecvPlayerDataSocket(const char* sServer_IP)
 {
 	// 家南 汲沥
 	WSADATA wsa;
@@ -159,7 +159,7 @@ void CreateRecvPlayerDataSocket(char* sServer_IP)
 
 SOCKET GetRecvPlayerSocket() { return RecvPlayerDataSocket; }
 
-void CreateSendLookVectorSocket(char* sServer_IP)
+void CreateSendLookVectorSocket(const char* sServer_IP)
 {
 	// 家南 汲沥
 	WSADATA wsa;
