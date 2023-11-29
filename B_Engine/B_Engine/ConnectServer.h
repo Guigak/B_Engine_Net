@@ -33,6 +33,10 @@ void Release_m_vServerObjects();
 
 DirectX::XMFLOAT3 Get_Player_Cube_Color();	// send 하기위한 cube_color getter
 
+// 채팅 박스 getter / setter
+bool GetShowChatBox();
+void SetShowChatBox(bool bSet);
+
 //
 bool Get_Con();
 void Set_Con(bool bNew_Con);

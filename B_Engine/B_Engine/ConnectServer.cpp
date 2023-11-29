@@ -273,3 +273,8 @@ DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg)
 	WSACleanup();
 	return 0;
 }
+
+
+bool ShowChatBox = false;
+bool GetShowChatBox() { return ShowChatBox; }
+void SetShowChatBox(bool bSet) { ShowChatBox = bSet; }

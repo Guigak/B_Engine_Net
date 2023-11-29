@@ -19,7 +19,6 @@ HWND hWnd;
 #define CHAT_BOX_WIDTH 500
 #define CHAT_BOX_HEIGHT 300
 HWND childHWND;
-bool ShowChatBox = false;
 bool PressingReturn = false;
 std::string InputString = "";
 void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg);
@@ -453,16 +452,16 @@ void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg)
         {
             if (!PressingReturn)
             {
-                if (!ShowChatBox)
+                if (!GetShowChatBox())
                 {
                     ShowWindow(childHWND, SW_SHOW);
-                    ShowChatBox = true;
+                    SetShowChatBox(true);
                 }
                 else
                 {
                     //엔터키 다시 눌러서 채팅창 닫기
                     ShowWindow(childHWND, SW_HIDE);
-                    ShowChatBox = false;
+                    SetShowChatBox(false);
 
                     InputString.clear();
                 }

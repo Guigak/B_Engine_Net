@@ -416,7 +416,7 @@ void CFramework::Prcs_Input() {
 			}
 		}
 		if (dwDirection) {
-			if (!Get_Con()) {
+			if (!Get_Con() && !GetShowChatBox()) {
 				m_pPlayer->Move(dwDirection, PLAYER_MOVE_DISTANCE * m_Timer.Get_Elapsed_Time(), true);
 			}
 		}
@@ -451,9 +451,13 @@ void CFramework::Adavance_Frame() {
 
 		// 받은 박스 정보 설치 및 삭제
 		m_pScene->Check_Cube_Object_4_Server(Get_m_vServerObjects());
+	}else
+	{
+		Prcs_Input();
 	}
 
-	Prcs_Input();
+
+	
 	Anim_Objects();
 
 	HRESULT hResult = m_pd3d_Command_Allocator->Reset();
@@ -565,7 +569,7 @@ void CFramework::Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM l
 }
 
 void CFramework::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam) {
-	if((nMsg_ID==WM_KEYDOWN&&!GetPlayerBuffer(wParam)) || (nMsg_ID==WM_KEYUP&&GetPlayerBuffer(wParam)))
+	if(((nMsg_ID==WM_KEYDOWN&&!GetPlayerBuffer(wParam)) || (nMsg_ID==WM_KEYUP&&GetPlayerBuffer(wParam))) && !GetShowChatBox())
 	{
 		KeyInput senddata;
 		if (nMsg_ID == WM_KEYDOWN)
