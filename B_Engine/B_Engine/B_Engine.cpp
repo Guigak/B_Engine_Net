@@ -222,7 +222,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //  WM_DESTROY  - 종료 메시지를 게시하고 반환합니다.
 //
 //
-#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -404,9 +404,6 @@ LRESULT CALLBACK ChildProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     		SelectObject(hdc, blackBrush);
             RECT outputrect = { 0,0,CHAT_BOX_WIDTH,CHAT_BOX_HEIGHT-30 };
             FillRect(hdc, &outputrect, blackBrush);
-            std::string test= "abc 123 /.\"";
-            RECT testrect{ 10,CHAT_BOX_HEIGHT - 70,CHAT_BOX_WIDTH,CHAT_BOX_HEIGHT - 40 };
-            DrawTextA(hdc, test.c_str(), test.size(), &testrect, DT_LEFT| DT_VCENTER);
             
     		EndPaint(hWnd, &ps);
 	    }
