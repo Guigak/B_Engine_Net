@@ -1,5 +1,7 @@
 #include "ConnectServer.h"
 #include "Common.h"
+#include <array>
+#include <algorithm>
 
 //#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 
@@ -238,7 +240,25 @@ DWORD WINAPI Get_Time(LPVOID arg)
 		else if (retval == 0)
 			break;
 	}
-	
+
+	std::array<int, PLAYER_MAX_NUMBER> player_cube_count;
+	if(now_time == 0)
+	{
+		retval = recv(sock, (char*)&player_cube_count, sizeof(int) * PLAYER_MAX_NUMBER, MSG_WAITALL);
+	}
+
+	auto max_player_cube = std::max_element(player_cube_count.begin(),player_cube_count.end());
+	int winner_player_number = std::distance(player_cube_count.begin(), max_player_cube);
+	if( winner_player_number == GetPlayerNumber())
+	{
+		MessageBoxA(hWnd, "승리했습니다.", "승리!", MB_OK);
+	}
+	else
+	{
+		std::string s = "패배했습니다. 승리자는 " + std::to_string(winner_player_number) + "입니다.";
+		MessageBoxA(hWnd, s.c_str(), "패배!", MB_OK);
+	}
+
 	// 소켓 닫기
 	closesocket(sock);
 	// 윈속 종료

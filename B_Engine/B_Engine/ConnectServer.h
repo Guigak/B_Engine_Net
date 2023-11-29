@@ -6,6 +6,8 @@
 
 #define CHATMAXBUFFER 30
 
+extern HWND hWnd;
+
 bool Connect_To_Server(const char* sServer_IP);
 void CreateKeyInputServerSocket(const char* sServer_IP);
 void CreateCubeServerSocket(const char* sServer_IP);
