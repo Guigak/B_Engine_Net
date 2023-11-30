@@ -4,7 +4,7 @@
 #include "Shader.h"
 #include <vector>
 
-#define CHATMAXBUFFER 30
+#define CHATMAXBUFFER 40
 
 extern HWND hWnd;
 

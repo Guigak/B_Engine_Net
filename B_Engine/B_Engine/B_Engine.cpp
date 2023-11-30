@@ -27,13 +27,21 @@ HWND hWnd;
 class ChatString
 {
 public:
-    ChatString(){}
+    ChatString() {}
     ~ChatString(){}
-    ChatString(int pn, std::string cd) { playerNumber = pn; chatData = cd; };
+    ChatString(int pn, std::string cd)
+    {
+        playerNumber = pn;
+        for (int i = 0; i < cd.size(); ++i)
+        {
+            chatData[i] = cd[i];
+        }
+        chatData[cd.size()] = '\0';
+    };
 public:
-    int playerNumber;       // -1 -> 커맨드 채팅, 0 -> 0번 플레이어, 1 -> 1번 플레이어,
+    int playerNumber{};       // -1 -> 커맨드 채팅, 0 -> 0번 플레이어, 1 -> 1번 플레이어,
 	                        // 2  -> 2번 플레이어, ..., MAX_PLAYER_COUNT-> 오프라인시 채팅
-    std::string chatData;
+    char chatData[CHATMAXBUFFER + 1]{0,};
 };
 HWND childHWND;
 bool PressingReturn = false;
@@ -453,9 +461,13 @@ LRESULT CALLBACK ChildProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     case PLAYER_MAX_NUMBER:
                         text_color = RGB(0,0,0);
                         break;
+                    default:
+                        text_color = RGB(0, 255, 255);
+                        break;
                     }
                     SetTextColor(hdc, text_color);
-                	DrawTextA(hdc, (plist->chatData).c_str(),plist->chatData.size(), &outputrect, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+                    std::string cd = plist->chatData;
+                	DrawTextA(hdc, cd.c_str(),cd.size(), &outputrect, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
                     
                     outputrect.top -= 30;
                     outputrect.bottom -= 30;
@@ -479,7 +491,7 @@ LRESULT CALLBACK ChildProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	            }
             }else
             {
-                if(wParam!=VK_RETURN&&wParam!=229 && wParam!=229 && InputString.size()<= CHATMAXBUFFER)//엔터, 한영키
+                if(wParam!=VK_RETURN&&wParam!=229 && wParam!=229 && InputString.size()<= CHATMAXBUFFER-10)//엔터, 한영키
                 {
                     
                     if (wParam == ' ') InputString.push_back(' ');
@@ -557,7 +569,12 @@ void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg)
                             {
                                 ChatString chatdata;
                                 chatdata.playerNumber = GetPlayerNumber();
-                                chatdata.chatData = std::string("[")+std::to_string(GetPlayerNumber())+std::string("] - ")+ InputString;
+                                std::string tempstring = std::string("[") + std::to_string(GetPlayerNumber()) + std::string("] - ") + InputString;
+                                for(int i=0; i<tempstring.size(); ++i)
+                                {
+                                    chatdata.chatData[i] = tempstring[i];
+                                }
+                                chatdata.chatData[tempstring.size()] = '\0';
                                 int retval = send(GetChatDataSocket(), (char*)&chatdata, sizeof(ChatString), 0);
                                 if(retval==INVALID_SOCKET)
                                 {
@@ -668,12 +685,11 @@ DWORD WINAPI RecvChatData(LPVOID arg)
 {
     int retval = 0;
     ChatString chatdata;
+
     while (1) {
         retval = recv(GetChatDataSocket(), (char*)&chatdata, sizeof(ChatString), MSG_WAITALL);
         if (retval == INVALID_SOCKET)
         {
-            chatdata.playerNumber = -1;
-            chatdata.chatData = std::string();
             DisconnectServer();
             return -1;
         }
