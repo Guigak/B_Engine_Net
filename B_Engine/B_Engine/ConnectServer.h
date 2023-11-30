@@ -4,11 +4,15 @@
 #include "Shader.h"
 #include <vector>
 
-bool Connect_To_Server(char* sServer_IP);
-void CreateKeyInputServerSocket(char* sServer_IP);
-void CreateCubeServerSocket(char* sServer_IP);
-void CreateRecvPlayerDataSocket(char* sServer_IP);
-void CreateSendLookVectorSocket(char* sServer_IP);
+#define CHATMAXBUFFER 30
+
+extern HWND hWnd;
+
+bool Connect_To_Server(const char* sServer_IP);
+void CreateKeyInputServerSocket(const char* sServer_IP);
+void CreateCubeServerSocket(const char* sServer_IP);
+void CreateRecvPlayerDataSocket(const char* sServer_IP);
+void CreateSendLookVectorSocket(const char* sServer_IP);
 
 
 // 소켓 Getter
@@ -32,6 +36,10 @@ std::vector<Cube_Info> Get_m_vServerObjects();
 void Release_m_vServerObjects();
 
 DirectX::XMFLOAT3 Get_Player_Cube_Color();	// send 하기위한 cube_color getter
+
+// 채팅 박스 getter / setter
+bool GetShowChatBox();
+void SetShowChatBox(bool bSet);
 
 //
 bool Get_Con();
