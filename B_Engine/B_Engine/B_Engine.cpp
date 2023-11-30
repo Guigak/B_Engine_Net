@@ -352,7 +352,6 @@ void Prcs_Console_Cmd() {
             CreateKeyInputServerSocket(IP_ADDRESS);
             CreateCubeServerSocket(IP_ADDRESS);
             CreateRecvPlayerDataSocket(IP_ADDRESS);
-            CreateSendLookVectorSocket(IP_ADDRESS);
 
             // 시간 스레드 생성
             HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);
@@ -488,7 +487,6 @@ void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg)
                                 CreateKeyInputServerSocket(words[1].c_str());
                                 CreateCubeServerSocket(words[1].c_str());
                                 CreateRecvPlayerDataSocket(words[1].c_str());
-                                CreateSendLookVectorSocket(words[1].c_str());
 
                                 // 시간 스레드 생성
                                 HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);

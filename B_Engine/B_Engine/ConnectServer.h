@@ -12,14 +12,12 @@ bool Connect_To_Server(const char* sServer_IP);
 void CreateKeyInputServerSocket(const char* sServer_IP);
 void CreateCubeServerSocket(const char* sServer_IP);
 void CreateRecvPlayerDataSocket(const char* sServer_IP);
-void CreateSendLookVectorSocket(const char* sServer_IP);
 
 
 // ╪рдо Getter
 SOCKET GetKeyInputSocket();
 SOCKET GetCubeSocket();
 SOCKET GetRecvPlayerSocket();
-SOCKET GetSendLookVectorSocket();
 
 void SetPlayerNumberAndColor(int pn);
 int GetPlayerNumber();
