@@ -38,6 +38,9 @@ protected :
 	//
 	DirectX::XMFLOAT3 m_xmf3_Calculated_Vel;
 
+	//
+	bool m_bAble_2_Jump = false;
+
 public :
 	CPlayer();
 	virtual ~CPlayer();

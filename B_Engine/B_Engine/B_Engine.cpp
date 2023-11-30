@@ -271,7 +271,7 @@ void Prcs_Console_Cmd() {
     while (1) {
         printf("\n커맨드를 입력해주세요.\n");
         printf("서버 연결 - connect\n");
-        printf("큐브 클리어 - clear");
+        printf("큐브 클리어 - clear\n");
         printf("커맨드 창 종료 - exit\n");
         printf("프로그램 종료 - quit\n");
 

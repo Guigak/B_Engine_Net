@@ -48,12 +48,17 @@ void CPlayer::Move(ULONG dwDirection, float fDistance, bool bVelocity) {
 			xmf3_Shift = Vector3::Add(xmf3_Shift, m_xmf3_Right, -fDistance);
 		}
 
-		if (dwDirection & DIRECT_UP) {
-			xmf3_Shift = Vector3::Add(xmf3_Shift, m_xmf3_Up, fDistance);
+		if (m_bAble_2_Jump) {
+			if (dwDirection & DIRECT_UP) {
+				m_xmf3_Velocity.y = 0.0f;
+				xmf3_Shift = Vector3::Add(xmf3_Shift, m_xmf3_Up, fDistance * CUBE_WIDTH * 1.5f);
+			}
+
+			m_bAble_2_Jump = false;
 		}
-		if (dwDirection & DIRECT_DOWN) {
-			xmf3_Shift = Vector3::Add(xmf3_Shift, m_xmf3_Up, -fDistance);
-		}
+		//if (dwDirection & DIRECT_DOWN) {
+		//	xmf3_Shift = Vector3::Add(xmf3_Shift, m_xmf3_Up, -fDistance);
+		//}
 
 		Move(xmf3_Shift, bVelocity);
 	}
@@ -229,12 +234,19 @@ void CPlayer::Update(float fElapsed_Time) {
 	float fMax_Gravity = m_fMax_Gravity * fElapsed_Time;
 	fLength = sqrtf(m_xmf3_Velocity.y * m_xmf3_Velocity.y);
 
-	if (fLength > m_fMax_Gravity) {
+	if (fLength > m_fMax_Gravity && m_xmf3_Velocity.y < 0.0f) {
 		m_xmf3_Velocity.y *= (m_fMax_Gravity / fLength);
 	}
 
 	m_xmf3_Calculated_Vel = Vector3::Multiply(m_xmf3_Velocity, fElapsed_Time, false);
 	//Move(xmf3_Velocity, false);
+
+	//
+	//if (!m_bAble_2_Jump) {
+	//	char str[100] = "";
+	//	sprintf(str, "%.5f\t%.5f\t%.5f\n", m_xmf3_Calculated_Vel.x, m_xmf3_Calculated_Vel.y, m_xmf3_Calculated_Vel.z);
+	//	OutputDebugStringA(str);
+	//}
 
 	if (m_pPlayer_Udt_Context) {
 		Player_Udt_Callback(fElapsed_Time);
@@ -256,6 +268,7 @@ void CPlayer::Update(float fElapsed_Time) {
 
 	m_pCamera->Regenerate_View_Matrix();
 
+	//fLength = Vector3::Length(DirectX::XMFLOAT3(m_xmf3_Velocity.x, 0.0f, m_xmf3_Velocity.z));
 	fLength = Vector3::Length(m_xmf3_Velocity);
 	float fDeceleration = m_fFriction * fElapsed_Time;
 
@@ -266,8 +279,16 @@ void CPlayer::Update(float fElapsed_Time) {
 	//
 	DirectX::XMFLOAT3 xmf3_Friction = Vector3::Add(m_xmf3_Velocity, Vector3::Multiply(m_xmf3_Velocity, -fDeceleration, true));
 
-	m_xmf3_Velocity.x = xmf3_Friction.x;
-	m_xmf3_Velocity.z = xmf3_Friction.z;
+	//if (!m_bAble_2_Jump) {
+	//	char str[100] = "";
+	//	sprintf(str, "%.5f\t%.5f\t%.5f\n", xmf3_Friction.x, xmf3_Friction.y, xmf3_Friction.z);
+	//	OutputDebugStringA(str);
+	//}
+
+	if (m_bAble_2_Jump) {
+		m_xmf3_Velocity.x = xmf3_Friction.x;
+		m_xmf3_Velocity.z = xmf3_Friction.z;
+	}
 
 	Prepare_Render();
 }
@@ -444,6 +465,8 @@ void CPlayer::Udt_N_Prcs_Collision(CObject** ppObject, int nObjects) {
 
 			if (m_xmf3_Calculated_Vel.y < 0) {
 				m_xmf4x4_World._42 = m_xmf3_Position.y = xmf3_Object_Position.y + CUBE_WIDTH / 2 + PLAYER_HEIGHT / 2 + PLAYER_COLLISION_OFFSET;
+
+				m_bAble_2_Jump = true;
 			}
 			else {
 				m_xmf4x4_World._42 = m_xmf3_Position.y = xmf3_Object_Position.y - CUBE_WIDTH / 2 - PLAYER_HEIGHT / 2 - PLAYER_COLLISION_OFFSET;
