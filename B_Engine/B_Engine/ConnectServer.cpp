@@ -65,7 +65,12 @@ bool Connect_To_Server(const char* sServer_IP)
 
 	// PlayerNumber 받기
 	int playerNumber{};
-	recv(sock, (char*)&playerNumber, sizeof(playerNumber), 0);
+	retval = recv(sock, (char*)&playerNumber, sizeof(playerNumber), 0);
+	if (retval == INVALID_SOCKET)
+	{
+		DisconnectServer();
+		return false;
+	}
 	SetPlayerNumberAndColor(playerNumber);
 
 }
@@ -200,9 +205,10 @@ DWORD WINAPI Get_Time(LPVOID arg)
 	int retval = 0;
 	while (1) {
 		retval = recv(sock, (char*)&now_time, sizeof(int), MSG_WAITALL);
-		if (retval == SOCKET_ERROR) {
-			err_display("Time recv()");
-			break;
+		if (retval == INVALID_SOCKET)
+		{
+			DisconnectServer();
+			return -1;
 		}
 		else if (retval == 0)
 			break;
@@ -212,6 +218,11 @@ DWORD WINAPI Get_Time(LPVOID arg)
 	if(now_time == 0)
 	{
 		retval = recv(sock, (char*)&player_cube_count, sizeof(int) * PLAYER_MAX_NUMBER, MSG_WAITALL);
+		if (retval == INVALID_SOCKET)
+		{
+			DisconnectServer();
+			return -1;
+		}
 	}
 
 	auto max_player_cube = std::max_element(player_cube_count.begin(),player_cube_count.end());
@@ -240,9 +251,10 @@ DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg)
 	struct Cube_Info CubeInput;
 	while (1) {
 		retval = recv(CubeSocket, (char*)&CubeInput, sizeof(Cube_Info), MSG_WAITALL);
-		if (retval == SOCKET_ERROR) {
-			err_display("Cube_Infor recv()");
-			break;
+		if (retval == INVALID_SOCKET)
+		{
+			DisconnectServer();
+			return -1;
 		}
 		else if (retval == 0)
 			break;
@@ -297,3 +309,25 @@ void CreateChatDataSocket(const char* sServer_IP)
 bool ShowChatBox = false;
 bool GetShowChatBox() { return ShowChatBox; }
 void SetShowChatBox(bool bSet) { ShowChatBox = bSet; }
+void AddLastChatData(int playerNumber, std::string);
+void ClearCube();
+bool checkCRITICAL;
+void DisconnectServer()
+{
+	if(Get_Con() &&!checkCRITICAL)
+	{
+		checkCRITICAL = true;
+		if (ChatDataSocket != INVALID_SOCKET) closesocket(ChatDataSocket);
+		if (KeyInputSocket != INVALID_SOCKET) closesocket(KeyInputSocket);
+		if (CubeSocket != INVALID_SOCKET) closesocket(CubeSocket);
+		if (sock != INVALID_SOCKET) closesocket(sock);
+		if (RecvPlayerDataSocket != INVALID_SOCKET) closesocket(RecvPlayerDataSocket);
+
+		Set_Con(false);
+
+		ClearCube();
+		AddLastChatData(-1, std::string{"[시스템] 서버와의 연결이 끊어졌습니다."});
+		checkCRITICAL = false;
+	}
+	
+}

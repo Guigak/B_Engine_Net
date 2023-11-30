@@ -577,7 +577,12 @@ void CFramework::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARA
 		}
 		senddata.key = (int)wParam;
 		senddata.PlayerNumber = GetPlayerNumber();
-		send(GetKeyInputSocket(), (const char*)&senddata, sizeof(senddata), 0);
+		int retval = send(GetKeyInputSocket(), (const char*)&senddata, sizeof(senddata), 0);
+		if (retval == INVALID_SOCKET)
+		{
+			DisconnectServer();
+			return;
+		}
 	}
 	switch (nMsg_ID) {
 	case WM_KEYUP :
@@ -741,7 +746,12 @@ void CFramework::GetPlayerDataAndSendLook(CPlayer* m_pPlayer)
 		data.PlayerNumber = GetPlayerNumber();
 		data.fLook_x = m_pPlayer->Get_Look().x;
 		data.fLook_z = m_pPlayer->Get_Look().z;
-		send(GetRecvPlayerSocket(), (char*)&data, sizeof(struct Look_Data), 0);
+		int retval = send(GetRecvPlayerSocket(), (char*)&data, sizeof(struct Look_Data), 0);
+		if (retval == INVALID_SOCKET)
+		{
+			DisconnectServer();
+			return;
+		}
 	}
 	if(m_pScene)
 	{

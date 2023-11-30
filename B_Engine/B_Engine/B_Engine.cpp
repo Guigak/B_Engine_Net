@@ -558,7 +558,12 @@ void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg)
                                 ChatString chatdata;
                                 chatdata.playerNumber = GetPlayerNumber();
                                 chatdata.chatData = std::string("[")+std::to_string(GetPlayerNumber())+std::string("] - ")+ InputString;
-                                send(GetChatDataSocket(), (char*)&chatdata, sizeof(ChatString), 0);
+                                int retval = send(GetChatDataSocket(), (char*)&chatdata, sizeof(ChatString), 0);
+                                if(retval==INVALID_SOCKET)
+                                {
+                                    DisconnectServer();
+                                    return;
+                                }
                             }
                             else 
                                 AddLastChatData(PLAYER_MAX_NUMBER, InputString);
@@ -576,7 +581,12 @@ void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg)
     }
     InvalidateRect(childHWND, NULL, true);
 }
-
+void ClearCube()
+{
+    gFramework.Clr_Cube_Objects();
+    std::string cd = std::string("[시스템] \"") + std::string("모든 블럭을 초기화 하였습니다.");
+    AddLastChatData(-1, cd);
+}
 void DoCommandAction()
 {
     InputString = { InputString.begin() + 1, InputString.end() };
@@ -620,9 +630,7 @@ void DoCommandAction()
         
     }
     else if (words[0] == "clear") {
-        gFramework.Clr_Cube_Objects();
-        std::string cd = std::string("[시스템] \"") + std::string("모든 블럭을 초기화 하였습니다.");
-        AddLastChatData(-1, cd);
+        ClearCube();
     }
     else if (words[0] == "exit") {
         g_bConsole = false;
@@ -662,9 +670,12 @@ DWORD WINAPI RecvChatData(LPVOID arg)
     ChatString chatdata;
     while (1) {
         retval = recv(GetChatDataSocket(), (char*)&chatdata, sizeof(ChatString), MSG_WAITALL);
-        if(retval==INVALID_SOCKET)
+        if (retval == INVALID_SOCKET)
         {
-            break;
+            chatdata.playerNumber = -1;
+            chatdata.chatData = std::string();
+            DisconnectServer();
+            return -1;
         }
         AddLastChatData(chatdata.playerNumber, chatdata.chatData);
         InvalidateRect(childHWND, NULL, true);

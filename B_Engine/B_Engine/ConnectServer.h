@@ -44,6 +44,8 @@ void SetShowChatBox(bool bSet);
 bool Get_Con();
 void Set_Con(bool bNew_Con);
 
+void DisconnectServer();
+
 struct KeyInput
 {
 	int key;
