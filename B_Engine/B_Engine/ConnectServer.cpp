@@ -9,14 +9,14 @@
 #define KEYINPUTSERVERPORT	9001
 #define CUBESERVERPORT		9002
 #define RECVPLAYERDATAPORT	9003
-#define SENDLOOKVECTORPORT  9004
+#define CHATDATAPORT  9004
 
 int now_time = 500;
 SOCKET KeyInputSocket;
 SOCKET CubeSocket;
 SOCKET sock;
 SOCKET RecvPlayerDataSocket;
-SOCKET SendLookVectorSocket;
+SOCKET ChatDataSocket;
 int PlayerNumber{};
 
 std::vector<Cube_Info> m_vServerObjects;
@@ -59,7 +59,7 @@ bool Connect_To_Server(const char* sServer_IP)
 	serverAddr.sin_port = htons(SERVERPORT);
 	int retval = connect(sock, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
 	if (retval == SOCKET_ERROR) {
-		err_quit("connect Fail - Connect_To_ServeR(char)");
+		//적절치 않은 서버, 연결하지 못하게 해야함
 		return false;
 	}
 
@@ -260,6 +260,38 @@ DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg)
 	WSACleanup();
 	return 0;
 }
+
+SOCKET GetChatDataSocket() { return ChatDataSocket; }
+
+void CreateChatDataSocket(const char* sServer_IP)
+{
+	// 소켓 설정
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		return;
+
+	ChatDataSocket = socket(AF_INET, SOCK_STREAM, 0);
+	if (ChatDataSocket == INVALID_SOCKET) {
+		printf("Socket Fail - CreateChatDataSocket(char*)");
+		err_quit("Socket Fail - CreateChatDataSocket(char*)");
+		return;
+	}
+
+	//서버에 연결
+	struct sockaddr_in serverAddr;
+	memset(&serverAddr, 0, sizeof(serverAddr));
+	serverAddr.sin_family = AF_INET;
+	inet_pton(AF_INET, sServer_IP, &serverAddr.sin_addr);
+	serverAddr.sin_port = htons(CHATDATAPORT);
+	int retval = connect(ChatDataSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
+	if (retval == SOCKET_ERROR) {
+		printf("connect Fail - CreateChatDataSocket(char)");
+		err_quit("connect Fail - CreateChatDataSocket(char)");
+		return;
+	}
+}
+
+
 
 
 bool ShowChatBox = false;
