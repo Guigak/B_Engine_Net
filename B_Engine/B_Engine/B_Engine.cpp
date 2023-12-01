@@ -513,6 +513,7 @@ LRESULT CALLBACK ChildProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         InvalidateRect(hWnd, NULL, true);
         break;
     case WM_KEYUP:
+        if (wParam == VK_ESCAPE) PostQuitMessage(0);
         SetChatBoxOpenClose(wParam, uMsg);
         InvalidateRect(hWnd, NULL, true);
         break;
