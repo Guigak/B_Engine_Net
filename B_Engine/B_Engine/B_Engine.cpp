@@ -623,6 +623,7 @@ void DoCommandAction()
         bool bCanConnect = Connect_To_Server(words[1].c_str());
         if(bCanConnect)
         {
+            ClearCube();
             CreateKeyInputServerSocket(words[1].c_str());
             CreateCubeServerSocket(words[1].c_str());
             CreateRecvPlayerDataSocket(words[1].c_str());
@@ -661,6 +662,7 @@ void DoCommandAction()
         bool bCanConnect = Connect_To_Server("127.0.0.1");
         if (bCanConnect)
         {
+            ClearCube();
             CreateKeyInputServerSocket("127.0.0.1");
             CreateCubeServerSocket("127.0.0.1");
             CreateRecvPlayerDataSocket("127.0.0.1");
@@ -674,6 +676,7 @@ void DoCommandAction()
             HANDLE hThread3 = CreateThread(NULL, 0, RecvChatData, NULL, 0, NULL);
             //
             Set_Con(true);
+
 
             std::string cd = std::string("[시스템] \"") + "127.0.0.1" + std::string("에 접속하였습니다.");
             AddLastChatData(-1, cd);
