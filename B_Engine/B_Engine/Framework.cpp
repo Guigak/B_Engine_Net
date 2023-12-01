@@ -442,12 +442,9 @@ void CFramework::Adavance_Frame() {
 	m_Timer.Tick(100.0f);
 
 	if (Get_Con()) {
-		// RecvMyLookVectorToServer
-		RecvMyLookVectorToServer();
-
 		// GetAllPlayerData
-		// 플레이어 위치 동기화
-		GetAllPlayerData(m_pPlayer);
+		// 플레이어 위치 및 룩벡터 동기화
+		GetPlayerDataAndSendLook(m_pPlayer);
 
 		// 받은 박스 정보 설치 및 삭제
 		m_pScene->Check_Cube_Object_4_Server(Get_m_vServerObjects());
@@ -580,7 +577,12 @@ void CFramework::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARA
 		}
 		senddata.key = (int)wParam;
 		senddata.PlayerNumber = GetPlayerNumber();
-		send(GetKeyInputSocket(), (const char*)&senddata, sizeof(senddata), 0);
+		int retval = send(GetKeyInputSocket(), (const char*)&senddata, sizeof(senddata), 0);
+		if (retval == INVALID_SOCKET)
+		{
+			DisconnectServer();
+			return;
+		}
 	}
 	switch (nMsg_ID) {
 	case WM_KEYUP :
@@ -734,21 +736,23 @@ void CFramework::Clr_Cube_Objects() {
 	m_pScene->Clr_Cube_Objects();
 }
 
-void CFramework::RecvMyLookVectorToServer()
+
+
+void CFramework::GetPlayerDataAndSendLook(CPlayer* m_pPlayer)
 {
-	if(m_pCamera)
+	if (m_pCamera)
 	{
 		struct Look_Data data;
 		data.PlayerNumber = GetPlayerNumber();
 		data.fLook_x = m_pPlayer->Get_Look().x;
 		data.fLook_z = m_pPlayer->Get_Look().z;
-		send(GetSendLookVectorSocket(), (char*)&data, sizeof(struct Look_Data), 0);
+		int retval = send(GetRecvPlayerSocket(), (char*)&data, sizeof(struct Look_Data), 0);
+		if (retval == INVALID_SOCKET)
+		{
+			DisconnectServer();
+			return;
+		}
 	}
-	
-}
-
-void CFramework::GetAllPlayerData(CPlayer* m_pPlayer)
-{
 	if(m_pScene)
 	{
 		m_pScene->GetAllPlayerData(m_pPlayer);

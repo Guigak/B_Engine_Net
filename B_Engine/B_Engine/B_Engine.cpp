@@ -2,6 +2,7 @@
 //
 
 #include "B_Engine.h"
+#include <list>
 #include "ConnectServer.h"      //TODO: 테스트용 나중에 지우기 (2019180031)
 #include "sstream"
 #include "string"
@@ -18,13 +19,40 @@ bool g_bActive = true;
 
 HWND hWnd;
 
+
+//=================== 채팅창 관련 시작 ===================
 #define CHAT_BOX_WIDTH 500
 #define CHAT_BOX_HEIGHT 300
+#define MAX_LAST_CHAT 30
+class ChatString
+{
+public:
+    ChatString() {}
+    ~ChatString(){}
+    ChatString(int pn, std::string cd)
+    {
+        playerNumber = pn;
+        for (int i = 0; i < cd.size(); ++i)
+        {
+            chatData[i] = cd[i];
+        }
+        chatData[cd.size()] = '\0';
+    };
+public:
+    int playerNumber{};       // -1 -> 커맨드 채팅, 0 -> 0번 플레이어, 1 -> 1번 플레이어,
+	                        // 2  -> 2번 플레이어, ..., MAX_PLAYER_COUNT-> 오프라인시 채팅
+    char chatData[CHATMAXBUFFER + 1]{0,};
+};
 HWND childHWND;
 bool PressingReturn = false;
 std::string InputString = "";
+std::list<ChatString> LastChatData;
+int ChatBoxWheel{};
 void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg);
 void DoCommandAction();
+void AddLastChatData(int playerNumber, std::string);
+DWORD WINAPI RecvChatData(LPVOID arg);
+//=================== 채팅창 관련 끝 ===================
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -352,7 +380,6 @@ void Prcs_Console_Cmd() {
             CreateKeyInputServerSocket(IP_ADDRESS);
             CreateCubeServerSocket(IP_ADDRESS);
             CreateRecvPlayerDataSocket(IP_ADDRESS);
-            CreateSendLookVectorSocket(IP_ADDRESS);
 
             // 시간 스레드 생성
             HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);
@@ -377,7 +404,6 @@ void Prcs_Console_Cmd() {
         }
     }
 }
-
 HDC hdc;
 HDC memdc;
 HBRUSH blackBrush, whiteBrush;
@@ -398,12 +424,58 @@ LRESULT CALLBACK ChildProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             RECT inputrect = { 0 ,CHAT_BOX_HEIGHT - 30,CHAT_BOX_WIDTH,CHAT_BOX_HEIGHT };
             FillRect(hdc, &inputrect, whiteBrush);
             inputrect.left += 10;
+            SetTextColor(hdc, RGB(0, 0, 0));
             DrawTextA(hdc, InputString.c_str(), InputString.size(), &inputrect, DT_LEFT|DT_VCENTER|DT_SINGLELINE);
 			//TextOutA(hdc,10,CHAT_BOX_HEIGHT-20, InputString.c_str(), InputString.size());
 
     		SelectObject(hdc, blackBrush);
-            RECT outputrect = { 0,0,CHAT_BOX_WIDTH,CHAT_BOX_HEIGHT-30 };
+            RECT outputrect = { 0,0,CHAT_BOX_WIDTH,CHAT_BOX_HEIGHT - 30 };
             FillRect(hdc, &outputrect, blackBrush);
+            outputrect.top = CHAT_BOX_HEIGHT - 60;
+            outputrect.left += 10;
+            if(!LastChatData.empty())
+            {
+                auto plist = LastChatData.begin();
+                for (int i = 0; i < ChatBoxWheel; ++i) {
+                    if (ChatBoxWheel + CHAT_BOX_HEIGHT / 30 >= MAX_LAST_CHAT) break;
+                    ++plist;
+                }
+
+                for(plist; plist!=LastChatData.end(); ++plist)
+                {
+                    COLORREF text_color;
+                    switch(plist->playerNumber)
+                    {
+                    case -1: // 시스템
+                        text_color = RGB(255, 0, 255);
+                        break;
+                    case 0:
+                        text_color = RGB(255,0,0);
+                        break;
+                    case 1:
+                        text_color = RGB(0, 255, 0);
+                        break;
+                    case 2:
+                        text_color = RGB(0,0,255);
+                        break;
+                    case PLAYER_MAX_NUMBER:
+                        text_color = RGB(0,0,0);
+                        break;
+                    default:
+                        text_color = RGB(0, 255, 255);
+                        break;
+                    }
+                    SetTextColor(hdc, text_color);
+                    std::string cd = plist->chatData;
+                	DrawTextA(hdc, cd.c_str(),cd.size(), &outputrect, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
+                    
+                    outputrect.top -= 30;
+                    outputrect.bottom -= 30;
+                }
+               
+            }
+            
+
             
     		EndPaint(hWnd, &ps);
 	    }
@@ -419,7 +491,7 @@ LRESULT CALLBACK ChildProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	            }
             }else
             {
-                if(wParam!=VK_RETURN&&wParam!=229 && wParam!=229 && InputString.size()<= CHATMAXBUFFER)//엔터, 한영키
+                if(wParam!=VK_RETURN&&wParam!=229 && wParam!=229 && InputString.size()<= CHATMAXBUFFER-10)//엔터, 한영키
                 {
                     
                     if (wParam == ' ') InputString.push_back(' ');
@@ -428,7 +500,7 @@ LRESULT CALLBACK ChildProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
                     else if (wParam == 191) InputString.push_back('/');
                     else {
                         char c = (char)wParam;
-                        if (isalnum(c))
+                        if (('A'<=c && c<='Z') || ('0'<=c && c<='9'))
                         {
                             if (isalpha(c)) c += ('a' - 'A');
                             InputString.push_back(c);
@@ -438,9 +510,21 @@ LRESULT CALLBACK ChildProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             }
 	    }
         SetChatBoxOpenClose(wParam, uMsg);
+        InvalidateRect(hWnd, NULL, true);
         break;
     case WM_KEYUP:
         SetChatBoxOpenClose(wParam, uMsg);
+        InvalidateRect(hWnd, NULL, true);
+        break;
+    case WM_MOUSEWHEEL:
+        if(GET_WHEEL_DELTA_WPARAM(wParam)<0)
+        {
+            if (ChatBoxWheel > 0) --ChatBoxWheel;
+        }
+        else
+        {
+            if (ChatBoxWheel + CHAT_BOX_HEIGHT / 30 < LastChatData.size()) ++ChatBoxWheel;
+        }
         InvalidateRect(hWnd, NULL, true);
         break;
     case WM_DESTROY:
@@ -462,6 +546,7 @@ void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg)
             {
                 if (!GetShowChatBox())
                 {
+                    ChatBoxWheel = 0;
                     ShowWindow(childHWND, SW_SHOW);
                     SetShowChatBox(true);
                 }
@@ -476,47 +561,31 @@ void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg)
                         // 명령어 입력시
 	                    if(InputString[0] == '/')
 	                    {
-                            InputString = { InputString.begin() + 1, InputString.end() };
-                            std::vector<std::string> words;
-                            std::stringstream ss(InputString);
-                            std::string word;
-                            while (std::getline(ss, word, ' ')) words.push_back(word);
-
-                            if (words[0] == "connect")
-                            {
-                                Connect_To_Server(words[1].c_str());
-                                CreateKeyInputServerSocket(words[1].c_str());
-                                CreateCubeServerSocket(words[1].c_str());
-                                CreateRecvPlayerDataSocket(words[1].c_str());
-                                CreateSendLookVectorSocket(words[1].c_str());
-
-                                // 시간 스레드 생성
-                                HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);
-
-                                // Cube Input 스레드 생성
-                                HANDLE hThread2 = CreateThread(NULL, 0, Get_Cube_Object_From_Server, NULL, 0, NULL);
-
-                                //
-                                Set_Con(true);
-                            }
-                            else if (words[0] == "clear") {
-                                gFramework.Clr_Cube_Objects();
-                            }
-                            else if (words[0] == "exit") {
-                                g_bConsole = false;
-                            }
-                            else if (words[0] == "quit") {
-                                g_bConsole = false;
-                                g_bActive = false;
-                            }
+							DoCommandAction();
 	                    }
                         else //명령어가 아니면 채팅 서버로 전송
                         {
-	                        
+                            if (Get_Con())
+                            {
+                                ChatString chatdata;
+                                chatdata.playerNumber = GetPlayerNumber();
+                                std::string tempstring = std::string("[") + std::to_string(GetPlayerNumber()) + std::string("] - ") + InputString;
+                                for(int i=0; i<tempstring.size(); ++i)
+                                {
+                                    chatdata.chatData[i] = tempstring[i];
+                                }
+                                chatdata.chatData[tempstring.size()] = '\0';
+                                int retval = send(GetChatDataSocket(), (char*)&chatdata, sizeof(ChatString), 0);
+                                if(retval==INVALID_SOCKET)
+                                {
+                                    DisconnectServer();
+                                    return;
+                                }
+                            }
+                            else 
+                                AddLastChatData(PLAYER_MAX_NUMBER, InputString);
                         }
                     }
-
-
                     InputString.clear();
                 }
                 PressingReturn = true;
@@ -527,10 +596,110 @@ void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg)
             PressingReturn = false;
         }
     }
-    SendMessage(childHWND, WM_PAINT, NULL, NULL);
+    InvalidateRect(childHWND, NULL, true);
 }
-
+void ClearCube()
+{
+    gFramework.Clr_Cube_Objects();
+    std::string cd = std::string("[시스템] \"") + std::string("모든 블럭을 초기화 하였습니다.");
+    AddLastChatData(-1, cd);
+}
 void DoCommandAction()
 {
-	
+    InputString = { InputString.begin() + 1, InputString.end() };
+    std::vector<std::string> words;
+    std::stringstream ss(InputString);
+    std::string word;
+    while (std::getline(ss, word, ' ')) words.push_back(word);
+    if(words.size() == 0)
+    {
+        std::string chatdata = "[시스템] 잘못된 명령어 입력입니다.";
+        AddLastChatData(-1, chatdata);
+        return;
+    }
+    if (words[0] == "connect")
+    {
+        bool bCanConnect = Connect_To_Server(words[1].c_str());
+        if(bCanConnect)
+        {
+            CreateKeyInputServerSocket(words[1].c_str());
+            CreateCubeServerSocket(words[1].c_str());
+            CreateRecvPlayerDataSocket(words[1].c_str());
+            CreateChatDataSocket(words[1].c_str());
+            // 시간 스레드 생성
+            HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);
+
+            // Cube Input 스레드 생성
+            HANDLE hThread2 = CreateThread(NULL, 0, Get_Cube_Object_From_Server, NULL, 0, NULL);
+            // 채팅 스레드 생성
+            HANDLE hThread3 = CreateThread(NULL, 0, RecvChatData, NULL, 0, NULL);
+            //
+            Set_Con(true);
+
+            std::string cd = std::string("[시스템] \"") + words[1] + std::string("에 접속하였습니다.");
+            AddLastChatData(-1, cd);
+        }
+        else
+        {
+            std::string cd = std::string("[시스템] 연결하려는 서버가 적절치 않거나 오프라인 상태입니다.");
+            AddLastChatData(-1, cd);
+        }
+        
+    }
+    else if (words[0] == "clear") {
+        ClearCube();
+    }
+    else if (words[0] == "exit") {
+        g_bConsole = false;
+    }
+    else if (words[0] == "quit") {
+        g_bConsole = false;
+        g_bActive = false;
+    }else
+    {
+        std::string chatdata = "[시스템] 잘못된 명령어 입력입니다.";
+        AddLastChatData(-1, chatdata);
+    }
+}
+/*
+std::string InputString = "";
+std::queue<ChatString> LastChatData;
+int ChatBoxWheel{};
+void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg);
+*/
+void AddLastChatData(int playerNumber, std::string chatdata)
+{
+    if(LastChatData.size() >= MAX_LAST_CHAT)
+    {
+        LastChatData.pop_back();
+    }
+    ChatBoxWheel = 0;
+    LastChatData.push_front(ChatString(playerNumber, chatdata));
+
+
+    InvalidateRect(childHWND, NULL, true);
+}
+
+
+DWORD WINAPI RecvChatData(LPVOID arg)
+{
+    int retval = 0;
+    ChatString chatdata;
+
+    while (1) {
+        retval = recv(GetChatDataSocket(), (char*)&chatdata, sizeof(ChatString), MSG_WAITALL);
+        if (retval == INVALID_SOCKET)
+        {
+            DisconnectServer();
+            return -1;
+        }
+        AddLastChatData(chatdata.playerNumber, chatdata.chatData);
+        InvalidateRect(childHWND, NULL, true);
+    }
+
+    // 소켓 닫기
+    closesocket(GetChatDataSocket());
+    // 윈속 종료
+    WSACleanup();
+    return 0;
 }

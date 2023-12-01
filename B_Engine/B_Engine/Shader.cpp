@@ -540,7 +540,12 @@ void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, 
 		// 피킹된 곳의 설치될 큐브 정보 보내기 + 플레이어 당 큐브 색 추가해야 됌
 		DirectX::XMFLOAT3 xmf3Color = Get_Player_Cube_Color();
 		struct Cube_Info cube(xmf3_Position.x, xmf3_Position.y, xmf3_Position.z, xmf3Color.x, xmf3Color.y, xmf3Color.z, true);
-		send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
+		int retval = send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
+		if (retval == INVALID_SOCKET)
+		{
+			DisconnectServer();
+			return;
+		}
 	}
 }
 
@@ -580,7 +585,12 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 			m_ppObjects[nSelected_Index]->Get_Position().x, m_ppObjects[nSelected_Index]->Get_Position().y, m_ppObjects[nSelected_Index]->Get_Position().z, 
 			m_ppObjects[nSelected_Index]->Get_Color().x, m_ppObjects[nSelected_Index]->Get_Color().y, m_ppObjects[nSelected_Index]->Get_Color().z,
 			false);
-		send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
+		int retval = send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
+		if (retval == INVALID_SOCKET)
+		{
+			DisconnectServer();
+			return;
+		}
 
 		// 기존 설치 연결 안됐을시
 		if (!Get_Con()) {
@@ -732,8 +742,13 @@ void CPlayers_Shader::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCame
 void CPlayers_Shader::GetAllPlayerData(CPlayer* m_pPlayer)
 {
 	struct Player_Info player_info[PLAYER_MAX_NUMBER];
-	recv(GetRecvPlayerSocket(), (char*)&player_info, sizeof(struct Player_Info) * PLAYER_MAX_NUMBER, MSG_WAITALL);
-	
+	int retval = recv(GetRecvPlayerSocket(), (char*)&player_info, sizeof(struct Player_Info) * PLAYER_MAX_NUMBER, MSG_WAITALL);
+	if (retval == INVALID_SOCKET)
+	{
+		DisconnectServer();
+		return;
+	}
+
 	for(int i=0; i<PLAYER_MAX_NUMBER; ++i)
 	{
 		m_ppObjects[i]->Set_Position(player_info[i].fPosition_x, player_info[i].fPosition_y, player_info[i].fPosition_z);
