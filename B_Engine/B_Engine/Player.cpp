@@ -470,6 +470,8 @@ void CPlayer::Udt_N_Prcs_Collision(CObject** ppObject, int nObjects) {
 			}
 			else {
 				m_xmf4x4_World._42 = m_xmf3_Position.y = xmf3_Object_Position.y - CUBE_WIDTH / 2 - PLAYER_HEIGHT / 2 - PLAYER_COLLISION_OFFSET;
+
+				m_xmf3_Velocity.y = 0.0f;
 			}
 		}
 	}
