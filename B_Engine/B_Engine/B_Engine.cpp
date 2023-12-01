@@ -513,6 +513,7 @@ LRESULT CALLBACK ChildProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         InvalidateRect(hWnd, NULL, true);
         break;
     case WM_KEYUP:
+        if (wParam == VK_ESCAPE) PostQuitMessage(0);
         SetChatBoxOpenClose(wParam, uMsg);
         InvalidateRect(hWnd, NULL, true);
         break;
@@ -622,6 +623,7 @@ void DoCommandAction()
         bool bCanConnect = Connect_To_Server(words[1].c_str());
         if(bCanConnect)
         {
+            ClearCube();
             CreateKeyInputServerSocket(words[1].c_str());
             CreateCubeServerSocket(words[1].c_str());
             CreateRecvPlayerDataSocket(words[1].c_str());
@@ -655,6 +657,35 @@ void DoCommandAction()
     else if (words[0] == "quit") {
         g_bConsole = false;
         g_bActive = false;
+    }else if(words[0] == "cs") //connect self server
+    {
+        bool bCanConnect = Connect_To_Server("127.0.0.1");
+        if (bCanConnect)
+        {
+            ClearCube();
+            CreateKeyInputServerSocket("127.0.0.1");
+            CreateCubeServerSocket("127.0.0.1");
+            CreateRecvPlayerDataSocket("127.0.0.1");
+            CreateChatDataSocket("127.0.0.1");
+            // 시간 스레드 생성
+            HANDLE hThread1 = CreateThread(NULL, 0, Get_Time, NULL, 0, NULL);
+
+            // Cube Input 스레드 생성
+            HANDLE hThread2 = CreateThread(NULL, 0, Get_Cube_Object_From_Server, NULL, 0, NULL);
+            // 채팅 스레드 생성
+            HANDLE hThread3 = CreateThread(NULL, 0, RecvChatData, NULL, 0, NULL);
+            //
+            Set_Con(true);
+
+
+            std::string cd = std::string("[시스템] \"") + "127.0.0.1" + std::string("에 접속하였습니다.");
+            AddLastChatData(-1, cd);
+        }
+        else
+        {
+            std::string cd = std::string("[시스템] 연결하려는 서버가 적절치 않습니다.");
+            AddLastChatData(-1, cd);
+        }
     }else
     {
         std::string chatdata = "[시스템] 잘못된 명령어 입력입니다.";

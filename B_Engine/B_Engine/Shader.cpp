@@ -587,7 +587,6 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 			false);
 		int retval = send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
 
-
 		// 기존 설치 연결 안됐을시
 		if (!Get_Con()) {
 			m_ppObjects[nSelected_Index]->Release();
@@ -604,7 +603,6 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 			DisconnectServer();
 			return;
 		}
-
 	}
 }
 

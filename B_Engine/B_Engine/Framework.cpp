@@ -563,7 +563,7 @@ void CFramework::Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM l
 }
 
 void CFramework::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam) {
-	if(((nMsg_ID==WM_KEYDOWN&&!GetPlayerBuffer(wParam)) || (nMsg_ID==WM_KEYUP&&GetPlayerBuffer(wParam))) && !GetShowChatBox())
+	if(((nMsg_ID==WM_KEYDOWN&&!GetPlayerBuffer(wParam)) || (nMsg_ID==WM_KEYUP&&GetPlayerBuffer(wParam))) && !GetShowChatBox() && Get_Con())
 	{
 		KeyInput senddata;
 		if (nMsg_ID == WM_KEYDOWN)
