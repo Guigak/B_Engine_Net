@@ -222,30 +222,57 @@ DWORD WINAPI Get_Time(LPVOID arg)
 		}
 		else if (retval == 0)
 			break;
-	}
 
-	std::array<int, PLAYER_MAX_NUMBER> player_cube_count;
-	if(now_time == 0)
-	{
-		retval = recv(sock, (char*)&player_cube_count, sizeof(int) * PLAYER_MAX_NUMBER, MSG_WAITALL);
-		if (retval == INVALID_SOCKET)
-		{
-			DisconnectServer();
-			return -1;
+		std::array<int, PLAYER_MAX_NUMBER> player_cube_count;
+		if (now_time <= 0) {
+			retval = recv(sock, (char*)&player_cube_count, sizeof(int) * PLAYER_MAX_NUMBER, MSG_WAITALL);
+			if (retval == INVALID_SOCKET) {
+				DisconnectServer();
+				return -1;
+			}
+
+	
+			auto max_cube_count = std::max_element(player_cube_count.begin(), player_cube_count.end());
+			int winner_player_number = std::distance(player_cube_count.begin(), max_cube_count);
+
+
+			std::vector<int> winners;
+			for (int i = 0; i < PLAYER_MAX_NUMBER; ++i) {
+				if (player_cube_count[i] == *max_cube_count) {
+					winners.push_back(i);
+				}
+			}
+
+			// 승리자가 한명일 때
+			if (winners.size() == 1)
+			{
+				if (winner_player_number == GetPlayerNumber())
+				{
+					MessageBoxA(hWnd, "승리했습니다.", "승리!", MB_OK);
+				}
+				else
+				{
+					std::string s = "패배했습니다. 승리자는 " + std::to_string(winner_player_number) + "입니다.";
+					MessageBoxA(hWnd, s.c_str(), "패배!", MB_OK);
+				}
+			}
+			// Multiple winners
+			else 
+			{
+				std::string s = "무승부입니다. 승리자는 ";
+				for (int i = 0; i < winners.size(); ++i) {
+					s += std::to_string(winners[i]);
+					if (i + 1 < winners.size()) {
+						s += ", ";
+					}
+				}
+				s += "입니다.";
+				MessageBoxA(hWnd, s.c_str(), "무승부!", MB_OK);
+			}
+			
 		}
 	}
 
-	auto max_player_cube = std::max_element(player_cube_count.begin(),player_cube_count.end());
-	int winner_player_number = std::distance(player_cube_count.begin(), max_player_cube);
-	if( winner_player_number == GetPlayerNumber())
-	{
-		MessageBoxA(hWnd, "승리했습니다.", "승리!", MB_OK);
-	}
-	else
-	{
-		std::string s = "패배했습니다. 승리자는 " + std::to_string(winner_player_number) + "입니다.";
-		MessageBoxA(hWnd, s.c_str(), "패배!", MB_OK);
-	}
 
 	// 소켓 닫기
 	closesocket(sock);
