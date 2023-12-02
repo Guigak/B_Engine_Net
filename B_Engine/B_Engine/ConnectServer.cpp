@@ -19,9 +19,17 @@ SOCKET RecvPlayerDataSocket;
 SOCKET ChatDataSocket;
 int PlayerNumber{};
 
+// 큐브 벡터 크리티컬 섹션
+CRITICAL_SECTION cs_Cube;
+
 std::vector<Cube_Info> m_vServerObjects;
 std::vector<Cube_Info> Get_m_vServerObjects() { return m_vServerObjects; }
-void Release_m_vServerObjects() { m_vServerObjects.clear(); }
+void Release_m_vServerObjects()
+{
+	EnterCriticalSection(&cs_Cube);
+	m_vServerObjects.clear();
+	LeaveCriticalSection(&cs_Cube);
+}
 
 
 DirectX::XMFLOAT3 Player_Cube_Color;
@@ -107,6 +115,8 @@ void CreateKeyInputServerSocket(const char* sServer_IP)
 
 void CreateCubeServerSocket(const char* sServer_IP)
 {
+	// cs_for_Cube
+	InitializeCriticalSection(&cs_Cube);
 	// 소켓 설정
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
@@ -258,9 +268,10 @@ DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg)
 		}
 		else if (retval == 0)
 			break;
-
+		
+		EnterCriticalSection(&cs_Cube);
 		m_vServerObjects.push_back(CubeInput);
-
+		LeaveCriticalSection(&cs_Cube);
 		printf("**큐브 %s**\n", CubeInput.AddorDelete ? "설치" : "삭제");
 		printf("입력받은 큐브 정보 위치 : %.2f, %.2f, %.2f\n", CubeInput.fPosition_x, CubeInput.fPosition_y, CubeInput.fPosition_z);
 		printf("입력받은 큐브 정보  색 : %.2f, %.2f, %.2f\n", CubeInput.fColor_r, CubeInput.fColor_g, CubeInput.fColor_b);
@@ -328,6 +339,7 @@ void DisconnectServer()
 		ClearCube();
 		AddLastChatData(-1, std::string{"[시스템] 서버와의 연결이 끊어졌습니다."});
 		checkCRITICAL = false;
+		DeleteCriticalSection(&cs_Cube);
 	}
 	
 }

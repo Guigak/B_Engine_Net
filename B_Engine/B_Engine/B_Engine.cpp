@@ -19,11 +19,11 @@ bool g_bActive = true;
 
 HWND hWnd;
 
-
 //=================== 채팅창 관련 시작 ===================
 #define CHAT_BOX_WIDTH 500
 #define CHAT_BOX_HEIGHT 300
 #define MAX_LAST_CHAT 30
+
 class ChatString
 {
 public:
@@ -376,6 +376,7 @@ void Prcs_Console_Cmd() {
         scanf_s("%s", cmd, (int)sizeof(cmd));
 
         if (!strcmp(cmd, "connect")) {
+
             Connect_To_Server(IP_ADDRESS);
             CreateKeyInputServerSocket(IP_ADDRESS);
             CreateCubeServerSocket(IP_ADDRESS);
