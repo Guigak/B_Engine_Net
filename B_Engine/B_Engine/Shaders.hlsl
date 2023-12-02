@@ -11,6 +11,10 @@ cbuffer CB_UI_Info : register(b2) {
 	float4 f4Color : packoffset(c0);
 }
 
+cbuffer cbSpriteInfo : register(b3) {
+	float4x4 gmtx_SpriteTexture : packoffset(c0);
+}
+
 struct INSTANCED_OBJECT_INFO {
 	matrix m_mtx_Object;
 	float4 m_f4Color;
@@ -82,4 +86,37 @@ VS_OUTPUT VSUI(VS_INPUT input) {
 	output.color = f4Color;
 
 	return output;
+}
+
+//
+Texture2D gtxNumberTexture : register(t1);
+
+SamplerState gssWrap : register(s0);
+
+struct VS_SPRITE_TEXTURED_INPUT
+{
+	float3 position : POSITION;
+	float2 uv : TEXCOORD;
+};
+
+struct VS_SPRITE_TEXTURED_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float2 uv : TEXCOORD;
+};
+
+VS_SPRITE_TEXTURED_OUTPUT VSNUMBER(VS_SPRITE_TEXTURED_INPUT input)
+{
+	VS_SPRITE_TEXTURED_OUTPUT output;
+
+	output.position = float4(input.position, 1.0f);
+	output.uv = mul(float3(input.uv, 1.0f), (float3x3)(gmtx_SpriteTexture)).xy;
+
+	return(output);
+}
+
+float4 PSNUMBER(VS_SPRITE_TEXTURED_OUTPUT input) : SV_TARGET{
+	float4 cColor = gtxNumberTexture.Sample(gssWrap, input.uv);
+
+	return cColor;
 }

@@ -4,7 +4,60 @@
 #include "Mesh.h"
 #include "Camera.h"
 
+//
+#define RESOURCE_TEXTURE2D			0x01
+#define RESOURCE_TEXTURE2D_ARRAY	0x02	//[]
+#define RESOURCE_TEXTURE2DARRAY		0x03
+#define RESOURCE_TEXTURE_CUBE		0x04
+#define RESOURCE_BUFFER				0x05
+
 class CShader;
+
+//
+class CTexture {
+private :
+	int m_nReferences = 0;
+
+	UINT m_nTexture_Type;
+
+	ID3D12Resource* m_pd3d_Texture = NULL;
+	ID3D12Resource* m_pd3d_Texture_Upload_Buffer = NULL;
+
+	DXGI_FORMAT m_d3d_Buffer_Format;
+	int m_nBuffer_Elements = 0;
+
+	int m_nRootParameter_Index = 0;
+
+	ID3D12DescriptorHeap* m_pd3d_Descriptor_Heap = NULL;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE m_d3d_CPU_Descriptor_Handle;
+	D3D12_GPU_DESCRIPTOR_HANDLE m_d3d_GPU_Descriptor_Handle;
+
+	//
+	int m_nRow = 0;
+	int m_nCol = 0;
+
+	int m_nRows = 1;
+	int m_nCols = 1;
+
+public :
+	CTexture(UINT nResource_Type, int nRootParameter_Index, int nRows = 1, int nCols = 1);
+	virtual ~CTexture();
+
+	void Add_Ref() { ++m_nReferences; }
+	void Release() { if (--m_nReferences <= 0) delete this; }
+
+	void Udt_Shader_Variable(ID3D12GraphicsCommandList* pd3d_Command_List);
+	void Release_Shader_Variable();
+
+	void Load_Texture_From_DDS_File(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, wchar_t* pszFileName);
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC Get_Shader_Resource_View_Desc();
+
+	void Crt_Shader_Resource_View(ID3D12Device* pd3d_Device);
+
+	void Release_Upload_Buffers();
+};
 
 class CObject {
 private :
@@ -105,4 +158,20 @@ public :
 	void Set_Rotation_Speed(float fRotation_Speed) { m_fRotation_Speed = fRotation_Speed; }
 
 	virtual void Anim(float fElapsed_Time);
+};
+
+
+
+//
+class CNumber_Object : public CObject {
+private :
+	DirectX::XMFLOAT4X4 m_xmf4x4_Texture_UV = Matrix4x4::Identity();
+
+public :
+	CNumber_Object();
+	virtual ~CNumber_Object();
+
+	void Udt_Number(int nNumber);
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
 };

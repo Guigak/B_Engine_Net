@@ -19,41 +19,71 @@ bool CScene::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lP
 ID3D12RootSignature* CScene::Crt_Graphics_RootSignature(ID3D12Device* pd3d_Device) {
 	ID3D12RootSignature* pd3d_Graphics_RootSignature = NULL;
 
-	D3D12_ROOT_PARAMETER pd3d_RootParameters[4];
-	pd3d_RootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	D3D12_ROOT_PARAMETER pd3d_RootParameters[5];
+	pd3d_RootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;	// world
 	pd3d_RootParameters[0].Constants.Num32BitValues = 16;
 	pd3d_RootParameters[0].Constants.ShaderRegister = 0;
 	pd3d_RootParameters[0].Constants.RegisterSpace = 0;
 	pd3d_RootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	pd3d_RootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+
+	pd3d_RootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;	// view, projection
 	pd3d_RootParameters[1].Constants.Num32BitValues = 32;
 	pd3d_RootParameters[1].Constants.ShaderRegister = 1;
 	pd3d_RootParameters[1].Constants.RegisterSpace = 0;
 	pd3d_RootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-	pd3d_RootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+
+	pd3d_RootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;	// instancing info
 	pd3d_RootParameters[2].Descriptor.ShaderRegister = 0;
 	pd3d_RootParameters[2].Descriptor.RegisterSpace = 0;
 	pd3d_RootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
 	//
-	pd3d_RootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	pd3d_RootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;	// aim box color
 	pd3d_RootParameters[3].Constants.Num32BitValues = 1;
 	pd3d_RootParameters[3].Constants.ShaderRegister = 2;
 	pd3d_RootParameters[3].Constants.RegisterSpace = 0;
 	pd3d_RootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
+	//
+	pd3d_RootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;	// number uv
+	pd3d_RootParameters[4].Constants.Num32BitValues = 16;
+	pd3d_RootParameters[4].Constants.ShaderRegister = 3;
+	pd3d_RootParameters[4].Constants.RegisterSpace = 0;
+	pd3d_RootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+
+	//pd3d_RootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;	// number texture
+	//pd3d_RootParameters[5].Descriptor.ShaderRegister = 1;
+	//pd3d_RootParameters[5].Descriptor.RegisterSpace = 0;
+	//pd3d_RootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	// sampler
+	D3D12_STATIC_SAMPLER_DESC pd3d_Sampler_Descs[1];
+
+	pd3d_Sampler_Descs[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	pd3d_Sampler_Descs[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	pd3d_Sampler_Descs[0].AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	pd3d_Sampler_Descs[0].AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	pd3d_Sampler_Descs[0].MipLODBias = 0;
+	pd3d_Sampler_Descs[0].MaxAnisotropy = 1;
+	pd3d_Sampler_Descs[0].ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+	pd3d_Sampler_Descs[0].MinLOD = 0;
+	pd3d_Sampler_Descs[0].MaxLOD = D3D12_FLOAT32_MAX;
+	pd3d_Sampler_Descs[0].ShaderRegister = 0;
+	pd3d_Sampler_Descs[0].RegisterSpace = 0;
+	pd3d_Sampler_Descs[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
 	D3D12_ROOT_SIGNATURE_FLAGS d3d_RootSignature_Flags =
 		D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
 		D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-		D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+		D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
 	D3D12_ROOT_SIGNATURE_DESC d3d_RootSignature_Desc;
 	ZeroMemory(&d3d_RootSignature_Desc, sizeof(D3D12_ROOT_SIGNATURE_DESC));
 	d3d_RootSignature_Desc.NumParameters = _countof(pd3d_RootParameters);
 	d3d_RootSignature_Desc.pParameters = pd3d_RootParameters;
-	d3d_RootSignature_Desc.NumStaticSamplers = 0;
-	d3d_RootSignature_Desc.pStaticSamplers = NULL;
+	d3d_RootSignature_Desc.NumStaticSamplers = _countof(pd3d_Sampler_Descs);
+	d3d_RootSignature_Desc.pStaticSamplers = pd3d_Sampler_Descs;
 	d3d_RootSignature_Desc.Flags = d3d_RootSignature_Flags;
 
 	HRESULT hResult;
@@ -61,12 +91,21 @@ ID3D12RootSignature* CScene::Crt_Graphics_RootSignature(ID3D12Device* pd3d_Devic
 	ID3DBlob* pd3d_Error_Blob = NULL;
 
 	hResult = D3D12SerializeRootSignature(&d3d_RootSignature_Desc, D3D_ROOT_SIGNATURE_VERSION_1, &pd3d_Signature_Blob, &pd3d_Error_Blob);
-	pd3d_Device->CreateRootSignature(0, pd3d_Signature_Blob->GetBufferPointer(), pd3d_Signature_Blob->GetBufferSize(), __uuidof(ID3D12RootSignature), (void**)&pd3d_Graphics_RootSignature);
 
 	// print error
 	if (FAILED(hResult)) {
 		OutputDebugStringA("루트 시그니처 에러\n");
 		OutputDebugStringA(static_cast<const char*>(pd3d_Error_Blob->GetBufferPointer()));
+	}
+
+	hResult = pd3d_Device->CreateRootSignature(0, pd3d_Signature_Blob->GetBufferPointer(), pd3d_Signature_Blob->GetBufferSize(), __uuidof(ID3D12RootSignature), (void**)&pd3d_Graphics_RootSignature);
+
+	// print error
+	if (FAILED(hResult)) {
+		_com_error comError(hResult);
+		char str[256] = "";
+		WideCharToMultiByte(CP_ACP, 0, comError.ErrorMessage(), -1, str, 256, NULL, NULL);
+		OutputDebugStringA(str);
 	}
 
 	if (pd3d_Signature_Blob) {
@@ -208,7 +247,7 @@ int CScene::Get_Object_Num_From_Shader(int nShader_Index) {
 void CScene::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
 	m_pd3d_Graphics_RootSignature = Crt_Graphics_RootSignature(pd3d_Device);
 
-	m_nShaders = 3;
+	m_nShaders = 4;
 	m_ppShaders = new CObjects_Shader * [m_nShaders];
 
 	CObjects_Shader* pObject_Shader = new CInstancing_Shader;	// cube
@@ -225,6 +264,11 @@ void CScene::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList*
 	m_ppShaders[2] = pObject_Shader;
 	m_ppShaders[2]->Crt_Shader(pd3d_Device, m_pd3d_Graphics_RootSignature);
 	m_ppShaders[2]->Build_Objects(pd3d_Device, pd3d_Command_List);
+
+	pObject_Shader = new CNumber_Shader;	// number
+	m_ppShaders[3] = pObject_Shader;
+	m_ppShaders[3]->Crt_Shader(pd3d_Device, m_pd3d_Graphics_RootSignature);
+	m_ppShaders[3]->Build_Objects(pd3d_Device, pd3d_Command_List);
 }
 
 void CScene::Release_Objects() {

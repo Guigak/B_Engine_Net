@@ -35,15 +35,10 @@ D3D12_INPUT_LAYOUT_DESC CShader::Crt_Input_Layout() {
 	return d3d_Input_Layout_Desc;
 }
 
-D3D12_RASTERIZER_DESC CShader::Crt_Rasterizer_State(bool bSolid) {
+D3D12_RASTERIZER_DESC CShader::Crt_Rasterizer_State() {
 	D3D12_RASTERIZER_DESC d3d_Rasterizer_Desc;
 	ZeroMemory(&d3d_Rasterizer_Desc, sizeof(D3D12_RASTERIZER_DESC));
-	if (bSolid) {
-		d3d_Rasterizer_Desc.FillMode = D3D12_FILL_MODE_SOLID;
-	}
-	else {
-		d3d_Rasterizer_Desc.FillMode = D3D12_FILL_MODE_WIREFRAME;
-	}
+	d3d_Rasterizer_Desc.FillMode = D3D12_FILL_MODE_WIREFRAME;
 	d3d_Rasterizer_Desc.CullMode = D3D12_CULL_MODE_BACK;
 	d3d_Rasterizer_Desc.FrontCounterClockwise = FALSE;
 	d3d_Rasterizer_Desc.DepthBias = 0;
@@ -307,6 +302,8 @@ void CObjects_Shader::Release_Objects() {
 
 		delete[] m_ppObjects;
 	}
+
+	m_ppObjects = NULL;
 }
 
 D3D12_INPUT_LAYOUT_DESC CObjects_Shader::Crt_Input_Layout() {
@@ -586,11 +583,6 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 			m_ppObjects[nSelected_Index]->Get_Color().x, m_ppObjects[nSelected_Index]->Get_Color().y, m_ppObjects[nSelected_Index]->Get_Color().z,
 			false);
 		int retval = send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
-		if (retval == INVALID_SOCKET)
-		{
-			DisconnectServer();
-			return;
-		}
 
 		// 기존 설치 연결 안됐을시
 		if (!Get_Con()) {
@@ -601,6 +593,12 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 				m_ppObjects[nSelected_Index] = m_ppObjects[m_nObjects - 1];
 			}
 			--m_nObjects;
+		}
+
+		if (retval == INVALID_SOCKET)
+		{
+			DisconnectServer();
+			return;
 		}
 	}
 }
@@ -812,4 +810,151 @@ void CUI_Shader::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandL
 	m_ppObjects[i++] = pObject;
 
 	Crt_Shader_Variables(pd3d_Device, pd3d_Command_List);
+}
+
+
+
+//
+CNumber_Shader::CNumber_Shader() {
+}
+
+CNumber_Shader::~CNumber_Shader() {
+}
+
+D3D12_INPUT_LAYOUT_DESC CNumber_Shader::Crt_Input_Layout() {
+	UINT nInput_Element_Descs = 2;
+	D3D12_INPUT_ELEMENT_DESC* pd3d_Input_Element_Descs = new D3D12_INPUT_ELEMENT_DESC[nInput_Element_Descs];
+
+	pd3d_Input_Element_Descs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3d_Input_Element_Descs[1] = { "COLOR", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+
+	D3D12_INPUT_LAYOUT_DESC d3d_Input_Layout_Desc;
+	d3d_Input_Layout_Desc.pInputElementDescs = pd3d_Input_Element_Descs;
+	d3d_Input_Layout_Desc.NumElements = nInput_Element_Descs;
+
+	return d3d_Input_Layout_Desc;
+}
+
+D3D12_RASTERIZER_DESC CNumber_Shader::Crt_Rasterizer_State() {
+	D3D12_RASTERIZER_DESC d3d_Rasterizer_Desc;
+	ZeroMemory(&d3d_Rasterizer_Desc, sizeof(D3D12_RASTERIZER_DESC));
+	d3d_Rasterizer_Desc.FillMode = D3D12_FILL_MODE_SOLID;
+	d3d_Rasterizer_Desc.CullMode = D3D12_CULL_MODE_BACK;
+	d3d_Rasterizer_Desc.FrontCounterClockwise = FALSE;
+	d3d_Rasterizer_Desc.DepthBias = 0;
+	d3d_Rasterizer_Desc.DepthBiasClamp = 0.0f;
+	d3d_Rasterizer_Desc.SlopeScaledDepthBias = 0.0f;
+	d3d_Rasterizer_Desc.DepthClipEnable = TRUE;
+	d3d_Rasterizer_Desc.MultisampleEnable = FALSE;
+	d3d_Rasterizer_Desc.AntialiasedLineEnable = FALSE;
+	d3d_Rasterizer_Desc.ForcedSampleCount = 0;
+	d3d_Rasterizer_Desc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
+
+	return d3d_Rasterizer_Desc;
+}
+
+D3D12_BLEND_DESC CNumber_Shader::Crt_Blend_State() {
+	D3D12_BLEND_DESC d3d_Blend_Desc;
+	ZeroMemory(&d3d_Blend_Desc, sizeof(D3D12_BLEND_DESC));
+	d3d_Blend_Desc.AlphaToCoverageEnable = TRUE;
+	d3d_Blend_Desc.IndependentBlendEnable = FALSE;
+	d3d_Blend_Desc.RenderTarget[0].BlendEnable = TRUE;
+	d3d_Blend_Desc.RenderTarget[0].LogicOpEnable = FALSE;
+	d3d_Blend_Desc.RenderTarget[0].SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	d3d_Blend_Desc.RenderTarget[0].DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	d3d_Blend_Desc.RenderTarget[0].BlendOp = D3D12_BLEND_OP_ADD;
+	d3d_Blend_Desc.RenderTarget[0].SrcBlendAlpha = D3D12_BLEND_ONE;
+	d3d_Blend_Desc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
+	d3d_Blend_Desc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	d3d_Blend_Desc.RenderTarget[0].LogicOp = D3D12_LOGIC_OP_NOOP;
+	d3d_Blend_Desc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+
+	return d3d_Blend_Desc;
+}
+
+D3D12_SHADER_BYTECODE CNumber_Shader::Crt_Vertex_Shader(ID3DBlob** ppd3d_Shader_Blob) {
+	return CShader::Compile_Shader_From_File(L"Shaders.hlsl", "VSNUMBER", "vs_5_1", ppd3d_Shader_Blob);
+}
+
+D3D12_SHADER_BYTECODE CNumber_Shader::Crt_Pixel_Shader(ID3DBlob** ppd3d_Shader_Blob) {
+	return (CShader::Compile_Shader_From_File(L"Shaders.hlsl", "PSNUMBER", "ps_5_1", ppd3d_Shader_Blob));
+}
+
+void CNumber_Shader::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
+	int i = 0;
+
+	m_nObjects = 3;
+
+	m_ppObjects = new CObject * [m_nObjects];
+
+	CNumber_Object* pObject = NULL;
+	CNumber_Mesh* pNumber_Mesh = NULL;
+	for (int i = 0; i < m_nObjects; ++i) {
+		pObject = new CNumber_Object;
+		pNumber_Mesh = new CNumber_Mesh(pd3d_Device, pd3d_Command_List, i);
+		pObject->Set_Mesh(pNumber_Mesh);
+
+		m_ppObjects[i++] = pObject;
+	}
+
+	Crt_Shader_Variables(pd3d_Device, pd3d_Command_List);
+
+	//
+	m_pTexture = new CTexture(RESOURCE_TEXTURE2D, 5);
+	m_pTexture->Load_Texture_From_DDS_File(pd3d_Device, pd3d_Command_List, L"Number.dds");
+	m_pTexture->Crt_Shader_Resource_View(pd3d_Device);
+	m_pTexture->Udt_Shader_Variable(pd3d_Command_List);
+}
+
+void CNumber_Shader::Release_Objcets() {
+	CObjects_Shader::Release_Objects();
+
+	if (m_pTexture) {
+		m_pTexture->Release();
+		m_pTexture = NULL;
+	}
+}
+
+void CNumber_Shader::Release_Upload_Buffers() {
+	CObjects_Shader::Release_Upload_Buffers();
+
+	if (m_pTexture) {
+		m_pTexture->Release_Upload_Buffers();
+	}
+}
+
+void CNumber_Shader::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera) {
+	CObjects_Shader::Render(pd3d_Command_List, pCamera);
+}
+
+void CNumber_Shader::Udt_Numbers(int nNumber) {
+	// calculate number
+	char sNumber[4];
+	_itoa(nNumber, sNumber, 10);
+
+	switch (strlen(sNumber)) {
+	case 1:
+		sNumber[3] = sNumber[1];
+		sNumber[2] = sNumber[0];
+		sNumber[1] = '0';
+		sNumber[0] = '0';
+		break;
+	case 2:
+		sNumber[3] = sNumber[2];
+		sNumber[2] = sNumber[1];
+		sNumber[1] = sNumber[0];
+		sNumber[0] = '0';
+		break;
+	default:
+		break;
+	}
+
+	// apply
+	for (int i = 0; i < m_nObjects; ++i) {
+		int nNum = (int)(sNumber[i] - '0');
+
+		if (m_ppObjects[i]) {
+			((CNumber_Object*)m_ppObjects[i])->Udt_Number(nNum);
+		}
+	}
 }

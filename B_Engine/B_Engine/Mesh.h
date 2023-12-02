@@ -36,6 +36,27 @@ public :
 	~CDiffused_Vertex() {};
 };
 
+//
+class CTextured_Vertex : public CVertex {
+protected :
+	DirectX::XMFLOAT2 m_xmf2_UV;
+
+public :
+	CTextured_Vertex() {
+		m_xmf3_Position = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+		m_xmf2_UV = DirectX::XMFLOAT2(0.0f, 0.0f);
+	}
+	CTextured_Vertex(float x, float y, float z, DirectX::XMFLOAT2(xmf2_UV)) {
+		m_xmf3_Position = DirectX::XMFLOAT3(x, y, z);
+		m_xmf2_UV = xmf2_UV;
+	}
+	CTextured_Vertex(DirectX::XMFLOAT3 xmf3_Position, DirectX::XMFLOAT2 xmf2_UV) {
+		m_xmf3_Position = xmf3_Position;
+		m_xmf2_UV = xmf2_UV;
+	}
+	~CTextured_Vertex() {}
+};
+
 class CMesh {
 private :
 	int m_nReferences = 0;
@@ -137,4 +158,14 @@ class CUI_Box_Mesh : public CMesh {
 public :
 	CUI_Box_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, float fPosition_x, float fPosition_y, float fWidth, float fHeight, DirectX::XMFLOAT4 xmf4_Color = DirectX::XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f));
 	virtual ~CUI_Box_Mesh();
+};
+
+//
+class CNumber_Mesh : public CMesh {
+private :
+	CTextured_Vertex* m_pTextured_Vertices = NULL;
+
+public:
+	CNumber_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, int nIndex);
+	virtual ~CNumber_Mesh();
 };

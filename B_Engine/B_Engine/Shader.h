@@ -43,7 +43,7 @@ public:
 
 	//
 	virtual D3D12_INPUT_LAYOUT_DESC Crt_Input_Layout();
-	virtual D3D12_RASTERIZER_DESC Crt_Rasterizer_State(bool bSolid = true);
+	virtual D3D12_RASTERIZER_DESC Crt_Rasterizer_State();
 	virtual D3D12_BLEND_DESC Crt_Blend_State();
 	virtual D3D12_DEPTH_STENCIL_DESC Crt_Depth_Stencil_State();
 
@@ -194,4 +194,31 @@ public :
 	virtual void Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_RootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3d_Primitive_Topology_Type = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE);
 
 	virtual void Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List);
+};
+
+//
+class CNumber_Shader : public CObjects_Shader {
+private :
+	CTexture* m_pTexture = NULL;
+
+public :
+	CNumber_Shader();
+	virtual ~CNumber_Shader();
+
+	virtual D3D12_INPUT_LAYOUT_DESC Crt_Input_Layout();
+	virtual D3D12_RASTERIZER_DESC Crt_Rasterizer_State();
+	virtual D3D12_BLEND_DESC Crt_Blend_State();
+
+	virtual D3D12_SHADER_BYTECODE Crt_Vertex_Shader(ID3DBlob** ppd3d_Shader_Blob);
+	virtual D3D12_SHADER_BYTECODE Crt_Pixel_Shader(ID3DBlob** ppd3d_Shader_Blob);
+
+	virtual void Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List);
+	virtual void Release_Objcets();
+
+	virtual void Release_Upload_Buffers();
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
+
+	//
+	void Udt_Numbers(int nNumber);
 };

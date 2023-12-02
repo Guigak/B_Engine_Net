@@ -1,6 +1,113 @@
 #include "Object.h"
 #include "Shader.h"
 
+//
+CTexture::CTexture(UINT nResource_Type, int nRootParameter_Index, int nRows, int nCols) {
+	m_nTexture_Type = nResource_Type;
+
+	m_nRootParameter_Index = nRootParameter_Index;
+
+	m_pd3d_Texture = NULL;
+	m_pd3d_Texture_Upload_Buffer = NULL;
+
+	//
+	m_nRow = 0;
+	m_nCol = 0;
+
+	m_nRows = nRows;
+	m_nCols = nCols;
+}
+
+CTexture::~CTexture() {
+	if (m_pd3d_Texture) {
+		delete m_pd3d_Texture;
+	}
+}
+
+void CTexture::Udt_Shader_Variable(ID3D12GraphicsCommandList* pd3d_Command_List) {
+	if (m_pd3d_Texture) {
+		pd3d_Command_List->SetDescriptorHeaps(1, &m_pd3d_Descriptor_Heap);
+
+		pd3d_Command_List->SetGraphicsRootShaderResourceView(m_nRootParameter_Index, m_pd3d_Texture->GetGPUVirtualAddress());
+	}
+}
+
+void CTexture::Release_Shader_Variable() {
+}
+
+void CTexture::Load_Texture_From_DDS_File(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, wchar_t* pszFileName) {
+	m_pd3d_Texture = Crt_Texture_Resource_From_DDS_File(pd3d_Device, pd3d_Command_List, pszFileName, &m_pd3d_Texture_Upload_Buffer, D3D12_RESOURCE_STATE_GENERIC_READ);
+}
+
+D3D12_SHADER_RESOURCE_VIEW_DESC CTexture::Get_Shader_Resource_View_Desc() {
+	D3D12_RESOURCE_DESC d3d_Resource_Desc = m_pd3d_Texture->GetDesc();
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC d3d_Shader_Resource_View_Desc;
+	d3d_Shader_Resource_View_Desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+	switch (m_nTexture_Type)
+	{
+	case RESOURCE_TEXTURE2D: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize == 1)
+	case RESOURCE_TEXTURE2D_ARRAY: //[]
+		d3d_Shader_Resource_View_Desc.Format = d3d_Resource_Desc.Format;
+		d3d_Shader_Resource_View_Desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		d3d_Shader_Resource_View_Desc.Texture2D.MipLevels = -1;
+		d3d_Shader_Resource_View_Desc.Texture2D.MostDetailedMip = 0;
+		d3d_Shader_Resource_View_Desc.Texture2D.PlaneSlice = 0;
+		d3d_Shader_Resource_View_Desc.Texture2D.ResourceMinLODClamp = 0.0f;
+		break;
+	case RESOURCE_TEXTURE2DARRAY: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize != 1)
+		d3d_Shader_Resource_View_Desc.Format = d3d_Resource_Desc.Format;
+		d3d_Shader_Resource_View_Desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+		d3d_Shader_Resource_View_Desc.Texture2DArray.MipLevels = -1;
+		d3d_Shader_Resource_View_Desc.Texture2DArray.MostDetailedMip = 0;
+		d3d_Shader_Resource_View_Desc.Texture2DArray.PlaneSlice = 0;
+		d3d_Shader_Resource_View_Desc.Texture2DArray.ResourceMinLODClamp = 0.0f;
+		d3d_Shader_Resource_View_Desc.Texture2DArray.FirstArraySlice = 0;
+		d3d_Shader_Resource_View_Desc.Texture2DArray.ArraySize = d3d_Resource_Desc.DepthOrArraySize;
+		break;
+	case RESOURCE_TEXTURE_CUBE: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize == 6)
+		d3d_Shader_Resource_View_Desc.Format = d3d_Resource_Desc.Format;
+		d3d_Shader_Resource_View_Desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+		d3d_Shader_Resource_View_Desc.TextureCube.MipLevels = 1;
+		d3d_Shader_Resource_View_Desc.TextureCube.MostDetailedMip = 0;
+		d3d_Shader_Resource_View_Desc.TextureCube.ResourceMinLODClamp = 0.0f;
+		break;
+	case RESOURCE_BUFFER: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
+		d3d_Shader_Resource_View_Desc.Format = m_d3d_Buffer_Format;
+		d3d_Shader_Resource_View_Desc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+		d3d_Shader_Resource_View_Desc.Buffer.FirstElement = 0;
+		d3d_Shader_Resource_View_Desc.Buffer.NumElements = m_nBuffer_Elements;
+		d3d_Shader_Resource_View_Desc.Buffer.StructureByteStride = 0;
+		d3d_Shader_Resource_View_Desc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+		break;
+	}
+	return(d3d_Shader_Resource_View_Desc);
+}
+
+void CTexture::Release_Upload_Buffers() {
+	if (m_pd3d_Texture_Upload_Buffer) {
+		m_pd3d_Texture_Upload_Buffer->Release();
+		m_pd3d_Texture_Upload_Buffer = NULL;
+	}
+}
+
+void CTexture::Crt_Shader_Resource_View(ID3D12Device* pd3d_Device) {
+	D3D12_DESCRIPTOR_HEAP_DESC d3d_Descriptor_Heap_Desc;
+	d3d_Descriptor_Heap_Desc.NumDescriptors = 1;
+	d3d_Descriptor_Heap_Desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	d3d_Descriptor_Heap_Desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	d3d_Descriptor_Heap_Desc.NodeMask = 0;
+	pd3d_Device->CreateDescriptorHeap(&d3d_Descriptor_Heap_Desc, __uuidof(ID3D12DescriptorHeap), (void**)&m_pd3d_Descriptor_Heap);
+
+	pd3d_Device->CreateShaderResourceView(m_pd3d_Texture, &(Get_Shader_Resource_View_Desc()), m_pd3d_Descriptor_Heap->GetCPUDescriptorHandleForHeapStart());
+
+	m_d3d_GPU_Descriptor_Handle = m_pd3d_Descriptor_Heap->GetGPUDescriptorHandleForHeapStart();
+}
+
+
+
+//
 CObject::CObject() {
 	DirectX::XMStoreFloat4x4(&m_xmf4x4_World, DirectX::XMMatrixIdentity());
 }
@@ -246,6 +353,8 @@ void CObject::Set_Color(DirectX::XMFLOAT4 xmf4_Color) {
 	Set_Color(xmf4_Color.x, xmf4_Color.y, xmf4_Color.z, xmf4_Color.w);
 }
 
+
+
 //
 CRotating_Object::CRotating_Object() {
 	m_xmf3_Rotation_Axis = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
@@ -257,4 +366,30 @@ CRotating_Object::~CRotating_Object() {
 
 void CRotating_Object::Anim(float fElapsed_Time) {
 	CObject::Rotate(&m_xmf3_Rotation_Axis, m_fRotation_Speed * fElapsed_Time);
+}
+
+
+
+//
+CNumber_Object::CNumber_Object() {
+	DirectX::XMFLOAT4X4 m_xmf4x4_Texture_UV = Matrix4x4::Identity();
+}
+
+CNumber_Object::~CNumber_Object() {
+}
+
+void CNumber_Object::Udt_Number(int nNumber) {
+	int nCol = nNumber % 5;
+	int nRow = nNumber / 5;
+
+	m_xmf4x4_Texture_UV._11 = 1.0f / float(5);
+	m_xmf4x4_Texture_UV._22 = 1.0f / float(2);
+	m_xmf4x4_Texture_UV._31 = float(nRow) / float(2);
+	m_xmf4x4_Texture_UV._32 = float(nCol) / float(5);
+}
+
+void CNumber_Object::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera) {
+	pd3d_Command_List->SetGraphicsRoot32BitConstants(4, 16, &m_xmf4x4_Texture_UV, 0);
+
+	CObject::Render(pd3d_Command_List, pCamera);
 }

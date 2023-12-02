@@ -537,3 +537,57 @@ CUI_Box_Mesh::CUI_Box_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList*
 
 CUI_Box_Mesh::~CUI_Box_Mesh() {
 }
+
+
+
+//
+CNumber_Mesh::CNumber_Mesh(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, int nIndex) {
+	m_nVertices = 4;
+	m_nStride = sizeof(CTextured_Vertex);
+	m_d3d_Primitive_Topology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+
+	float fHeight = 0.2f;
+	float fWidth = 0.1f;
+
+	float fleft = (float)(nIndex - 1) * fWidth - fWidth * 0.5f;
+	float ftop = 1.0f;
+	float fright = fleft + fWidth;
+	float fbottom = ftop - fHeight;
+	//float fz = CAMERA_NEAR_DISTANCE;
+	float fz = 0.0f;
+
+	m_pTextured_Vertices = new CTextured_Vertex[m_nVertices];
+	m_pTextured_Vertices[0] = CTextured_Vertex(DirectX::XMFLOAT3(fleft, ftop, fz), DirectX::XMFLOAT2(0.0f, 0.0f));
+	m_pTextured_Vertices[1] = CTextured_Vertex(DirectX::XMFLOAT3(fright, ftop, fz), DirectX::XMFLOAT2(1.0f, 0.0f));
+	m_pTextured_Vertices[2] = CTextured_Vertex(DirectX::XMFLOAT3(fright, fbottom, fz), DirectX::XMFLOAT2(1.0f, 1.0f));
+	m_pTextured_Vertices[3] = CTextured_Vertex(DirectX::XMFLOAT3(fleft, fbottom, fz), DirectX::XMFLOAT2(0.0f, 1.0f));
+
+	m_pd3d_Vertex_Buffer = Crt_Buffer_Resource(pd3d_Device, pd3d_Command_List, m_pTextured_Vertices, m_nStride * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3d_Vertex_Upload_Buffer);
+
+	m_d3d_Vertex_Buffer_View.BufferLocation = m_pd3d_Vertex_Buffer->GetGPUVirtualAddress();
+	m_d3d_Vertex_Buffer_View.StrideInBytes = m_nStride;
+	m_d3d_Vertex_Buffer_View.SizeInBytes = m_nStride * m_nVertices;
+
+	//
+	m_nIndices = 6;
+	m_pnIndices = new UINT[m_nIndices];
+
+	m_pnIndices[0] = 0;
+	m_pnIndices[1] = 1;
+	m_pnIndices[2] = 2;
+	m_pnIndices[3] = 0;
+	m_pnIndices[4] = 2;
+	m_pnIndices[5] = 3;
+
+	m_pd3d_Index_Buffer = Crt_Buffer_Resource(pd3d_Device, pd3d_Command_List, m_pnIndices, sizeof(UINT) * m_nIndices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_INDEX_BUFFER, &m_pd3d_Index_Upload_Buffer);
+
+	m_d3d_Index_Buffer_View.BufferLocation = m_pd3d_Index_Buffer->GetGPUVirtualAddress();
+	m_d3d_Index_Buffer_View.Format = DXGI_FORMAT_R32_UINT;
+	m_d3d_Index_Buffer_View.SizeInBytes = sizeof(UINT) * m_nIndices;
+}
+
+CNumber_Mesh::~CNumber_Mesh() {
+	if (m_pTextured_Vertices) {
+		delete[] m_pTextured_Vertices;
+	}
+}
