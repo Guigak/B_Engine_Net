@@ -105,6 +105,8 @@ using Microsoft::WRL::ComPtr;
 // 25.55.51.203 - 윤석's hamachi ip
 #define IP_ADDRESS "25.55.51.203"
 
+#define GAMETIME 60
+
 // 임시로 여기에다 두었다.
 struct Cube_Info {
 	float fPosition_x, fPosition_y, fPosition_z;

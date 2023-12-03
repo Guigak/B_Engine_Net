@@ -778,7 +778,7 @@ LRESULT CALLBACK Timer_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     case WM_CREATE:
         hbBackground = CreateSolidBrush(RGB(128, 128, 128));
 
-        SetTimer(hWnd, 1, 100, NULL);
+        SetTimer(hWnd, 1, 500, NULL);
         break;
     case WM_PAINT:
     {
@@ -795,7 +795,21 @@ LRESULT CALLBACK Timer_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         char number[10] = "";
 
         if (Get_Con()) {
-            itoa(Get_Now_Time(), number, 10);
+            if (Get_Now_Time() / GAMETIME == 1)
+            {
+                if (Get_Now_Time() % GAMETIME == 0) {
+                    strcpy(number, "Start!");
+                }
+                else
+                {
+                    itoa(Get_Now_Time() % GAMETIME, number, 10);
+                }
+            }
+            else
+            {
+                itoa(Get_Now_Time(), number, 10);
+            }
+           
         }
         else {
             sprintf(number, "---");
@@ -807,7 +821,7 @@ LRESULT CALLBACK Timer_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     }
     break;
     case WM_TIMER:
-        InvalidateRect(hWnd, NULL, true); // 이 부분은 유지하고 해당 시간 간격마다 윈도우를 갱신합니다.
+        InvalidateRect(hWnd, NULL, true);
         break;
     case WM_KEYDOWN:
         break;

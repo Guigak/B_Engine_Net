@@ -11,7 +11,7 @@
 #define RECVPLAYERDATAPORT	9003
 #define CHATDATAPORT  9004
 
-int now_time = 500;
+int now_time = 999;
 SOCKET KeyInputSocket;
 SOCKET CubeSocket;
 SOCKET sock;
