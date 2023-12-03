@@ -304,9 +304,6 @@ DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg)
 		EnterCriticalSection(&cs_Cube);
 		m_vServerObjects.push_back(CubeInput);
 		LeaveCriticalSection(&cs_Cube);
-		printf("**큐브 %s**\n", CubeInput.AddorDelete ? "설치" : "삭제");
-		printf("입력받은 큐브 정보 위치 : %.2f, %.2f, %.2f\n", CubeInput.fPosition_x, CubeInput.fPosition_y, CubeInput.fPosition_z);
-		printf("입력받은 큐브 정보  색 : %.2f, %.2f, %.2f\n", CubeInput.fColor_r, CubeInput.fColor_g, CubeInput.fColor_b);
 	}
 	
 	// 소켓 닫기

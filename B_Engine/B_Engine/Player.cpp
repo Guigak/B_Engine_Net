@@ -476,8 +476,23 @@ void CPlayer::Udt_N_Prcs_Collision(CObject** ppObject, int nObjects) {
 		}
 	}
 
-	// axis x
-	Move(m_xmf3_Calculated_Vel.x, 0.0f, 0.0f);
+	// 투명 벽 설치
+	// **axis x**
+	if (m_xmf3_Position.x < CUBE_WIDTH * CUBE_INIT_RING_NUMBER && m_xmf3_Position.x > -(CUBE_WIDTH * CUBE_INIT_RING_NUMBER)) {
+		// axis x
+		Move(m_xmf3_Calculated_Vel.x, 0.0f, 0.0f);
+	}
+	else
+	{
+		if (m_xmf3_Position.x > CUBE_WIDTH * CUBE_INIT_RING_NUMBER) {
+			// axis x
+			Move(-0.05f, 0.0f, 0.0f);
+		}
+		else {
+			// axis x
+			Move(0.05f, 0.0f, 0.0f);
+		}
+	}
 	Prepare_Render();
 
 	//
@@ -498,8 +513,23 @@ void CPlayer::Udt_N_Prcs_Collision(CObject** ppObject, int nObjects) {
 		}
 	}
 
-	// axis z
-	Move(0.0f, 0.0f, m_xmf3_Calculated_Vel.z);
+	// 투명 벽 설치
+	// **axis z**
+	if (m_xmf3_Position.z < CUBE_WIDTH * CUBE_INIT_RING_NUMBER && m_xmf3_Position.z > -(CUBE_WIDTH * CUBE_INIT_RING_NUMBER)) {
+		// axis z
+		Move(0.0f, 0.0f, m_xmf3_Calculated_Vel.z);
+	}
+	else
+	{
+		if (m_xmf3_Position.z > CUBE_WIDTH * CUBE_INIT_RING_NUMBER) {
+			// axis x
+			Move(0.0f, 0.0f, -0.05f);
+		}
+		else {
+			// axis x
+			Move(0.0f, 0.0f, 0.05f);
+		}
+	}
 	Prepare_Render();
 
 	//
@@ -521,42 +551,6 @@ void CPlayer::Udt_N_Prcs_Collision(CObject** ppObject, int nObjects) {
 	}
 }
 
-//void CPlayer::Prcs_Collision(CObject* pObject) {
-//	// asix Y
-//	DirectX::BoundingOrientedBox d3d_OBB_Player = Get_OBB();
-//	DirectX::BoundingOrientedBox d3d_OBB_Object = pObject->Get_OBB();
-//
-//	if (d3d_OBB_Player.Intersects(d3d_OBB_Object)) {
-//		DirectX::XMFLOAT3 xmf3_Object_Position = pObject->Get_Position();
-//		float fNew_Position_Y = 0.0f;
-//
-//		if (m_xmf3_Velocity.y < 0) {
-//			m_xmf4x4_World._42 = m_xmf3_Position.y = xmf3_Object_Position.y + CUBE_WIDTH / 2 + PLAYER_HEIGHT / 2 - PLAYER_COLLISION_OFFSET;
-//		}
-//		else {
-//			m_xmf4x4_World._42 = m_xmf3_Position.y = xmf3_Object_Position.y - CUBE_WIDTH / 2 - PLAYER_HEIGHT / 2 + PLAYER_COLLISION_OFFSET;
-//		}
-//
-//		//OutputDebugStringA("충돌함\n");
-//	}
-//
-//	// asix X
-//	//d3d_OBB_Player = Get_OBB();
-//
-//	//if (d3d_OBB_Player.Intersects(d3d_OBB_Object)) {
-//	//	DirectX::XMFLOAT3 xmf3_Object_Position = pObject->Get_Position();
-//	//	float fNew_Position_X = 0.0f;
-//
-//	//	if (m_xmf3_Velocity.x < 0) {
-//	//		m_xmf4x4_World._41 = m_xmf3_Position.x = xmf3_Object_Position.x + CUBE_WIDTH / 2 + PLAYER_WIDTH / 2 + PLAYER_COLLISION_OFFSET;
-//	//	}
-//	//	else {
-//	//		m_xmf4x4_World._41 = m_xmf3_Position.x = xmf3_Object_Position.x - CUBE_WIDTH / 2 - PLAYER_WIDTH / 2 - PLAYER_COLLISION_OFFSET;
-//	//	}
-//
-//	//	//OutputDebugStringA("충돌함\n");
-//	//}
-//}
 
 CAirplane_Player::CAirplane_Player(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List, ID3D12RootSignature* pd3d_Graphics_RootSignature) {
 	CMesh* pAirplane_Mesh = new CAirPlane_Mesh(pd3d_Device, pd3d_Command_List, 20.0f, 20.0f, 4.0f, DirectX::XMFLOAT4(0.0f, 0.5f, 0.0f, 0.0f));
