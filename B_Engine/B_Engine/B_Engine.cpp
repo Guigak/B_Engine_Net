@@ -778,7 +778,7 @@ LRESULT CALLBACK Timer_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     case WM_CREATE:
         hbBackground = CreateSolidBrush(RGB(128, 128, 128));
 
-        SetTimer(hWnd, 1, 1000, NULL);
+        SetTimer(hWnd, 1, 100, NULL);
         break;
     case WM_PAINT:
     {
