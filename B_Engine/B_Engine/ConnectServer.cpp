@@ -36,6 +36,11 @@ DirectX::XMFLOAT3 Player_Cube_Color;
 DirectX::XMFLOAT3 Get_Player_Cube_Color() { return Player_Cube_Color; }
 
 //
+int Get_Now_Time() {
+	return now_time;
+}
+
+//
 bool bConnected = false;
 
 bool Get_Con() {

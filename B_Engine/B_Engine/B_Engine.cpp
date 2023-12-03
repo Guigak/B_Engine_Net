@@ -22,6 +22,9 @@ HWND hWnd;
 //
 HWND hTimer_Wnd;
 
+LRESULT CALLBACK Timer_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void Udt_Timer(int nNumber);
+
 //=================== 채팅창 관련 시작 ===================
 #define CHAT_BOX_WIDTH 500
 #define CHAT_BOX_HEIGHT 300
@@ -129,7 +132,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     //
     wcex.hCursor = LoadCursor(NULL, IDC_CROSS);
-    wcex.lpfnWndProc = ChildProc;
+    wcex.lpfnWndProc = Timer_Proc;
     wcex.lpszClassName = TEXT("Timer_Wnd");
     wcex.hbrBackground = (HBRUSH)GetStockObject(COLOR_MENU);
     RegisterClassExW(&wcex);
@@ -141,10 +144,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     wcex.lpszClassName = TEXT("ChildCls");
     wcex.hbrBackground = (HBRUSH)GetStockObject(LTGRAY_BRUSH);
     RegisterClassExW(&wcex);
-
-
-    
-
 
     // 애플리케이션 초기화를 수행합니다:
     if (!InitInstance (hInstance, nCmdShow))
@@ -172,6 +171,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         else {
             gFramework.Adavance_Frame();
+        }
+
+        //
+        if (GetActiveWindow() == GetForegroundWindow()) {
+            ShowWindow(hTimer_Wnd, SW_SHOW);
+        }
+        else {
+            ShowWindow(hTimer_Wnd, SW_HIDE);
         }
     }
     gFramework.OnDestroy();
@@ -260,6 +267,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 //
 
+#define TIMER_RECT_WIDTH  FRAME_BUFFER_WIDTH / 10
+#define TIMER_RECT_HEIGHT FRAME_BUFFER_HEIGHT / 15
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
@@ -273,7 +283,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         ShowWindow(childHWND, SW_HIDE);
 
         //
-        hTimer_Wnd = CreateWindow(TEXT("Timer_Wnd"), NULL, WS_POPUP | WS_VISIBLE, rect.left + FRAME_BUFFER_WIDTH * 9 / 20, rect.top + 40, FRAME_BUFFER_WIDTH / 10, rect.bottom / 20, hWnd, (HMENU)NULL, hInst, NULL);
+        hTimer_Wnd = CreateWindow(TEXT("Timer_Wnd"), NULL, WS_POPUP | WS_VISIBLE, rect.left + FRAME_BUFFER_WIDTH * 9 / 20, rect.top + 40, TIMER_RECT_WIDTH, TIMER_RECT_HEIGHT, hWnd, (HMENU)NULL, hInst, NULL);
 	    }
         
         break;
@@ -282,6 +292,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         RECT rect;
         GetWindowRect(hWnd, &rect);
         SetWindowPos(childHWND, HWND_TOPMOST, rect.left + 10, rect.bottom - CHAT_BOX_HEIGHT - 10, CHAT_BOX_WIDTH, CHAT_BOX_HEIGHT, NULL);
+
+        SetWindowPos(hTimer_Wnd, HWND_TOPMOST, rect.left + FRAME_BUFFER_WIDTH * 9 / 20, rect.top + 40, TIMER_RECT_WIDTH, TIMER_RECT_HEIGHT, NULL);
 	    }
         
         break;
@@ -332,7 +344,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             g_bConsole = true;
         }
-
 
         SetChatBoxOpenClose(wParam, message);
 
@@ -664,6 +675,9 @@ void DoCommandAction()
     else if (words[0] == "clear") {
         ClearCube();
     }
+    else if (words[0] == "settimer") {
+        Udt_Timer(std::stoi(words[1]));
+    }
     else if (words[0] == "exit") {
         g_bConsole = false;
     }
@@ -746,4 +760,73 @@ DWORD WINAPI RecvChatData(LPVOID arg)
     // 윈속 종료
     WSACleanup();
     return 0;
+}
+
+//
+HBRUSH hbBackground;
+
+static int nTimer = 0;
+
+LRESULT CALLBACK Timer_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    HDC hDC;
+    PAINTSTRUCT ps;
+
+    switch (uMsg) {
+    case WM_CREATE:
+        hbBackground = CreateSolidBrush(RGB(128, 128, 128));
+
+        SetTimer(hWnd, 1, 1000, NULL);
+        break;
+    case WM_PAINT:
+    {
+        hDC = BeginPaint(hWnd, &ps);
+        SelectObject(hDC, hbBackground);
+
+        RECT rect;
+        GetWindowRect(hWnd, &rect);
+
+        RECT rcRender = { 4, 4, TIMER_RECT_WIDTH - 4, TIMER_RECT_HEIGHT - 4 };
+        //RECT rcRender = { 2, 2, TIMER_RECT_WIDTH - 4, TIMER_RECT_HEIGHT - 4 };
+        FillRect(hdc, &rcRender, hbBackground);
+        SetBkMode(hDC, TRANSPARENT);
+
+        char number[10] = "";
+
+        if (Get_Con()) {
+            itoa(Get_Now_Time(), number, 10);
+        }
+        else {
+            sprintf(number, "---");
+        }
+
+        DrawTextA(hdc, number, -1, &rcRender, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+        InvalidateRect(hWnd, NULL, true);
+        UpdateWindow(hWnd);
+
+		EndPaint(hWnd, &ps);
+	}
+	    break;
+    case WM_TIMER:
+        InvalidateRect(hWnd, NULL, true);
+        UpdateWindow(hWnd);
+        break;
+	case WM_KEYDOWN:
+		break;
+	case WM_KEYUP:
+		break;
+	case WM_MOUSEWHEEL:
+		break;
+	case WM_DESTROY:
+		DeleteObject(hbBackground);
+		PostQuitMessage(0);
+		break;
+	}
+	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+void Udt_Timer(int nNumber) {
+    nTimer = nNumber;
+
+    SendMessage(hTimer_Wnd, WM_PAINT, NULL, NULL);
 }

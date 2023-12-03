@@ -41,6 +41,8 @@ bool GetShowChatBox();
 void SetShowChatBox(bool bSet);
 
 //
+int Get_Now_Time();
+
 bool Get_Con();
 void Set_Con(bool bNew_Con);
 
