@@ -389,7 +389,7 @@ void CNumber_Object::Udt_Number(int nNumber) {
 }
 
 void CNumber_Object::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera) {
-	pd3d_Command_List->SetGraphicsRoot32BitConstants(4, 16, &m_xmf4x4_Texture_UV, 0);
+	//pd3d_Command_List->SetGraphicsRoot32BitConstants(4, 16, &m_xmf4x4_Texture_UV, 0);
 
 	CObject::Render(pd3d_Command_List, pCamera);
 }

@@ -146,6 +146,7 @@ void CShader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_Ro
 	//m_nPipeline_States = 1;
 	//m_ppd3d_Pipeline_States = new ID3D12PipelineState * [m_nPipeline_States];
 
+	HRESULT hResult;
 	ID3DBlob* pd3d_Vertex_Shader_Blob = NULL;
 	ID3DBlob* pd3d_Pixel_Shader_Blob = NULL;
 
@@ -165,7 +166,15 @@ void CShader::Crt_Shader(ID3D12Device* pd3d_Device, ID3D12RootSignature* pd3d_Ro
 	d3d_Pipeline_State_Desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	d3d_Pipeline_State_Desc.SampleDesc.Count = 1;
 	d3d_Pipeline_State_Desc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
-	pd3d_Device->CreateGraphicsPipelineState(&d3d_Pipeline_State_Desc, __uuidof(ID3D12PipelineState), (void**)&m_ppd3d_Pipeline_States[0]);
+	hResult = pd3d_Device->CreateGraphicsPipelineState(&d3d_Pipeline_State_Desc, __uuidof(ID3D12PipelineState), (void**)&m_ppd3d_Pipeline_States[0]);
+
+	// print error
+	if (FAILED(hResult)) {
+		_com_error comError(hResult);
+		char str[256] = "";
+		WideCharToMultiByte(CP_ACP, 0, comError.ErrorMessage(), -1, str, 256, NULL, NULL);
+		OutputDebugStringA(str);
+	}
 
 	if (pd3d_Vertex_Shader_Blob) {
 		pd3d_Vertex_Shader_Blob->Release();
