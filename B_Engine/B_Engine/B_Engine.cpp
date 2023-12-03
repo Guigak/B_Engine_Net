@@ -401,6 +401,7 @@ void Prcs_Console_Cmd() {
             HANDLE hThread2 = CreateThread(NULL, 0, Get_Cube_Object_From_Server, NULL, 0, NULL);
 
             //
+            gFramework.Clr_Cube_Objects();
             Set_Con(true);
         }
         else if (!strcmp(cmd, "clear")) {
@@ -649,6 +650,7 @@ void DoCommandAction()
             // 채팅 스레드 생성
             HANDLE hThread3 = CreateThread(NULL, 0, RecvChatData, NULL, 0, NULL);
             //
+            gFramework.Clr_Cube_Objects();
             Set_Con(true);
 
             std::string cd = std::string("[시스템] \"") + words[1] + std::string("에 접속하였습니다.");
@@ -688,6 +690,7 @@ void DoCommandAction()
             // 채팅 스레드 생성
             HANDLE hThread3 = CreateThread(NULL, 0, RecvChatData, NULL, 0, NULL);
             //
+            gFramework.Clr_Cube_Objects();
             Set_Con(true);
 
 
