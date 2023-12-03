@@ -19,6 +19,9 @@ bool g_bActive = true;
 
 HWND hWnd;
 
+//
+HWND hTimer_Wnd;
+
 //=================== 채팅창 관련 시작 ===================
 #define CHAT_BOX_WIDTH 500
 #define CHAT_BOX_HEIGHT 300
@@ -124,6 +127,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     RegisterClassExW(&wcex);
 
+    //
+    wcex.hCursor = LoadCursor(NULL, IDC_CROSS);
+    wcex.lpfnWndProc = ChildProc;
+    wcex.lpszClassName = TEXT("Timer_Wnd");
+    wcex.hbrBackground = (HBRUSH)GetStockObject(COLOR_MENU);
+    RegisterClassExW(&wcex);
 
     // TODO: ChildWindow 만들고서 생성하기
     
@@ -262,6 +271,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         childHWND = CreateWindow(TEXT("ChildCls"), NULL, WS_POPUP | WS_VISIBLE,
             rect.left + 10, rect.bottom - CHAT_BOX_HEIGHT-10, CHAT_BOX_WIDTH, CHAT_BOX_HEIGHT, hWnd, (HMENU)NULL, hInst, NULL);
         ShowWindow(childHWND, SW_HIDE);
+
+        //
+        hTimer_Wnd = CreateWindow(TEXT("Timer_Wnd"), NULL, WS_POPUP | WS_VISIBLE, rect.left + FRAME_BUFFER_WIDTH * 9 / 20, rect.top + 40, FRAME_BUFFER_WIDTH / 10, rect.bottom / 20, hWnd, (HMENU)NULL, hInst, NULL);
 	    }
         
         break;

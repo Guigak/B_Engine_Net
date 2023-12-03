@@ -59,8 +59,8 @@ using Microsoft::WRL::ComPtr;
 #pragma comment(lib, "dxguid.lib")
 
 // client rect size
-#define FRAME_BUFFER_WIDTH	800
-#define FRAME_BUFFER_HEIGHT	600
+#define FRAME_BUFFER_WIDTH	1200
+#define FRAME_BUFFER_HEIGHT	800
 
 // random color
 #define RANDOM_COLOR DirectX::XMFLOAT4(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX))
