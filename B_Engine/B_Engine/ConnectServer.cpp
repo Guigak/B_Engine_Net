@@ -19,7 +19,7 @@ SOCKET RecvPlayerDataSocket;
 SOCKET ChatDataSocket;
 int PlayerNumber{};
 
-// 큐브 벡터 크리티컬 섹션
+//  큐브 벡터 크리티컬 섹션
 CRITICAL_SECTION cs_Cube;
 
 std::vector<Cube_Info> m_vServerObjects;
@@ -27,7 +27,7 @@ std::vector<Cube_Info> Get_m_vServerObjects() { return m_vServerObjects; }
 void Release_m_vServerObjects()
 {
 	EnterCriticalSection(&cs_Cube);
-	m_vServerObjects.clear();
+	std::vector<Cube_Info>().swap(m_vServerObjects);
 	LeaveCriticalSection(&cs_Cube);
 }
 
