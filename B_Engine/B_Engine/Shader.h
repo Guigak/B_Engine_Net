@@ -115,7 +115,7 @@ public :
 	virtual CObject* Pick_Object_By_Ray_Intersection(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
 
 	//
-	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {};
+	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance, CPlayer* pPlayer) {};
 	
 	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {};
 
@@ -151,7 +151,7 @@ public :
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
 
-	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
+	virtual void Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance, CPlayer* pPlayer);
 	
 	virtual void Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance);
 

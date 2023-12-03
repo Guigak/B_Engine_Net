@@ -482,7 +482,7 @@ void CInstancing_Shader::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CC
 	m_ppObjects[0]->Render_Bounding_Box(pd3d_Command_List, pCamera, m_nObjects);
 }
 
-void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance) {
+void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance, CPlayer* pPlayer) {
 	int nIntersected = 0;
 	*pfNear_Hit_Distance = PLAYER_PICKING_DISTANCE;
 	float fHit_Distance = FLT_MAX;
@@ -534,7 +534,18 @@ void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, 
 			pObject = new CObject();
 			pObject->Set_Position(xmf3_Position);
 			pObject->Set_Color(0.5f, 0.0f, 0.0f, 0.0f);
-			m_ppObjects[m_nObjects++] = pObject;
+
+			DirectX::BoundingOrientedBox d3d_OBB_Player = pPlayer->Get_OBB();
+			DirectX::BoundingOrientedBox d3d_OBB_Object = pObject->Get_OBB();
+
+			if (d3d_OBB_Player.Intersects(d3d_OBB_Object)) {
+				delete pObject;
+
+				return;
+			}
+			else {
+				m_ppObjects[m_nObjects++] = pObject;
+			}
 		}
 
 		// 피킹된 곳의 설치될 큐브 정보 보내기 + 플레이어 당 큐브 색 추가해야 됌

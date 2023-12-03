@@ -548,7 +548,7 @@ void CFramework::Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM l
 		break;
 	case WM_RBUTTONDOWN :
 		if (m_bCaptured) {
-			m_pScene->Add_Cube_Object(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera);
+			m_pScene->Add_Cube_Object(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera, m_pPlayer);
 		}
 		break;
 	case WM_LBUTTONUP :

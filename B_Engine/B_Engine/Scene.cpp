@@ -138,7 +138,7 @@ void CScene::Delete_Cube_Object(int Client_x, int Client_y, CCamera* pCamera) {	
 	}
 }
 
-void CScene::Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera) {
+void CScene::Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera, CPlayer* pPlayer) {
 	if (!pCamera) {
 		return;
 	}
@@ -156,7 +156,7 @@ void CScene::Add_Cube_Object(int Client_x, int Client_y, CCamera* pCamera) {
 	float fHit_Distance = FLT_MAX;
 	float fNearest_Hit_Distance = FLT_MAX;
 
-	m_ppShaders[0]->Add_Cube_Object(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
+	m_ppShaders[0]->Add_Cube_Object(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance, pPlayer);
 }
 
 void CScene::Clr_Cube_Objects() {
