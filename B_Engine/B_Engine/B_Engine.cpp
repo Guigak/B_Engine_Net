@@ -786,11 +786,10 @@ LRESULT CALLBACK Timer_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         SelectObject(hDC, hbBackground);
 
         RECT rect;
-        GetWindowRect(hWnd, &rect);
+        GetClientRect(hWnd, &rect);
 
         RECT rcRender = { 4, 4, TIMER_RECT_WIDTH - 4, TIMER_RECT_HEIGHT - 4 };
-        //RECT rcRender = { 2, 2, TIMER_RECT_WIDTH - 4, TIMER_RECT_HEIGHT - 4 };
-        FillRect(hdc, &rcRender, hbBackground);
+        FillRect(hDC, &rcRender, hbBackground);
         SetBkMode(hDC, TRANSPARENT);
 
         char number[10] = "";
@@ -802,30 +801,26 @@ LRESULT CALLBACK Timer_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             sprintf(number, "---");
         }
 
-        DrawTextA(hdc, number, -1, &rcRender, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+        DrawTextA(hDC, number, -1, &rcRender, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
-        InvalidateRect(hWnd, NULL, true);
-        UpdateWindow(hWnd);
-
-		EndPaint(hWnd, &ps);
-	}
-	    break;
+        EndPaint(hWnd, &ps);
+    }
+    break;
     case WM_TIMER:
-        InvalidateRect(hWnd, NULL, true);
-        UpdateWindow(hWnd);
+        InvalidateRect(hWnd, NULL, true); // 이 부분은 유지하고 해당 시간 간격마다 윈도우를 갱신합니다.
         break;
-	case WM_KEYDOWN:
-		break;
-	case WM_KEYUP:
-		break;
-	case WM_MOUSEWHEEL:
-		break;
-	case WM_DESTROY:
-		DeleteObject(hbBackground);
-		PostQuitMessage(0);
-		break;
-	}
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+    case WM_KEYDOWN:
+        break;
+    case WM_KEYUP:
+        break;
+    case WM_MOUSEWHEEL:
+        break;
+    case WM_DESTROY:
+        DeleteObject(hbBackground);
+        PostQuitMessage(0);
+        break;
+    }
+    return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 void Udt_Timer(int nNumber) {
