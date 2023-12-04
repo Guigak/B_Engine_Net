@@ -267,6 +267,7 @@ DWORD WINAPI Get_Time(LPVOID arg)
 					std::string s = "패배했습니다. 승리자는 " + std::to_string(winner_player_number) + "입니다.";
 					MessageBoxA(hWnd, s.c_str(), "패배!", MB_OK);
 				}
+				break;
 			}
 			// Multiple winners
 			else 
@@ -280,8 +281,9 @@ DWORD WINAPI Get_Time(LPVOID arg)
 				}
 				s += "입니다.";
 				MessageBoxA(hWnd, s.c_str(), "무승부!", MB_OK);
+				break;
 			}
-			
+			break;
 		}
 	}
 
