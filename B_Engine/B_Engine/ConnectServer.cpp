@@ -256,6 +256,8 @@ DWORD WINAPI Get_Time(LPVOID arg)
 				DisconnectServer();
 				return -1;
 			}
+
+			DisconnectServer();
 			for (int i = 0; i < PLAYER_MAX_NUMBER; ++i)
 			{
 				printf("%d개 받음\n", player_cube_count[i]);
@@ -307,7 +309,7 @@ DWORD WINAPI Get_Time(LPVOID arg)
 
 	//DeleteCriticalSection(&cs_Cube);
 	// 소켓 닫기
-	closesocket(sock);
+	DisconnectServer();
 	// 윈속 종료
 	WSACleanup();
 	return 0;
