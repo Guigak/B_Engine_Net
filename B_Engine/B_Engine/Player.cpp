@@ -434,11 +434,6 @@ void CPlayer::Prcs_Collision(CObject* pObject) {
 
 		//OutputDebugStringA("Ãæµ¹ÇÔ\n");
 	}
-
-	// drop
-	if (m_xmf4x4_World._42 < -10.0f) {
-		Set_Position(0.0f, 50.0f, 0.0f);
-	}
 }
 
 void CPlayer::Udt_N_Prcs_Collision(CObject** ppObject, int nObjects) {
@@ -559,6 +554,11 @@ void CPlayer::Udt_N_Prcs_Collision(CObject** ppObject, int nObjects) {
 				m_xmf4x4_World._42 = m_xmf3_Position.z = xmf3_Object_Position.z - CUBE_WIDTH / 2 - PLAYER_WIDTH / 2 - PLAYER_COLLISION_OFFSET;
 			}
 		}
+	}
+
+	// drop
+	if (m_xmf4x4_World._42 < -10.0f) {
+		Set_Position(0.0f, 50.0f, 0.0f);
 	}
 }
 
