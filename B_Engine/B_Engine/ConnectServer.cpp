@@ -27,7 +27,9 @@ std::vector<Cube_Info> Get_m_vServerObjects() { return m_vServerObjects; }
 void Release_m_vServerObjects()
 {
 	EnterCriticalSection(&cs_Cube);
-	std::vector<Cube_Info>().swap(m_vServerObjects);
+	if (m_vServerObjects.size() != 0) {
+		std::vector<Cube_Info>().swap(m_vServerObjects);
+	}
 	LeaveCriticalSection(&cs_Cube);
 }
 
