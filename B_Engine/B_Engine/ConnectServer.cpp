@@ -38,6 +38,7 @@ void Release_m_vServerObjects()
 			m_vServerObjects.clear();
 			//std::vector<Cube_Info>().clear(m_vServerObjects);
 		}
+
 	}
 	catch(std::exception e){
 		std::cout << e.what() << std::endl;
@@ -379,9 +380,9 @@ void ClearCube();
 bool checkCRITICAL;
 void DisconnectServer()
 {
+	mtx.lock();
 	if(Get_Con() &&!checkCRITICAL)
 	{
-		mtx.lock();
 		checkCRITICAL = true;
 		if (ChatDataSocket != INVALID_SOCKET) closesocket(ChatDataSocket);
 		if (KeyInputSocket != INVALID_SOCKET) closesocket(KeyInputSocket);
@@ -394,7 +395,7 @@ void DisconnectServer()
 		ClearCube();
 		AddLastChatData(-1, std::string{"[시스템] 서버와의 연결이 끊어졌습니다."});
 		checkCRITICAL = false;
-		mtx.unlock();
+		
 	}
-	
+	mtx.unlock();
 }
