@@ -32,6 +32,10 @@ CPlayer::~CPlayer() {
 }
 
 void CPlayer::Set_Position(float x, float y, float z) {
+	m_xmf3_Position.x = x;
+	m_xmf3_Position.y = x;
+	m_xmf3_Position.z = x;
+
 	m_xmf4x4_World._41 = x;
 	m_xmf4x4_World._42 = y;
 	m_xmf4x4_World._43 = z;
