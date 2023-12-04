@@ -760,6 +760,14 @@ void CPlayers_Shader::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCame
 	m_ppObjects[GetPlayerNumber()]->Set_Position(my_loc);
 }
 
+void CPlayers_Shader::Rst_Players_Position() {
+	for (int i = 0; i < m_nObjects; ++i) {
+		if (m_ppObjects[i]) {
+			m_ppObjects[i]->Set_Position(0.0f, -50.0f, 0.0f);
+		}
+	}
+}
+
 
 
 void CPlayers_Shader::GetAllPlayerData(CPlayer* m_pPlayer)

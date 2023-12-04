@@ -737,6 +737,10 @@ void CFramework::Chk_Collision_Player_N_Cube() {
 	m_pPlayer->Udt_N_Prcs_Collision(ppCube_Objects, nObjects);
 }
 
+void CFramework::Rst_Players_Position() {
+	m_pScene->Rst_Players_Position();
+}
+
 void CFramework::Clr_Cube_Objects() {
 	m_pScene->Clr_Cube_Objects();
 }

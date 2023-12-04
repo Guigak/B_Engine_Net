@@ -204,6 +204,12 @@ int CScene::Get_Object_Num_From_Shader(int nShader_Index) {
 	return 0;
 }
 
+void CScene::Rst_Players_Position() {
+	if (m_ppShaders[1]) {
+		((CPlayers_Shader*)m_ppShaders[1])->Rst_Players_Position();
+	}
+}
+
 void CScene::Build_Objects(ID3D12Device* pd3d_Device, ID3D12GraphicsCommandList* pd3d_Command_List) {
 	m_pd3d_Graphics_RootSignature = Crt_Graphics_RootSignature(pd3d_Device);
 

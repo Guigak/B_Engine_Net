@@ -26,7 +26,7 @@ LRESULT CALLBACK Timer_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void Udt_Timer(int nNumber);
 
 //
-CRITICAL_SECTION csCube;
+CRITICAL_SECTION csData;
 
 //=================== 채팅창 관련 시작 ===================
 #define CHAT_BOX_WIDTH 500
@@ -173,9 +173,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
         else {
-            EnterCriticalSection(&csCube);
+            EnterCriticalSection(&csData);
             gFramework.Adavance_Frame();
-            LeaveCriticalSection(&csCube);
+            LeaveCriticalSection(&csData);
         }
 
         //
@@ -291,7 +291,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         hTimer_Wnd = CreateWindow(TEXT("Timer_Wnd"), NULL, WS_POPUP | WS_VISIBLE, rect.left + FRAME_BUFFER_WIDTH * 9 / 20, rect.top + 40, TIMER_RECT_WIDTH, TIMER_RECT_HEIGHT, hWnd, (HMENU)NULL, hInst, NULL);
 
         //
-        InitializeCriticalSection(&csCube);
+        InitializeCriticalSection(&csData);
 	    }
         
         break;
@@ -356,12 +356,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         SetChatBoxOpenClose(wParam, message);
 
 
-        EnterCriticalSection(&csCube);
+        EnterCriticalSection(&csData);
         gFramework.Prcs_Msg_Wnd(hWnd, message, wParam, lParam);
-        LeaveCriticalSection(&csCube);
+        LeaveCriticalSection(&csData);
         break;
     case WM_DESTROY:
-        DeleteCriticalSection(&csCube);
+        DeleteCriticalSection(&csData);
 
         PostQuitMessage(0);
         break;
@@ -639,9 +639,10 @@ void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg)
 }
 void ClearCube()
 {
-    EnterCriticalSection(&csCube);
+    EnterCriticalSection(&csData);
     gFramework.Clr_Cube_Objects();
-    LeaveCriticalSection(&csCube);
+    gFramework.Rst_Players_Position();
+    LeaveCriticalSection(&csData);
 
     std::string cd = std::string("[시스템] \"") + std::string("모든 블럭을 초기화 하였습니다.");
     AddLastChatData(-1, cd);

@@ -123,6 +123,8 @@ public :
 public :
 	void Chk_Collision_Player_N_Cube();
 
+	void Rst_Players_Position();
+
 	// about cube
 	void Clr_Cube_Objects();
 

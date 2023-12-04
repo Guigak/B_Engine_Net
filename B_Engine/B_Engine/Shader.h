@@ -177,6 +177,9 @@ public :
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3d_Command_List, CCamera* pCamera);
 
+	//
+	void Rst_Players_Position();
+
 	//Server
 public:
 	void GetAllPlayerData(CPlayer* m_pPlayer);

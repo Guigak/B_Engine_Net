@@ -52,6 +52,8 @@ public :
 	CObject** Get_Objects_From_Shader(int nShader_Index);
 	int Get_Object_Num_From_Shader(int nShader_Index);
 
+	void Rst_Players_Position();
+
 
 	//Server
 	void Check_Cube_Object_4_Server(std::vector<Cube_Info> pObject);
