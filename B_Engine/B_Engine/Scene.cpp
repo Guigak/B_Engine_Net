@@ -103,13 +103,11 @@ CObject* CScene::Pick_Object_Pointed_By_Cursor(int Client_x, int Client_y, CCame
 	CObject* pIntersected_Object = NULL;
 	CObject* pNearest_Object = NULL;
 
-	for (int i = 0; i < m_nShaders; ++i) {
-		pIntersected_Object = m_ppShaders[i]->Pick_Object_By_Ray_Intersection(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
+	pIntersected_Object = m_ppShaders[0]->Pick_Object_By_Ray_Intersection(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);	// 0 : cube
 
-		if (pIntersected_Object && (fHit_Distance < fNearest_Hit_Distance)) {
-			fNearest_Hit_Distance = fHit_Distance;
-			pNearest_Object = pIntersected_Object;
-		}
+	if (pIntersected_Object && (fHit_Distance < fNearest_Hit_Distance)) {
+		fNearest_Hit_Distance = fHit_Distance;
+		pNearest_Object = pIntersected_Object;
 	}
 
 	return pNearest_Object;
@@ -182,25 +180,6 @@ void CScene::Check_Cube_Object_4_Server(std::vector<Cube_Info> pObject)
 			}
 		}
 		Release_m_vServerObjects();
-	}
-}
-
-void CScene::Check_Cube_Object_4_Server_test(CObject* pObject)
-{
-	if (pObject)
-	{
-		if (Get_AddorDelete_Cube())
-		{
-			m_ppShaders[0]->Add_Cube_Object_Server_test(pObject);
-		}
-
-		else
-		{
-			for (int i = 0; i < m_nShaders; ++i)
-			{
-				m_ppShaders[i]->Delete_Cube_Object_Server_test(pObject);
-			}
-		}
 	}
 }
 

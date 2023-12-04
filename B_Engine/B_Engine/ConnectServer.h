@@ -48,11 +48,6 @@ void Set_Con(bool bNew_Con);
 
 void DisconnectServer();
 
-CObject* Get_m_pServerObjects();		// 서버로 부터 받은 오브젝트 Geter
-void Release_m_pServerObjects();		// 생성후 전달 받은 오브젝트 제거
-bool Get_AddorDelete_Cube();			// 설치 삭제 bool getter
-void Release_AddorDelete_Cube();		// AddorDelete release
-
 struct KeyInput
 {
 	int key;

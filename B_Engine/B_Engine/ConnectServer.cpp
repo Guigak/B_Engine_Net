@@ -29,14 +29,7 @@ std::vector<Cube_Info>* Get_m_vServerObjects() {
 	return &m_vServerObjects; 
 }
 
-//++ 임시 테스트용
-CObject* m_pSeverObjects = NULL;
-bool AddorDelete = NULL;
-CObject* Get_m_pServerObjects() { return m_pSeverObjects; }
-void Release_m_pServerObjects() { m_pSeverObjects = NULL; }
-bool Get_AddorDelete_Cube() { return AddorDelete; }
-void Release_AddorDelete_Cube() { AddorDelete = NULL; }
-//
+
 
 void Release_m_vServerObjects()
 {
@@ -336,13 +329,7 @@ DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg)
 			break;
 		
 		EnterCriticalSection(&cs_Cube);
-		//m_vServerObjects.push_back(CubeInput);
-		//++ 임시
-		m_pSeverObjects = new CObject();
-		m_pSeverObjects->Set_Position(CubeInput.fPosition_x, CubeInput.fPosition_y, CubeInput.fPosition_z);
-		m_pSeverObjects->Set_Color(CubeInput.fColor_r, CubeInput.fColor_g, CubeInput.fColor_b, 0.0f);
-		AddorDelete = CubeInput.AddorDelete;
-
+		m_vServerObjects.push_back(CubeInput);
 		LeaveCriticalSection(&cs_Cube);
 	}
 	
