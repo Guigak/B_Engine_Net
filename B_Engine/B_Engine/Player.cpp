@@ -552,16 +552,16 @@ void CPlayer::Udt_N_Prcs_Collision(CObject** ppObject, int nObjects) {
 			float fNew_Position_Z = 0.0f;
 
 			if (m_xmf3_Calculated_Vel.z < 0) {
-				m_xmf4x4_World._42 = m_xmf3_Position.z = xmf3_Object_Position.z + CUBE_WIDTH / 2 + PLAYER_WIDTH / 2 + PLAYER_COLLISION_OFFSET;
+				m_xmf4x4_World._43 = m_xmf3_Position.z = xmf3_Object_Position.z + CUBE_WIDTH / 2 + PLAYER_WIDTH / 2 + PLAYER_COLLISION_OFFSET;
 			}
 			else {
-				m_xmf4x4_World._42 = m_xmf3_Position.z = xmf3_Object_Position.z - CUBE_WIDTH / 2 - PLAYER_WIDTH / 2 - PLAYER_COLLISION_OFFSET;
+				m_xmf4x4_World._43 = m_xmf3_Position.z = xmf3_Object_Position.z - CUBE_WIDTH / 2 - PLAYER_WIDTH / 2 - PLAYER_COLLISION_OFFSET;
 			}
 		}
 	}
 
 	// drop
-	if (m_xmf4x4_World._42 < -10.0f) {
+	if (m_xmf4x4_World._42 < -100.0f) {
 		Set_Position(0.0f, 50.0f, 0.0f);
 	}
 }
