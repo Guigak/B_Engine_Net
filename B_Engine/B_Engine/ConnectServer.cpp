@@ -235,7 +235,8 @@ void SetPlayerBuffer(DWORD key, bool bSet)
 DWORD WINAPI Get_Time(LPVOID arg)
 {
 	int retval = 0;
-	while (1) {
+	bool check_tmp = true;
+	while (check_tmp) {
 		retval = recv(sock, (char*)&now_time, sizeof(int), MSG_WAITALL);
 		if (retval == INVALID_SOCKET)
 		{
@@ -246,85 +247,94 @@ DWORD WINAPI Get_Time(LPVOID arg)
 			break;
 		printf("%d 초라고 시간 받았음\n", now_time);
 
-		//std::string s;
-		//switch (now_time)
-		//{
-		//case -1:
-		//	s = "승리자는 " + std::to_string(now_time) + "입니다.";
-		//	MessageBoxA(hWnd, s.c_str(), "결과", MB_OK);
-		//	break;
-		//case -2:
-		//	s = "승리자는 " + std::to_string(now_time) + "입니다.";
-		//	MessageBoxA(hWnd, s.c_str(), "결과", MB_OK);
-		//	break;
-		//case -3:
-		//	s = "승리자는 " + std::to_string(now_time) + "입니다.";
-		//	MessageBoxA(hWnd, s.c_str(), "결과", MB_OK);
-		//	break;
-		//default:
-		//	break;
-		//}
-
-		if (now_time <= 0) {
-			std::array<int, PLAYER_MAX_NUMBER> player_cube_count;
-			printf("결과창을 출력할것임\n");
-			retval = recv(sock, (char*)&player_cube_count, sizeof(int) * PLAYER_MAX_NUMBER, MSG_WAITALL);
-			if (retval == INVALID_SOCKET) {
-				printf("warning!!!!!!\n");
-				//DisconnectServer();
-				return -1;
-			}
-			printf("1111\n");
-			Sleep(1000);
-			DisconnectServer();
-			printf("2222\n");
-			for (int i = 0; i < PLAYER_MAX_NUMBER; ++i)
-			{
-				printf("%d개 받음\n", player_cube_count[i]);
-			}
-
-	
-			auto max_cube_count = std::max_element(player_cube_count.begin(), player_cube_count.end());
-			int winner_player_number = std::distance(player_cube_count.begin(), max_cube_count);
-
-
-			std::vector<int> winners;
-			for (int i = 0; i < PLAYER_MAX_NUMBER; ++i) {
-				if (player_cube_count[i] == *max_cube_count) {
-					winners.push_back(i);
-				}
-			}
-
-			// 승리자가 한명일 때
-			if (winners.size() == 1)
-			{
-				if (winner_player_number == GetPlayerNumber())
-				{
-					MessageBoxA(hWnd, "승리했습니다.", "승리!", MB_OK);
-				}
-				else
-				{
-					std::string s = "패배했습니다. 승리자는 " + std::to_string(winner_player_number) + "입니다.";
-					MessageBoxA(hWnd, s.c_str(), "패배!", MB_OK);
-				}
-				break;
-			}
-			// Multiple winners
-			else 
-			{
-				std::string s = "무승부입니다. 승리자는 ";
-				for (int i = 0; i < winners.size(); ++i) {
-					s += std::to_string(winners[i]);
-					if (i + 1 < winners.size()) {
-						s += ", ";
-					}
-				}
-				s += "입니다.";
-				MessageBoxA(hWnd, s.c_str(), "무승부!", MB_OK);
-				break;
-			}
+		std::string s;
+		switch (now_time)
+		{
+		case -1:
+			s = "승리자는 0번 입니다.";
+			MessageBoxA(hWnd, s.c_str(), "결과", MB_OK);
+			check_tmp = false;
+			break;
+		case -2:
+			s = "승리자는 1번 입니다.";
+			MessageBoxA(hWnd, s.c_str(), "결과", MB_OK);
+			check_tmp = false;
+			break;
+		case -3:
+			s = "승리자는 2번 입니다.";
+			MessageBoxA(hWnd, s.c_str(), "결과", MB_OK);
+			check_tmp = false;
+			break;
+		default:
 			break;
 		}
+
+		//if (now_time <= 0) {
+		//	int player_cube_count[PLAYER_MAX_NUMBER];
+		//	//std::array<int, PLAYER_MAX_NUMBER> player_cube_count;
+		//	printf("결과창을 출력할것임\n");
+		//	retval = recv(sock, (char*)&player_cube_count, sizeof(int) * PLAYER_MAX_NUMBER, MSG_WAITALL);
+		//	if (retval == INVALID_SOCKET) {
+		//		printf("warning!!\n");
+		//		for (int i = 0; i < PLAYER_MAX_NUMBER; ++i)
+		//		{
+		//			printf("%d\n", player_cube_count[i]);
+		//		}
+		//		//DisconnectServer();
+		//		return -1;
+		//	}
+
+		//	printf("1111\n");
+		//	Sleep(1000);
+		//	DisconnectServer();
+		//	printf("2222\n");
+		//	for (int i = 0; i < PLAYER_MAX_NUMBER; ++i)
+		//	{
+		//		printf("%d개 받음\n", player_cube_count[i]);
+		//	}
+
+	
+		//	auto max_cube_count = std::max_element(player_cube_count.begin(), player_cube_count.end());
+		//	int winner_player_number = std::distance(player_cube_count.begin(), max_cube_count);
+
+
+		//	std::vector<int> winners;
+		//	for (int i = 0; i < PLAYER_MAX_NUMBER; ++i) {
+		//		if (player_cube_count[i] == *max_cube_count) {
+		//			winners.push_back(i);
+		//		}
+		//	}
+
+		//	// 승리자가 한명일 때
+		//	if (winners.size() == 1)
+		//	{
+		//		if (winner_player_number == GetPlayerNumber())
+		//		{
+		//			MessageBoxA(hWnd, "승리했습니다.", "승리!", MB_OK);
+		//		}
+		//		else
+		//		{
+		//			std::string s = "패배했습니다. 승리자는 " + std::to_string(winner_player_number) + "입니다.";
+		//			MessageBoxA(hWnd, s.c_str(), "패배!", MB_OK);
+		//		}
+		//		break;
+		//	}
+		//	// Multiple winners
+		//	else 
+		//	{
+		//		std::string s = "무승부입니다. 승리자는 ";
+		//		for (int i = 0; i < winners.size(); ++i) {
+		//			s += std::to_string(winners[i]);
+		//			if (i + 1 < winners.size()) {
+		//				s += ", ";
+		//			}
+		//		}
+		//		s += "입니다.";
+		//		MessageBoxA(hWnd, s.c_str(), "무승부!", MB_OK);
+		//		break;
+		//	}
+		///*	break;
+		//}*/
 	}
 
 	//DeleteCriticalSection(&cs_Cube);
