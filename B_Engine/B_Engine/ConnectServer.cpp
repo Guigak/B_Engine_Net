@@ -2,6 +2,7 @@
 #include "Common.h"
 #include <array>
 #include <algorithm>
+#include <mutex>
 
 //#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 
@@ -21,6 +22,7 @@ int PlayerNumber{};
 
 //  큐브 벡터 크리티컬 섹션
 CRITICAL_SECTION cs_Cube;
+std::mutex mtx;
 
 std::vector<Cube_Info> m_vServerObjects;
 std::vector<Cube_Info>* Get_m_vServerObjects() { 
@@ -381,6 +383,7 @@ void DisconnectServer()
 {
 	if(Get_Con() &&!checkCRITICAL)
 	{
+		mtx.lock();
 		checkCRITICAL = true;
 		if (ChatDataSocket != INVALID_SOCKET) closesocket(ChatDataSocket);
 		if (KeyInputSocket != INVALID_SOCKET) closesocket(KeyInputSocket);
@@ -393,6 +396,7 @@ void DisconnectServer()
 		ClearCube();
 		AddLastChatData(-1, std::string{"[시스템] 서버와의 연결이 끊어졌습니다."});
 		checkCRITICAL = false;
+		mtx.unlock();
 	}
 	
 }
