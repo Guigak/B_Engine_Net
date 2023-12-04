@@ -30,7 +30,7 @@ DWORD WINAPI Get_Time(LPVOID arg);		// 시간값 받는 루프
 DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg); // 큐브 생성 스레드
 
 // 서버로 부터 받은 오브젝트 Getter
-std::vector<Cube_Info> Get_m_vServerObjects();
+std::vector<Cube_Info>* Get_m_vServerObjects();
 // 서버로 부터 받은 오브젝트 Release
 void Release_m_vServerObjects();
 
