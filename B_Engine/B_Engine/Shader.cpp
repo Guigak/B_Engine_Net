@@ -348,7 +348,9 @@ void CObjects_Shader::Release_Upload_Buffers() {
 
 void CObjects_Shader::Anim_Objects(float fElapsed_Time) {
 	for (int i = 0; i < m_nObjects; ++i) {
-		m_ppObjects[i]->Anim(fElapsed_Time);
+		if (m_ppObjects[i]) {
+			m_ppObjects[i]->Anim(fElapsed_Time);
+		}
 	}
 }
 
