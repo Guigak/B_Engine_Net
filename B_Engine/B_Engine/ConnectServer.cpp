@@ -246,7 +246,11 @@ DWORD WINAPI Get_Time(LPVOID arg)
 			break;
 		printf("%d 초라고 시간 받았음\n", now_time);
 
-
+		/*switch (now_time)
+		{
+		default:
+			break;
+		}*/
 		if (now_time <= 0) {
 			std::array<int, PLAYER_MAX_NUMBER> player_cube_count;
 			printf("결과창을 출력할것임\n");
@@ -256,7 +260,7 @@ DWORD WINAPI Get_Time(LPVOID arg)
 				DisconnectServer();
 				return -1;
 			}
-
+			Sleep(1000);
 			DisconnectServer();
 			for (int i = 0; i < PLAYER_MAX_NUMBER; ++i)
 			{
