@@ -316,6 +316,7 @@ DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg)
 		LeaveCriticalSection(&cs_Cube);
 	}
 	
+	DeleteCriticalSection(&cs_Cube);
 	// 소켓 닫기
 	closesocket(CubeSocket);
 	// 윈속 종료
@@ -378,7 +379,6 @@ void DisconnectServer()
 		ClearCube();
 		AddLastChatData(-1, std::string{"[시스템] 서버와의 연결이 끊어졌습니다."});
 		checkCRITICAL = false;
-		DeleteCriticalSection(&cs_Cube);
 	}
 	
 }
