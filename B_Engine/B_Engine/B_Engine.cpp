@@ -815,10 +815,15 @@ LRESULT CALLBACK Timer_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             {
                 if (Get_Now_Time() % GAMETIME == 0) {
                     strcpy(number, "Start!");
-                    ClearCube();
                 }
                 else
                 {
+                    if (Get_Now_Time() % GAMETIME == 3) {
+                        EnterCriticalSection(&csData);
+                        gFramework.Clr_Cube_Objects();
+                        LeaveCriticalSection(&csData);
+                    }
+
                     itoa(Get_Now_Time() % GAMETIME, number, 10);
                 }
             }
