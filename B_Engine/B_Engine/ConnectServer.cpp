@@ -337,7 +337,6 @@ DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg)
 	
 	DeleteCriticalSection(&cs_Cube);
 	// 소켓 닫기
-	closesocket(CubeSocket);
 	// 윈속 종료
 	WSACleanup();
 	return 0;
