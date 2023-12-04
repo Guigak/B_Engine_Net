@@ -416,7 +416,11 @@ void CFramework::Prcs_Input() {
 			}
 		}
 		if (dwDirection) {
-			if (!Get_Con() && !GetShowChatBox()) {
+			if (!Get_Con()) {
+				if (GetShowChatBox()) {
+					dwDirection = 0;
+				}
+
 				m_pPlayer->Move(dwDirection, PLAYER_MOVE_DISTANCE * m_Timer.Get_Elapsed_Time(), true);
 			}
 		}
@@ -431,7 +435,7 @@ void CFramework::Anim_Objects() {
 	}
 
 	//
-	if (!Get_Con() && !GetShowChatBox()) {
+	if (!Get_Con()) {
 		Chk_Collision_Player_N_Cube();
 	}
 	m_pCamera->Udt_Shader_Variables(m_pd3d_Command_List);
