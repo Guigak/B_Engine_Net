@@ -413,6 +413,7 @@ void Prcs_Console_Cmd() {
 
         if (!strcmp(cmd, "connect")) {
 
+            gFramework.Clr_Cube_Objects();
             Connect_To_Server(IP_ADDRESS);
             CreateKeyInputServerSocket(IP_ADDRESS);
             CreateCubeServerSocket(IP_ADDRESS);
@@ -425,7 +426,6 @@ void Prcs_Console_Cmd() {
             HANDLE hThread2 = CreateThread(NULL, 0, Get_Cube_Object_From_Server, NULL, 0, NULL);
 
             //
-            gFramework.Clr_Cube_Objects();
             Set_Con(true);
         }
         else if (!strcmp(cmd, "clear")) {
@@ -815,6 +815,7 @@ LRESULT CALLBACK Timer_Proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             {
                 if (Get_Now_Time() % GAMETIME == 0) {
                     strcpy(number, "Start!");
+                    ClearCube();
                 }
                 else
                 {
