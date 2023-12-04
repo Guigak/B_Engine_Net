@@ -33,13 +33,14 @@ void Release_m_vServerObjects()
 	try {
 		
 		if (m_vServerObjects.size() != 0) {
-			std::vector<Cube_Info>().swap(m_vServerObjects);
+			m_vServerObjects.clear();
+			//std::vector<Cube_Info>().clear(m_vServerObjects);
 		}
 
 		throw 1;
 	}
-	catch(int excep){
-		std::cout << excep << std::endl;
+	catch(std::exception e){
+		std::cout << e.what() << std::endl;
 	}
 	LeaveCriticalSection(&cs_Cube);
 }
@@ -240,13 +241,21 @@ DWORD WINAPI Get_Time(LPVOID arg)
 		}
 		else if (retval == 0)
 			break;
+		printf("%d 초라고 시간 받았음\n", now_time);
 
-		std::array<int, PLAYER_MAX_NUMBER> player_cube_count;
+
 		if (now_time <= 0) {
+			std::array<int, PLAYER_MAX_NUMBER> player_cube_count;
+			printf("결과창을 출력할것임\n");
 			retval = recv(sock, (char*)&player_cube_count, sizeof(int) * PLAYER_MAX_NUMBER, MSG_WAITALL);
 			if (retval == INVALID_SOCKET) {
+				printf("warning!!!!!!\n");
 				DisconnectServer();
 				return -1;
+			}
+			for (int i = 0; i < PLAYER_MAX_NUMBER; ++i)
+			{
+				printf("%d개 받음\n", player_cube_count[i]);
 			}
 
 	
