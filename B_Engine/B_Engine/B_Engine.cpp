@@ -355,7 +355,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         SetChatBoxOpenClose(wParam, message);
 
+
+        EnterCriticalSection(&csCube);
         gFramework.Prcs_Msg_Wnd(hWnd, message, wParam, lParam);
+        LeaveCriticalSection(&csCube);
         break;
     case WM_DESTROY:
         DeleteCriticalSection(&csCube);

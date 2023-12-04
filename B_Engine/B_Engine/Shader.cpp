@@ -371,6 +371,10 @@ CObject* CObjects_Shader::Pick_Object_By_Ray_Intersection(DirectX::XMFLOAT3& xmf
 	CObject* pSelected_Object = NULL;
 
 	for (int i = 0; i < m_nObjects; ++i) {
+		if (m_ppObjects[i] == NULL) {
+			return;
+		}
+
 		nIntersected = m_ppObjects[i]->Pick_Object_By_Ray_Intersection(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance, m_ppObjects[0]->Get_Mesh());
 
 		if ((nIntersected > 0) && (fHit_Distance < *pfNear_Hit_Distance)) {

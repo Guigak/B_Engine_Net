@@ -38,8 +38,6 @@ void Release_m_vServerObjects()
 			m_vServerObjects.clear();
 			//std::vector<Cube_Info>().clear(m_vServerObjects);
 		}
-
-		throw 1;
 	}
 	catch(std::exception e){
 		std::cout << e.what() << std::endl;
