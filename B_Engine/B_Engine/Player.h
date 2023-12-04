@@ -56,6 +56,7 @@ public :
 	void Set_Max_Gravity(float fMax_Gravity) { m_fMax_Gravity = fMax_Gravity; }
 	void Set_Friction(float fFriction) { m_fFriction = fFriction; }
 
+	void Set_Position(float x, float y, float z);
 	void Set_Position(DirectX::XMFLOAT3& xmf3_Position) { Move(DirectX::XMFLOAT3(xmf3_Position.x - m_xmf3_Position.x, xmf3_Position.y - m_xmf3_Position.y, xmf3_Position.z - m_xmf3_Position.z), false); }
 
 	DirectX::XMFLOAT3& Get_Velocity() { return m_xmf3_Velocity; }

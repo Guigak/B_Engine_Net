@@ -100,6 +100,9 @@ DWORD WINAPI Prcs_Console(LPVOID argument) {
 }
 
 
+//
+bool g_bActive_Wnd = false;
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
                      _In_ LPWSTR    lpCmdLine,
@@ -181,9 +184,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         //
         if (GetActiveWindow() == GetForegroundWindow()) {
             ShowWindow(hTimer_Wnd, SW_SHOW);
+            g_bActive_Wnd = true;
         }
         else {
             ShowWindow(hTimer_Wnd, SW_HIDE);
+            g_bActive_Wnd = false;
         }
     }
     gFramework.OnDestroy();
@@ -357,7 +362,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 
         EnterCriticalSection(&csData);
-        gFramework.Prcs_Msg_Wnd(hWnd, message, wParam, lParam);
+        gFramework.Prcs_Msg_Wnd(hWnd, message, wParam, lParam, g_bActive_Wnd);
         LeaveCriticalSection(&csData);
         break;
     case WM_DESTROY:
@@ -637,11 +642,12 @@ void SetChatBoxOpenClose(WPARAM wParam, UINT uMsg)
     }
     InvalidateRect(childHWND, NULL, true);
 }
-void ClearCube()
+void Reset_Game()
 {
     EnterCriticalSection(&csData);
     gFramework.Clr_Cube_Objects();
     gFramework.Rst_Players_Position();
+    gFramework.Respawn_Player();
     LeaveCriticalSection(&csData);
 
     std::string cd = std::string("[시스템] \"") + std::string("모든 블럭을 초기화 하였습니다.");
@@ -665,7 +671,7 @@ void DoCommandAction()
         bool bCanConnect = Connect_To_Server(words[1].c_str());
         if(bCanConnect)
         {
-            ClearCube();
+            Reset_Game();
             CreateKeyInputServerSocket(words[1].c_str());
             CreateCubeServerSocket(words[1].c_str());
             CreateRecvPlayerDataSocket(words[1].c_str());
@@ -692,7 +698,7 @@ void DoCommandAction()
         
     }
     else if (words[0] == "clear") {
-        ClearCube();
+        Reset_Game();
     }
     else if (words[0] == "settimer") {
         Udt_Timer(std::stoi(words[1]));
@@ -708,7 +714,7 @@ void DoCommandAction()
         bool bCanConnect = Connect_To_Server("127.0.0.1");
         if (bCanConnect)
         {
-            ClearCube();
+            Reset_Game();
             CreateKeyInputServerSocket("127.0.0.1");
             CreateCubeServerSocket("127.0.0.1");
             CreateRecvPlayerDataSocket("127.0.0.1");

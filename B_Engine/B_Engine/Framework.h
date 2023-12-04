@@ -105,7 +105,7 @@ public :
 	void Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam);
 	void Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam);
 
-	LRESULT CALLBACK Prcs_Msg_Wnd(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam);
+	LRESULT CALLBACK Prcs_Msg_Wnd(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam, bool bActive);
 
 	// full screen
 public :
@@ -123,6 +123,7 @@ public :
 public :
 	void Chk_Collision_Player_N_Cube();
 
+	void Respawn_Player();
 	void Rst_Players_Position();
 
 	// about cube

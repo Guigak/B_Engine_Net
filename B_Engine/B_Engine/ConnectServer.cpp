@@ -342,7 +342,7 @@ bool ShowChatBox = false;
 bool GetShowChatBox() { return ShowChatBox; }
 void SetShowChatBox(bool bSet) { ShowChatBox = bSet; }
 void AddLastChatData(int playerNumber, std::string);
-void ClearCube();
+void Reset_Game();
 bool checkCRITICAL;
 void DisconnectServer()
 {
@@ -359,7 +359,7 @@ void DisconnectServer()
 
 		Set_Con(false);
 
-		ClearCube();
+		Reset_Game();
 		AddLastChatData(-1, std::string{"[시스템] 서버와의 연결이 끊어졌습니다."});
 		checkCRITICAL = false;
 		

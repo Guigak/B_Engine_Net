@@ -559,7 +559,6 @@ void CFramework::Prcs_Msg_Mouse(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM l
 	case WM_RBUTTONUP :
 		break;
 	case WM_MOUSEMOVE :
-		m_pSelected_Object = m_pScene->Pick_Object_Pointed_By_Cursor(FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 2, m_pCamera);
 		break;
 	default :
 		break;
@@ -636,7 +635,7 @@ void CFramework::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARA
 	}
 }
 
-LRESULT CALLBACK CFramework::Prcs_Msg_Wnd(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK CFramework::Prcs_Msg_Wnd(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam, bool bActive) {
 	switch (nMsg_ID) {
 	case WM_SIZE :
 		m_nWndClient_Width = LOWORD(lParam);
@@ -647,7 +646,9 @@ LRESULT CALLBACK CFramework::Prcs_Msg_Wnd(HWND hWnd, UINT nMsg_ID, WPARAM wParam
 	case WM_LBUTTONUP :
 	case WM_RBUTTONUP :
 	case WM_MOUSEMOVE :
-		Prcs_Msg_Mouse(hWnd, nMsg_ID, wParam, lParam);
+		if (bActive) {
+			Prcs_Msg_Mouse(hWnd, nMsg_ID, wParam, lParam);
+		}
 		break;
 	case WM_KEYDOWN :
 	case WM_KEYUP :
@@ -735,6 +736,12 @@ void CFramework::Chk_Collision_Player_N_Cube() {
 	}
 	
 	m_pPlayer->Udt_N_Prcs_Collision(ppCube_Objects, nObjects);
+}
+
+void CFramework::Respawn_Player() {
+	if (m_pPlayer) {
+		m_pPlayer->Set_Position(0.0f, 50.0f, 0.0f);
+	}
 }
 
 void CFramework::Rst_Players_Position() {

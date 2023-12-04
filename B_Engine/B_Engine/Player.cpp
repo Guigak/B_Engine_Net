@@ -31,6 +31,12 @@ CPlayer::~CPlayer() {
 	}
 }
 
+void CPlayer::Set_Position(float x, float y, float z) {
+	m_xmf4x4_World._41 = x;
+	m_xmf4x4_World._42 = y;
+	m_xmf4x4_World._43 = z;
+}
+
 void CPlayer::Move(ULONG dwDirection, float fDistance, bool bVelocity) {
 	if (dwDirection) {
 		DirectX::XMFLOAT3 xmf3_Shift = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
