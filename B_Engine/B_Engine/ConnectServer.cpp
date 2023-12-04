@@ -246,11 +246,25 @@ DWORD WINAPI Get_Time(LPVOID arg)
 			break;
 		printf("%d 초라고 시간 받았음\n", now_time);
 
-		/*switch (now_time)
-		{
-		default:
-			break;
-		}*/
+		//std::string s;
+		//switch (now_time)
+		//{
+		//case -1:
+		//	s = "승리자는 " + std::to_string(now_time) + "입니다.";
+		//	MessageBoxA(hWnd, s.c_str(), "결과", MB_OK);
+		//	break;
+		//case -2:
+		//	s = "승리자는 " + std::to_string(now_time) + "입니다.";
+		//	MessageBoxA(hWnd, s.c_str(), "결과", MB_OK);
+		//	break;
+		//case -3:
+		//	s = "승리자는 " + std::to_string(now_time) + "입니다.";
+		//	MessageBoxA(hWnd, s.c_str(), "결과", MB_OK);
+		//	break;
+		//default:
+		//	break;
+		//}
+
 		if (now_time <= 0) {
 			std::array<int, PLAYER_MAX_NUMBER> player_cube_count;
 			printf("결과창을 출력할것임\n");
@@ -387,7 +401,8 @@ void ClearCube();
 bool checkCRITICAL;
 void DisconnectServer()
 {
-	mtx.lock();
+	//mtx.lock();
+	EnterCriticalSection(&cs_Cube);
 	if(Get_Con() &&!checkCRITICAL)
 	{
 		checkCRITICAL = true;
@@ -404,5 +419,6 @@ void DisconnectServer()
 		checkCRITICAL = false;
 		
 	}
-	mtx.unlock();
+	EnterCriticalSection(&cs_Cube);
+	//mtx.unlock();
 }
