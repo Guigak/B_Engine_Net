@@ -483,6 +483,10 @@ void CInstancing_Shader::Render(ID3D12GraphicsCommandList* pd3d_Command_List, CC
 }
 
 void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, DirectX::XMFLOAT4X4& xmf4x4_View, float* pfNear_Hit_Distance, CPlayer* pPlayer) {
+	if (m_nObjects >= CUBE_MAX_NUMBER) {
+		return;
+	}
+
 	int nIntersected = 0;
 	*pfNear_Hit_Distance = PLAYER_PICKING_DISTANCE;
 	float fHit_Distance = FLT_MAX;

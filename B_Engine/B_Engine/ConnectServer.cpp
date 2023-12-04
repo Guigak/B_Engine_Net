@@ -19,7 +19,7 @@ SOCKET RecvPlayerDataSocket;
 SOCKET ChatDataSocket;
 int PlayerNumber{};
 
-// 큐브 벡터 크리티컬 섹션
+//  큐브 벡터 크리티컬 섹션
 CRITICAL_SECTION cs_Cube;
 
 std::vector<Cube_Info> m_vServerObjects;
