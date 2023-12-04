@@ -372,7 +372,7 @@ CObject* CObjects_Shader::Pick_Object_By_Ray_Intersection(DirectX::XMFLOAT3& xmf
 
 	for (int i = 0; i < m_nObjects; ++i) {
 		if (m_ppObjects[i] == NULL) {
-			return;
+			return NULL;
 		}
 
 		nIntersected = m_ppObjects[i]->Pick_Object_By_Ray_Intersection(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance, m_ppObjects[0]->Get_Mesh());
@@ -669,6 +669,40 @@ void CInstancing_Shader::Delete_Cube_Object_Server(Cube_Info pObject)
 
 		--m_nObjects;
 	}
+}
+
+void CInstancing_Shader::Add_Cube_Object_Server_test(CObject* pObject)
+{
+	m_ppObjects[m_nObjects++] = pObject;
+	Release_m_pServerObjects();
+	Release_AddorDelete_Cube();
+}
+
+void CInstancing_Shader::Delete_Cube_Object_Server_test(CObject* pObject)
+{
+	CObject* pSelected_Object = NULL;
+	int nSelected_Index = 0;
+
+
+	for (int i = 0; i < m_nObjects; ++i) {
+		if (CompareXMFLOAT3(m_ppObjects[i]->Get_Position(), pObject->Get_Position())) {
+			pSelected_Object = m_ppObjects[i];
+			nSelected_Index = i;
+		}
+	}
+	if (pSelected_Object) {
+		if (nSelected_Index < (CUBE_INIT_RING_NUMBER * 2 + 1) * (CUBE_INIT_RING_NUMBER * 2 + 1)) {
+			return;
+		}
+		m_ppObjects[nSelected_Index]->Release();
+		m_ppObjects[nSelected_Index] = NULL;
+		if (nSelected_Index != m_nObjects - 1) {
+			m_ppObjects[nSelected_Index] = m_ppObjects[m_nObjects - 1];
+		}
+		--m_nObjects;
+	}
+	Release_m_pServerObjects();
+	Release_AddorDelete_Cube();
 }
 
 void CInstancing_Shader::Prepare_Render_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List) {

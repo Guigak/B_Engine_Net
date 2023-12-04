@@ -123,6 +123,9 @@ public :
 	virtual void Add_Cube_Object_Server(Cube_Info pObject) {};
 	virtual void Delete_Cube_Object_Server(Cube_Info pObject) {};
 
+	virtual void Add_Cube_Object_Server_test(CObject* pObject) {};
+	virtual void Delete_Cube_Object_Server_test(CObject* pObject) {};
+
 	//
 	CObject** Get_Objects() { return m_ppObjects; };
 	int Get_Object_Num() { return m_nObjects; };
@@ -160,6 +163,9 @@ public :
 	//++ ¼­¹ö¿ë add cube
 	virtual void Add_Cube_Object_Server(Cube_Info pObject);
 	virtual void Delete_Cube_Object_Server(Cube_Info pObject);
+
+	virtual void Add_Cube_Object_Server_test(CObject* pObject);
+	virtual void Delete_Cube_Object_Server_test(CObject* pObject);
 
 	// for bounding box
 	virtual void Prepare_Render_4_Bounding_Box(ID3D12GraphicsCommandList* pd3d_Command_List);

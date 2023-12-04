@@ -185,6 +185,26 @@ void CScene::Check_Cube_Object_4_Server(std::vector<Cube_Info> pObject)
 	}
 }
 
+void CScene::Check_Cube_Object_4_Server_test(CObject* pObject)
+{
+	if (pObject)
+	{
+		if (Get_AddorDelete_Cube())
+		{
+			m_ppShaders[0]->Add_Cube_Object_Server_test(pObject);
+		}
+
+		else
+		{
+			for (int i = 0; i < m_nShaders; ++i)
+			{
+				m_ppShaders[i]->Delete_Cube_Object_Server_test(pObject);
+			}
+		}
+	}
+}
+
+
 CObject** CScene::Get_Objects_From_Shader(int nShader_Index) {
 	if (m_nShaders > nShader_Index) {
 		if (m_ppShaders[nShader_Index]) {
