@@ -773,20 +773,24 @@ void CPlayers_Shader::Rst_Players_Position() {
 void CPlayers_Shader::GetAllPlayerData(CPlayer* m_pPlayer)
 {
 	struct Player_Info player_info[PLAYER_MAX_NUMBER];
-	int retval = recv(GetRecvPlayerSocket(), (char*)&player_info, sizeof(struct Player_Info) * PLAYER_MAX_NUMBER, MSG_WAITALL);
-	if (retval == INVALID_SOCKET)
+	if(GetRecvPlayerSocket()!=INVALID_SOCKET)
 	{
-		//DisconnectServer();
-		return;
-	}
+		int retval = recv(GetRecvPlayerSocket(), (char*)&player_info, sizeof(struct Player_Info) * PLAYER_MAX_NUMBER, MSG_WAITALL);
+		if (retval == INVALID_SOCKET)
+		{
+			//DisconnectServer();
+			return;
+		}
 
-	for(int i=0; i<PLAYER_MAX_NUMBER; ++i)
-	{
-		m_ppObjects[i]->Set_Position(player_info[i].fPosition_x, player_info[i].fPosition_y, player_info[i].fPosition_z);
-		m_ppObjects[i]->Set_Look_xz(player_info[i].fLook_x, player_info[i].fLook_z);
+		for (int i = 0; i < PLAYER_MAX_NUMBER; ++i)
+		{
+			m_ppObjects[i]->Set_Position(player_info[i].fPosition_x, player_info[i].fPosition_y, player_info[i].fPosition_z);
+			m_ppObjects[i]->Set_Look_xz(player_info[i].fLook_x, player_info[i].fLook_z);
+		}
+		DirectX::XMFLOAT3 player_location{player_info[GetPlayerNumber()].fPosition_x, player_info[GetPlayerNumber()].fPosition_y, player_info[GetPlayerNumber()].fPosition_z};
+		m_pPlayer->Set_Position(player_location);
 	}
-	DirectX::XMFLOAT3 player_location{player_info[GetPlayerNumber()].fPosition_x, player_info[GetPlayerNumber()].fPosition_y, player_info[GetPlayerNumber()].fPosition_z};
-	m_pPlayer->Set_Position(player_location);
+	
 }
 
 

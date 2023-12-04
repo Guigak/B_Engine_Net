@@ -356,7 +356,11 @@ void DisconnectServer()
 		if (CubeSocket != INVALID_SOCKET) closesocket(CubeSocket);
 		if (sock != INVALID_SOCKET) closesocket(sock);
 		if (RecvPlayerDataSocket != INVALID_SOCKET) closesocket(RecvPlayerDataSocket);
-
+		ChatDataSocket = INVALID_SOCKET;
+		KeyInputSocket = INVALID_SOCKET;
+		CubeSocket = INVALID_SOCKET;
+		sock = INVALID_SOCKET;
+		RecvPlayerDataSocket = INVALID_SOCKET;
 		Set_Con(false);
 
 		Reset_Game();
