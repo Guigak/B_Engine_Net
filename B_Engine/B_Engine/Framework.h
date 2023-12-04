@@ -107,6 +107,9 @@ public :
 
 	LRESULT CALLBACK Prcs_Msg_Wnd(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lParam, bool bActive);
 
+	//
+	void Set_Captured(bool bCaptured) { m_bCaptured = bCaptured; }
+
 	// full screen
 public :
 	void Chg_SwapChain_State();

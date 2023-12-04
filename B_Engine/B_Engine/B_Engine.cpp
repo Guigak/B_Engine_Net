@@ -189,6 +189,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         else {
             ShowWindow(hTimer_Wnd, SW_HIDE);
             g_bActive_Wnd = false;
+            gFramework.Set_Captured(false);
         }
     }
     gFramework.OnDestroy();
