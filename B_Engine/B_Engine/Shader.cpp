@@ -564,7 +564,7 @@ void CInstancing_Shader::Add_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Position, 
 		int retval = send(GetCubeSocket(), (const char*)&cube, sizeof(Cube_Info), 0);
 		if (retval == INVALID_SOCKET)
 		{
-			DisconnectServer();
+			//DisconnectServer();
 			return;
 		}
 	}
@@ -621,7 +621,7 @@ void CInstancing_Shader::Delete_Cube_Object(DirectX::XMFLOAT3& xmf3_Pick_Positio
 
 		if (retval == INVALID_SOCKET)
 		{
-			DisconnectServer();
+			//DisconnectServer();
 			return;
 		}
 	}
@@ -776,7 +776,7 @@ void CPlayers_Shader::GetAllPlayerData(CPlayer* m_pPlayer)
 	int retval = recv(GetRecvPlayerSocket(), (char*)&player_info, sizeof(struct Player_Info) * PLAYER_MAX_NUMBER, MSG_WAITALL);
 	if (retval == INVALID_SOCKET)
 	{
-		DisconnectServer();
+		//DisconnectServer();
 		return;
 	}
 

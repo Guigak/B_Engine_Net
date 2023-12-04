@@ -98,7 +98,7 @@ bool Connect_To_Server(const char* sServer_IP)
 	retval = recv(sock, (char*)&playerNumber, sizeof(playerNumber), 0);
 	if (retval == INVALID_SOCKET)
 	{
-		DisconnectServer();
+		//DisconnectServer();
 		return false;
 	}
 	SetPlayerNumberAndColor(playerNumber);
@@ -239,7 +239,7 @@ DWORD WINAPI Get_Time(LPVOID arg)
 		retval = recv(sock, (char*)&now_time, sizeof(int), MSG_WAITALL);
 		if (retval == INVALID_SOCKET)
 		{
-			DisconnectServer();
+			//DisconnectServer();
 			return -1;
 		}
 		else if (retval == 0)
@@ -271,11 +271,13 @@ DWORD WINAPI Get_Time(LPVOID arg)
 			retval = recv(sock, (char*)&player_cube_count, sizeof(int) * PLAYER_MAX_NUMBER, MSG_WAITALL);
 			if (retval == INVALID_SOCKET) {
 				printf("warning!!!!!!\n");
-				DisconnectServer();
+				//DisconnectServer();
 				return -1;
 			}
+			printf("1111\n");
 			Sleep(1000);
 			DisconnectServer();
+			printf("2222\n");
 			for (int i = 0; i < PLAYER_MAX_NUMBER; ++i)
 			{
 				printf("%d°³ ¹ÞÀ½\n", player_cube_count[i]);
@@ -342,7 +344,7 @@ DWORD WINAPI Get_Cube_Object_From_Server(LPVOID arg)
 		retval = recv(CubeSocket, (char*)&CubeInput, sizeof(Cube_Info), MSG_WAITALL);
 		if (retval == INVALID_SOCKET)
 		{
-			DisconnectServer();
+			//DisconnectServer();
 			return -1;
 		}
 		else if (retval == 0)
@@ -401,8 +403,8 @@ void ClearCube();
 bool checkCRITICAL;
 void DisconnectServer()
 {
-	//mtx.lock();
-	EnterCriticalSection(&cs_Cube);
+	mtx.lock();
+	//EnterCriticalSection(&cs_Cube);
 	if(Get_Con() &&!checkCRITICAL)
 	{
 		checkCRITICAL = true;
@@ -419,6 +421,6 @@ void DisconnectServer()
 		checkCRITICAL = false;
 		
 	}
-	EnterCriticalSection(&cs_Cube);
-	//mtx.unlock();
+	//EnterCriticalSection(&cs_Cube);
+	mtx.unlock();
 }
