@@ -103,13 +103,11 @@ CObject* CScene::Pick_Object_Pointed_By_Cursor(int Client_x, int Client_y, CCame
 	CObject* pIntersected_Object = NULL;
 	CObject* pNearest_Object = NULL;
 
-	for (int i = 0; i < m_nShaders; ++i) {
-		pIntersected_Object = m_ppShaders[i]->Pick_Object_By_Ray_Intersection(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);
+	pIntersected_Object = m_ppShaders[0]->Pick_Object_By_Ray_Intersection(xmf3_Pick_Position, xmf4x4_View, &fHit_Distance);	// 0 : cube
 
-		if (pIntersected_Object && (fHit_Distance < fNearest_Hit_Distance)) {
-			fNearest_Hit_Distance = fHit_Distance;
-			pNearest_Object = pIntersected_Object;
-		}
+	if (pIntersected_Object && (fHit_Distance < fNearest_Hit_Distance)) {
+		fNearest_Hit_Distance = fHit_Distance;
+		pNearest_Object = pIntersected_Object;
 	}
 
 	return pNearest_Object;
