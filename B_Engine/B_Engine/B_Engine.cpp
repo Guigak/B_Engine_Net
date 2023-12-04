@@ -775,7 +775,6 @@ DWORD WINAPI RecvChatData(LPVOID arg)
     }
 
     // 소켓 닫기
-    closesocket(GetChatDataSocket());
     // 윈속 종료
     WSACleanup();
     return 0;
