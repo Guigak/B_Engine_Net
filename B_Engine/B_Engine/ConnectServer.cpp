@@ -32,6 +32,8 @@ void Release_m_vServerObjects()
 		if (m_vServerObjects.size() != 0) {
 			std::vector<Cube_Info>().swap(m_vServerObjects);
 		}
+
+		throw 1;
 	}
 	catch(int excep){
 		std::cout << excep << std::endl;
