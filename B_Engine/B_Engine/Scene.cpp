@@ -19,7 +19,7 @@ bool CScene::Prcs_Msg_Keyboard(HWND hWnd, UINT nMsg_ID, WPARAM wParam, LPARAM lP
 ID3D12RootSignature* CScene::Crt_Graphics_RootSignature(ID3D12Device* pd3d_Device) {
 	ID3D12RootSignature* pd3d_Graphics_RootSignature = NULL;
 
-	D3D12_ROOT_PARAMETER pd3d_RootParameters[5];
+	D3D12_ROOT_PARAMETER pd3d_RootParameters[6];
 	pd3d_RootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;	// world
 	pd3d_RootParameters[0].Constants.Num32BitValues = 16;
 	pd3d_RootParameters[0].Constants.ShaderRegister = 0;
@@ -44,17 +44,17 @@ ID3D12RootSignature* CScene::Crt_Graphics_RootSignature(ID3D12Device* pd3d_Devic
 	pd3d_RootParameters[3].Constants.RegisterSpace = 0;
 	pd3d_RootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
-	//
-	//pd3d_RootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;	// number uv
-	//pd3d_RootParameters[4].Constants.Num32BitValues = 16;
-	//pd3d_RootParameters[4].Constants.ShaderRegister = 3;
-	//pd3d_RootParameters[4].Constants.RegisterSpace = 0;
-	//pd3d_RootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
+	
+	pd3d_RootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;	// number uv
+	pd3d_RootParameters[4].Constants.Num32BitValues = 16;
+	pd3d_RootParameters[4].Constants.ShaderRegister = 3;
+	pd3d_RootParameters[4].Constants.RegisterSpace = 0;
+	pd3d_RootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
-	pd3d_RootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;	// number texture
-	pd3d_RootParameters[4].Descriptor.ShaderRegister = 1;
-	pd3d_RootParameters[4].Descriptor.RegisterSpace = 0;
-	pd3d_RootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	pd3d_RootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;	// number texture
+	pd3d_RootParameters[5].Descriptor.ShaderRegister = 1;
+	pd3d_RootParameters[5].Descriptor.RegisterSpace = 0;
+	pd3d_RootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	// sampler
 	D3D12_STATIC_SAMPLER_DESC pd3d_Sampler_Descs[1];

@@ -112,12 +112,12 @@ void CFramework::OnDestroy() {
 		m_pdxgi_Factory->Release();
 	}
 
-//#if defined(_DEBUG)
-//	IDXGIDebug1* pdxgi_Debug = NULL;
-//	DXGIGetDebugInterface1(0, __uuidof(IDXGIDebug1), (void**)&pdxgi_Debug);
-//	HRESULT hResult = pdxgi_Debug->ReportLiveObjects/(DXGI_DEBUG_ALL, /DXGI_DEBUG_RLO_DETAIL);
-//	pdxgi_Debug->Release();
-//#endif
+#if defined(_DEBUG)
+	IDXGIDebug1* pdxgi_Debug = NULL;
+	DXGIGetDebugInterface1(0, __uuidof(IDXGIDebug1), (void**)&pdxgi_Debug);
+	HRESULT hResult = pdxgi_Debug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL);
+	pdxgi_Debug->Release();
+#endif
 }
 
 void CFramework::Crt_SwapChain() {
@@ -175,7 +175,15 @@ void CFramework::Crt_D3D_Device() {
 
 	UINT ndxgi_Factory_Flags = 0;
 
-
+#if defined(_DEBUG)
+	ID3D12Debug* pd3d_Debug_Controller = NULL;
+	hResult = D3D12GetDebugInterface(__uuidof(ID3D12Debug), (void**)&pd3d_Debug_Controller);
+	if (pd3d_Debug_Controller) {
+		pd3d_Debug_Controller->EnableDebugLayer();
+		pd3d_Debug_Controller->Release();
+	}
+	ndxgi_Factory_Flags |= DXGI_CREATE_FACTORY_DEBUG;
+#endif
 
 	hResult = CreateDXGIFactory2(ndxgi_Factory_Flags, __uuidof(IDXGIFactory4), (void**)&m_pdxgi_Factory);
 
